@@ -5,20 +5,20 @@ import { Song } from './Song';
 @Entity()
 export class Artist {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column()
-  name: string;
+  name!: string;
 
   @Column({ nullable: true })
-  bio: string;
+  bio!: string;
 
   @Column({ nullable: true })
-  profile_picture: string;
+  profile_picture!: string;
 
   @OneToMany(() => Album, album => album.artist)
-  albums: Album[];
+  albums!: Album[];
 
   @OneToMany(() => Song, song => song.artist)
-  songs: Song[];
+  songs!: Song[];
 }

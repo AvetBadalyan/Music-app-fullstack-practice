@@ -11,20 +11,20 @@ import { Song } from './Song';
 @Entity()
 export class Album {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column()
-  title: string;
+  title!: string;
 
   @Column({ type: 'date', nullable: true })
-  release_date: string;
+  release_date!: string;
 
   @Column({ nullable: true })
-  cover_image: string;
+  cover_image!: string;
 
   @ManyToOne(() => Artist, artist => artist.albums)
-  artist: Artist;
+  artist!: Artist;
 
   @OneToMany(() => Song, song => song.album)
-  songs: Song[];
+  songs!: Song[];
 }

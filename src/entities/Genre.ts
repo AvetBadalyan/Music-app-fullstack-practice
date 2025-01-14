@@ -4,11 +4,11 @@ import { Song } from './Song';
 @Entity()
 export class Genre {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column()
-  name: string;
+  name!: string;
 
   @ManyToMany(() => Song, song => song.genres)
-  songs: Song[];
+  songs!: Song[];
 }

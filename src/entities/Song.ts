@@ -13,24 +13,24 @@ import { Genre } from './Genre';
 @Entity()
 export class Song {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column()
-  title: string;
+  title!: string;
 
   @Column({ type: 'int' })
-  duration: number;
+  duration!: number;
 
   @Column({ nullable: true })
-  audio_file: string;
+  audio_file!: string;
 
   @ManyToOne(() => Album, album => album.songs, { nullable: true })
-  album: Album;
+  album!: Album;
 
   @ManyToOne(() => Artist, artist => artist.songs)
-  artist: Artist;
+  artist!: Artist;
 
   @ManyToMany(() => Genre, genre => genre.songs)
   @JoinTable()
-  genres: Genre[];
+  genres!: Genre[];
 }
