@@ -1,6 +1,11 @@
+import 'reflect-metadata';
 import { DataSource } from 'typeorm';
+import { Artist } from './src/entities/Artist';
+import { Album } from './src/entities/Album';
+import { Song } from './src/entities/Song';
+import { Genre } from './src/entities/Genre';
 
-const AppDataSource = new DataSource({
+export const AppDataSource = new DataSource({
   type: 'postgres',
   host: 'localhost',
   port: 5432,
@@ -9,7 +14,7 @@ const AppDataSource = new DataSource({
   database: 'music_app',
   synchronize: true,
   logging: true,
-  entities: ['src/entities/*.ts'],
+  entities: [Artist, Album, Song, Genre, 'src/entities/*.ts'],
+  migrations: [],
+  subscribers: [],
 });
-
-export default AppDataSource;
