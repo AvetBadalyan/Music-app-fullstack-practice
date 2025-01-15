@@ -15,7 +15,7 @@ export class Song {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column()
+  @Column({ length: 100 })
   title!: string;
 
   @Column({ type: 'int' })

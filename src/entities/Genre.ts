@@ -6,7 +6,7 @@ export class Genre {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column()
+  @Column({ length: 50 })
   name!: string;
 
   @ManyToMany(() => Song, song => song.genres)

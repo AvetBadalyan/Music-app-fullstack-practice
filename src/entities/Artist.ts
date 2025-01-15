@@ -7,10 +7,10 @@ export class Artist {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column()
+  @Column({ length: 100 })
   name!: string;
 
-  @Column({ nullable: true })
+  @Column({ length: 1000, nullable: true })
   bio!: string;
 
   @Column({ nullable: true })
