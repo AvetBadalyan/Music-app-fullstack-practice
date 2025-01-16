@@ -1,9 +1,7 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import { Artist } from './src/entities/Artist';
-import { Album } from './src/entities/Album';
-import { Song } from './src/entities/Song';
-import { Genre } from './src/entities/Genre';
+import { Artist, Album, Song, Genre } from './src/entities';
+
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -17,7 +15,7 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME,
   synchronize: true,
   logging: true,
-  entities: [Artist, Album, Song, Genre, 'src/entities/*.ts'],
+  entities: [Artist, Album, Song, Genre],
   migrations: [],
   subscribers: [],
 });

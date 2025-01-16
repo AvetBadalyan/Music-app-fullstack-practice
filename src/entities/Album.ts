@@ -19,7 +19,7 @@ export class Album {
   @Column({ type: 'date', nullable: true })
   release_date!: string;
 
-  @Column({ nullable: true })
+  @Column({ length: 50, nullable: true })
   cover_image!: string;
 
   @ManyToOne(() => Artist, artist => artist.albums)

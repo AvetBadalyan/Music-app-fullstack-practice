@@ -13,7 +13,7 @@ export class Artist {
   @Column({ length: 1000, nullable: true })
   bio!: string;
 
-  @Column({ nullable: true })
+  @Column({ length: 50, nullable: true })
   profile_picture!: string;
 
   @OneToMany(() => Album, album => album.artist)

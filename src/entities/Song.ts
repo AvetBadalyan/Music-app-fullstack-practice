@@ -21,7 +21,7 @@ export class Song {
   @Column({ type: 'int' })
   duration!: number;
 
-  @Column({ nullable: true })
+  @Column({ length: 50, nullable: true })
   audio_file!: string;
 
   @ManyToOne(() => Album, album => album.songs, { nullable: true })
