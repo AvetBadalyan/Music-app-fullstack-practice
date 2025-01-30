@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import { Artist, Album, Song, Genre } from './src/entities';
+import { Album, Artist, Genre, Song } from './entities';
 
 import dotenv from 'dotenv';
 
