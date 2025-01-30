@@ -1,4 +1,4 @@
-import { AppDataSource } from '../../data-source';
+import { AppDataSource } from '../data-source';
 import { Song } from '../entities/Song';
 import { NotFoundError } from '../utils/errors';
 import type { ISong } from '../types/song';

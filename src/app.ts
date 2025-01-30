@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import express from 'express';
-import { AppDataSource } from './../data-source';
+import { AppDataSource } from './data-source';
 import { errorHandler } from './middlewares/errorhandler';
 import { songRouter } from './routes/song';
 import { DatabaseError } from './utils/errors';
