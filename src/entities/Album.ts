@@ -22,9 +22,13 @@ export class Album {
   @Column({ length: 50, nullable: true })
   cover_image!: string;
 
-  @ManyToOne(() => Artist, artist => artist.albums)
+  @ManyToOne(() => Artist, artist => artist.albums, {
+    onDelete: 'CASCADE',
+  })
   artist!: Artist;
 
-  @OneToMany(() => Song, song => song.album)
+  @OneToMany(() => Song, song => song.album, {
+    cascade: true,
+  })
   songs!: Song[];
 }
