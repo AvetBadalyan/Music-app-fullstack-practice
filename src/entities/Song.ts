@@ -24,13 +24,20 @@ export class Song {
   @Column({ length: 50, nullable: true })
   audio_file!: string;
 
-  @ManyToOne(() => Album, album => album.songs, { nullable: true })
+  @ManyToOne(() => Album, album => album.songs, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
   album!: Album;
 
-  @ManyToOne(() => Artist, artist => artist.songs)
+  @ManyToOne(() => Artist, artist => artist.songs, {
+    onDelete: 'CASCADE',
+  })
   artist!: Artist;
 
-  @ManyToMany(() => Genre, genre => genre.songs)
+  @ManyToMany(() => Genre, genre => genre.songs, {
+    cascade: true,
+  })
   @JoinTable()
   genres!: Genre[];
 }

@@ -1,19 +1,29 @@
-import express, { Application } from 'express';
-import bodyParser from 'body-parser';
-import cors from 'cors';
-import artistRoutes from './routes/artistRoutes';
-import albumRoutes from './routes/albumRoutes';
-import songRoutes from './routes/songRoutes';
-import genreRoutes from './routes/genreRoutes';
+import dotenv from 'dotenv';
+import express from 'express';
+import { AppDataSource } from './data-source';
+import { errorHandler } from './middlewares/errorHandler';
+import { songRouter } from './routes/song';
+import { DatabaseError } from './utils/errors';
 
-const app: Application = express();
+dotenv.config();
 
-app.use(cors());
-app.use(bodyParser.json());
+const app = express();
+const port = process.env.PORT || 3000;
 
-app.use('/api/artists', artistRoutes);
-app.use('/api/albums', albumRoutes);
-app.use('/api/songs', songRoutes);
-app.use('/api/genres', genreRoutes);
+app.use(express.json());
 
-export default app;
+AppDataSource.initialize()
+  .then(() => {
+    console.log('Database connected successfully');
+
+    app.use('/api/songs', songRouter);
+    app.use(errorHandler);
+
+    app.listen(port, () => {
+      console.log(`Server running at http://localhost:${port}`);
+    });
+  })
+  .catch(error => {
+    console.error(new DatabaseError('Failed to connect to the database'));
+    process.exit(1);
+  });
