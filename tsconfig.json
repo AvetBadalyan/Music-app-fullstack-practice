@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2020", 
+    "target": "es2020",
     "module": "commonjs",
     "moduleResolution": "node",
     "rootDir": "./src",
@@ -12,8 +12,10 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "strictPropertyInitialization": false,
+    "moduleDetection": "force",
     "skipLibCheck": true,
-    "lib": ["es2020"]
+    "lib": ["es2020"],
+    "typeRoots": ["./src/types", "./node_modules/@types"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
