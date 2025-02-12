@@ -3,6 +3,7 @@ import express from 'express';
 import { AppDataSource } from './data-source';
 import { errorHandler } from './middlewares/errorHandler';
 import { songRouter } from './routes/song';
+import { artistRouter } from './routes/artist';
 import { DatabaseError } from './utils/errors';
 
 dotenv.config();
@@ -17,6 +18,7 @@ AppDataSource.initialize()
     console.log('Database connected successfully');
 
     app.use('/api/songs', songRouter);
+    app.use('/api/artists', artistRouter);
     app.use(errorHandler);
 
     app.listen(port, () => {
