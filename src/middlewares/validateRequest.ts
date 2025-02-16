@@ -7,25 +7,25 @@ export function validateRequest<T extends Record<string, any>>(
   dto: new () => T,
 ) {
   return async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const dtoInstance = plainToInstance(dto, {
+    const dtoInstance = plainToInstance(
+      dto,
+      {
         ...req.query,
         ...req.body,
-      });
+      },
+      { excludeExtraneousValues: true },
+    );
 
-      const errors = await validate(dtoInstance);
+    const errors = await validate(dtoInstance);
 
-      if (errors.length > 0) {
-        const errorMessages = errors
-          .map(error => Object.values(error.constraints || {}))
-          .flat();
-        return next(new ValidationError(errorMessages[0]));
-      }
-
-      req.validatedData = dtoInstance as T;
-      next();
-    } catch (error) {
-      next(error);
+    if (errors.length > 0) {
+      const errorMessages = errors
+        .map(error => Object.values(error.constraints || {}))
+        .flat();
+      return next(new ValidationError(errorMessages[0]));
     }
+
+    req.validatedData = dtoInstance as T;
+    next();
   };
 }
