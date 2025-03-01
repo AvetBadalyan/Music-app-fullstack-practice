@@ -1,10 +1,25 @@
-import { Expose } from 'class-transformer';
-import { IsString, IsNotEmpty, MaxLength } from 'class-validator';
+import { IsString, IsNotEmpty, MaxLength, IsOptional } from 'class-validator';
+
+export class CreateArtistDto {
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(50)
+  name: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(1000)
+  bio?: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(50)
+  profile_picture?: string;
+}
 
 export class SearchArtistDto {
-  @Expose()
   @IsString()
-  @IsNotEmpty({ message: 'name parameter is required' })
-  @MaxLength(100, { message: 'name parameter must not exceed 100 characters' })
+  @IsNotEmpty()
+  @MaxLength(100)
   name: string;
 }

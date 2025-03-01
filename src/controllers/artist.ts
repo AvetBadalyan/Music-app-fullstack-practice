@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import { ArtistService } from '../services/artist';
 import type { IArtist } from '../types/artist';
-import type { SearchArtistDto } from '../dto/artist.dto';
+import type { CreateArtistDto, SearchArtistDto } from '../dto/artist.dto';
 
 export class ArtistController {
   private artistService: ArtistService;
@@ -9,6 +9,20 @@ export class ArtistController {
   constructor() {
     this.artistService = new ArtistService();
   }
+
+  public create = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const artistData = req.validatedData as CreateArtistDto;
+      const newArtist: IArtist = await this.artistService.create(artistData);
+      res.status(201).json(newArtist);
+    } catch (error) {
+      next(error);
+    }
+  };
 
   public getById = async (
     req: Request,
