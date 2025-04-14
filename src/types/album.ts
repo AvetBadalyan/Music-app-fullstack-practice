@@ -3,4 +3,8 @@ export interface IAlbum {
   title: string;
   release_date?: string;
   cover_image?: string;
+  artist?: {
+    id: string;
+    name: string;
+  };
 }
