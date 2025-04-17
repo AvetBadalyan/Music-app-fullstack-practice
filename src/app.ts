@@ -4,6 +4,7 @@ import { AppDataSource } from './data-source';
 import { errorHandler } from './middlewares/errorHandler';
 import { songRouter } from './routes/song';
 import { artistRouter } from './routes/artist';
+import { albumRouter } from './routes/album';
 import { DatabaseError } from './utils/errors';
 
 dotenv.config();
@@ -19,6 +20,7 @@ AppDataSource.initialize()
 
     app.use('/api/songs', songRouter);
     app.use('/api/artists', artistRouter);
+    app.use('/api/albums', albumRouter);
     app.use(errorHandler);
 
     app.listen(port, () => {
