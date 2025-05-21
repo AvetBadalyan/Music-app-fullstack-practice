@@ -7,4 +7,8 @@ export interface IAlbum {
     id: string;
     name: string;
   };
+  songs?: {
+    id: string;
+    title: string;
+  }[];
 }

@@ -23,4 +23,30 @@ export class AlbumController {
       next(error);
     }
   };
+
+  public getById = async (
+    { params: { id } }: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const album: IAlbum = await this.albumService.getById(id);
+      res.status(200).json(album);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getAll = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const albums: IAlbum[] = await this.albumService.getAll();
+      res.status(200).json(albums);
+    } catch (error) {
+      next(error);
+    }
+  };
 }
