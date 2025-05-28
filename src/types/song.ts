@@ -4,7 +4,7 @@ export interface ISong {
   id: string;
   title: string;
   duration?: number;
-  audio_file?: string;
+  audioFile?: string;
   album: {
     title: string;
   };
