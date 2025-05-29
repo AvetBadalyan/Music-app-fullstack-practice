@@ -16,11 +16,11 @@ export class Album {
   @Column({ length: 100 })
   title!: string;
 
-  @Column({ type: 'date', nullable: true })
-  release_date!: string;
+  @Column({ type: 'date', nullable: true, name: 'release_date' })
+  releaseDate!: string;
 
-  @Column({ length: 50, nullable: true })
-  cover_image!: string;
+  @Column({ length: 50, nullable: true, name: 'cover_image' })
+  coverImage!: string;
 
   @ManyToOne(() => Artist, artist => artist.albums, {
     onDelete: 'CASCADE',

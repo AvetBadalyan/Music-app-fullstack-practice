@@ -15,12 +15,12 @@ export class CreateAlbumDto {
 
   @IsDateString()
   @IsOptional()
-  release_date?: string;
+  releaseDate?: string;
 
   @IsString()
   @IsOptional()
   @MaxLength(50)
-  cover_image?: string;
+  coverImage?: string;
 
   @IsUUID()
   @IsNotEmpty()
