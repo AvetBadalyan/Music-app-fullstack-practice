@@ -40,8 +40,8 @@ export class AlbumService {
         select: {
           id: true,
           title: true,
-          release_date: true,
-          cover_image: true,
+          releaseDate: true,
+          coverImage: true,
           artist: {
             id: true,
             name: true,
@@ -76,8 +76,8 @@ export class AlbumService {
         select: {
           id: true,
           title: true,
-          release_date: true,
-          cover_image: true,
+          releaseDate: true,
+          coverImage: true,
           artist: {
             id: true,
             name: true,

@@ -25,7 +25,7 @@ export class ArtistService {
         id: true,
         name: true,
         bio: true,
-        profile_picture: true,
+        profilePicture: true,
         albums: {
           id: true,
           title: true,
@@ -52,7 +52,7 @@ export class ArtistService {
         id: true,
         name: true,
         bio: true,
-        profile_picture: true,
+        profilePicture: true,
         albums: {
           id: true,
           title: true,

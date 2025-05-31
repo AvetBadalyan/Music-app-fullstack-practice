@@ -14,7 +14,7 @@ export class CreateArtistDto {
   @IsString()
   @IsOptional()
   @MaxLength(50)
-  profile_picture?: string;
+  profilePicture?: string;
 }
 
 export class SearchArtistDto {

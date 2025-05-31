@@ -13,8 +13,8 @@ export class Artist {
   @Column({ length: 1000, nullable: true })
   bio!: string;
 
-  @Column({ length: 50, nullable: true })
-  profile_picture!: string;
+  @Column({ length: 50, nullable: true, name: 'profile_picture' })
+  profilePicture!: string;
 
   @OneToMany(() => Album, album => album.artist, {
     cascade: true,

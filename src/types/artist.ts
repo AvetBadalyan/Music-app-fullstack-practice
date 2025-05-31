@@ -5,7 +5,7 @@ export interface IArtist {
   id: string;
   name: string;
   bio?: string;
-  profile_picture?: string;
+  profilePicture?: string;
   albums?: IAlbum[];
   songs?: ISong[];
 }

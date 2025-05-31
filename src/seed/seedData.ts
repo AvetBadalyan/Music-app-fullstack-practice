@@ -8,49 +8,49 @@ export const genres = [
 export const artists = [
   {
     name: 'Charles Aznavour',
-    bio: 'Famous French-Armenian singer and songwriter.',
-    profile_picture: 'aznavour.jpg',
+    bio: 'French-Armenian singer, lyricist, and actor.',
+    profilePicture: 'aznavour.jpg',
   },
   {
     name: 'Ray Charles',
     bio: 'American singer, songwriter, and pianist.',
-    profile_picture: 'ray_charles.jpg',
+    profilePicture: 'ray_charles.jpg',
   },
   {
     name: 'Frank Sinatra',
     bio: 'American singer and actor, one of the most popular entertainers of the 20th century.',
-    profile_picture: 'frank_sinatra.jpg',
+    profilePicture: 'frank_sinatra.jpg',
   },
   {
     name: 'Stevie Wonder',
     bio: 'American singer, songwriter, musician, and record producer.',
-    profile_picture: 'stevie_wonder.jpg',
+    profilePicture: 'stevie_wonder.jpg',
   },
 ];
 
 export const albums = [
   {
-    title: 'Best of Aznavour',
-    release_date: '1974-01-01',
-    cover_image: 'she.jpg',
+    title: 'She',
+    releaseDate: '1974-01-01',
+    coverImage: 'she.jpg',
     artist: 'Charles Aznavour',
   },
   {
     title: 'Genius Loves Company',
-    release_date: '2004-08-31',
-    cover_image: 'genius_loves_company.jpg',
+    releaseDate: '2004-08-31',
+    coverImage: 'genius_loves_company.jpg',
     artist: 'Ray Charles',
   },
   {
     title: 'In the Wee Small Hours',
-    release_date: '1955-04-25',
-    cover_image: 'in_the_wee_small_hours.jpg',
+    releaseDate: '1955-04-25',
+    coverImage: 'in_the_wee_small_hours.jpg',
     artist: 'Frank Sinatra',
   },
   {
     title: 'Songs in the Key of Life',
-    release_date: '1976-09-28',
-    cover_image: 'songs_in_the_key_of_life.jpg',
+    releaseDate: '1976-09-28',
+    coverImage: 'songs_in_the_key_of_life.jpg',
     artist: 'Stevie Wonder',
   },
 ];
@@ -60,7 +60,7 @@ export const songs = [
   {
     title: 'She',
     duration: 240,
-    audio_file: 'she.mp3',
+    audioFile: 'she.mp3',
     artist: 'Charles Aznavour',
     album: 'She',
     genres: ['Jazz', 'Pop'],
@@ -68,7 +68,7 @@ export const songs = [
   {
     title: 'The Old Fashioned Way',
     duration: 230,
-    audio_file: 'the_old_fashioned_way.mp3',
+    audioFile: 'the_old_fashioned_way.mp3',
     artist: 'Charles Aznavour',
     album: 'She',
     genres: ['Pop'],
@@ -76,7 +76,7 @@ export const songs = [
   {
     title: 'La Bohème',
     duration: 220,
-    audio_file: 'la_boheme.mp3',
+    audioFile: 'la_boheme.mp3',
     artist: 'Charles Aznavour',
     album: 'She',
     genres: ['Jazz'],
@@ -84,7 +84,7 @@ export const songs = [
   {
     title: 'Yesterday When I Was Young',
     duration: 210,
-    audio_file: 'yesterday_when_i_was_young.mp3',
+    audioFile: 'yesterday_when_i_was_young.mp3',
     artist: 'Charles Aznavour',
     album: 'She',
     genres: ['Pop', 'Jazz'],
@@ -92,7 +92,7 @@ export const songs = [
   {
     title: 'For Me Formidable',
     duration: 200,
-    audio_file: 'for_me_formidable.mp3',
+    audioFile: 'for_me_formidable.mp3',
     artist: 'Charles Aznavour',
     album: 'She',
     genres: ['Pop'],
@@ -100,7 +100,7 @@ export const songs = [
   {
     title: 'Emmenez-moi',
     duration: 250,
-    audio_file: 'emmenez_moi.mp3',
+    audioFile: 'emmenez_moi.mp3',
     artist: 'Charles Aznavour',
     album: 'She',
     genres: ['Jazz'],
@@ -108,7 +108,7 @@ export const songs = [
   {
     title: 'Comme Ils Disent',
     duration: 230,
-    audio_file: 'comme_ils_disent.mp3',
+    audioFile: 'comme_ils_disent.mp3',
     artist: 'Charles Aznavour',
     album: 'She',
     genres: ['Pop'],
@@ -116,7 +116,7 @@ export const songs = [
   {
     title: 'Parce Que Tu Crois',
     duration: 210,
-    audio_file: 'parce_que_tu_crois.mp3',
+    audioFile: 'parce_que_tu_crois.mp3',
     artist: 'Charles Aznavour',
     album: 'She',
     genres: ['Jazz'],
@@ -124,7 +124,7 @@ export const songs = [
   {
     title: 'Ave Maria',
     duration: 180,
-    audio_file: 'ave_maria.mp3',
+    audioFile: 'ave_maria.mp3',
     artist: 'Charles Aznavour',
     album: 'She',
     genres: ['Pop', 'Jazz'],
@@ -132,7 +132,7 @@ export const songs = [
   {
     title: 'Tous Les Visages De L’Amour',
     duration: 220,
-    audio_file: 'tous_les_visages.mp3',
+    audioFile: 'tous_les_visages.mp3',
     artist: 'Charles Aznavour',
     album: 'She',
     genres: ['Jazz', 'Pop'],
@@ -142,7 +142,7 @@ export const songs = [
   {
     title: 'Hit the Road Jack',
     duration: 180,
-    audio_file: 'hit_the_road_jack.mp3',
+    audioFile: 'hit_the_road_jack.mp3',
     artist: 'Ray Charles',
     album: 'Genius Loves Company',
     genres: ['Jazz', 'Blues'],
@@ -150,7 +150,7 @@ export const songs = [
   {
     title: 'Georgia on My Mind',
     duration: 240,
-    audio_file: 'georgia_on_my_mind.mp3',
+    audioFile: 'georgia_on_my_mind.mp3',
     artist: 'Ray Charles',
     album: 'Genius Loves Company',
     genres: ['Blues', 'Jazz'],
@@ -158,7 +158,7 @@ export const songs = [
   {
     title: 'You Don’t Know Me',
     duration: 230,
-    audio_file: 'you_dont_know_me.mp3',
+    audioFile: 'you_dont_know_me.mp3',
     artist: 'Ray Charles',
     album: 'Genius Loves Company',
     genres: ['Jazz'],
@@ -166,7 +166,7 @@ export const songs = [
   {
     title: 'Unchain My Heart',
     duration: 210,
-    audio_file: 'unchain_my_heart.mp3',
+    audioFile: 'unchain_my_heart.mp3',
     artist: 'Ray Charles',
     album: 'Genius Loves Company',
     genres: ['Blues'],
@@ -174,7 +174,7 @@ export const songs = [
   {
     title: 'Let’s Go Get Stoned',
     duration: 250,
-    audio_file: 'lets_go_get_stoned.mp3',
+    audioFile: 'lets_go_get_stoned.mp3',
     artist: 'Ray Charles',
     album: 'Genius Loves Company',
     genres: ['Blues'],
@@ -182,7 +182,7 @@ export const songs = [
   {
     title: 'I Can’t Stop Loving You',
     duration: 220,
-    audio_file: 'i_cant_stop_loving_you.mp3',
+    audioFile: 'i_cant_stop_loving_you.mp3',
     artist: 'Ray Charles',
     album: 'Genius Loves Company',
     genres: ['Jazz'],
@@ -190,7 +190,7 @@ export const songs = [
   {
     title: 'Crying Time',
     duration: 200,
-    audio_file: 'crying_time.mp3',
+    audioFile: 'crying_time.mp3',
     artist: 'Ray Charles',
     album: 'Genius Loves Company',
     genres: ['Blues'],
@@ -198,7 +198,7 @@ export const songs = [
   {
     title: 'What’d I Say',
     duration: 250,
-    audio_file: 'whatd_i_say.mp3',
+    audioFile: 'whatd_i_say.mp3',
     artist: 'Ray Charles',
     album: 'Genius Loves Company',
     genres: ['Blues', 'Jazz'],
@@ -206,7 +206,7 @@ export const songs = [
   {
     title: 'Busted',
     duration: 230,
-    audio_file: 'busted.mp3',
+    audioFile: 'busted.mp3',
     artist: 'Ray Charles',
     album: 'Genius Loves Company',
     genres: ['Jazz'],
@@ -214,7 +214,7 @@ export const songs = [
   {
     title: 'America the Beautiful',
     duration: 270,
-    audio_file: 'america_the_beautiful.mp3',
+    audioFile: 'america_the_beautiful.mp3',
     artist: 'Ray Charles',
     album: 'Genius Loves Company',
     genres: ['Blues'],
@@ -224,7 +224,7 @@ export const songs = [
   {
     title: 'Fly Me to the Moon',
     duration: 145,
-    audio_file: 'fly_me_to_the_moon.mp3',
+    audioFile: 'fly_me_to_the_moon.mp3',
     artist: 'Frank Sinatra',
     album: 'In the Wee Small Hours',
     genres: ['Jazz'],
@@ -232,7 +232,7 @@ export const songs = [
   {
     title: 'I Get a Kick Out of You',
     duration: 180,
-    audio_file: 'i_get_a_kick_out_of_you.mp3',
+    audioFile: 'i_get_a_kick_out_of_you.mp3',
     artist: 'Frank Sinatra',
     album: 'In the Wee Small Hours',
     genres: ['Jazz'],
@@ -240,7 +240,7 @@ export const songs = [
   {
     title: 'I’ve Got You Under My Skin',
     duration: 210,
-    audio_file: 'ive_got_you_under_my_skin.mp3',
+    audioFile: 'ive_got_you_under_my_skin.mp3',
     artist: 'Frank Sinatra',
     album: 'In the Wee Small Hours',
     genres: ['Jazz'],
@@ -248,7 +248,7 @@ export const songs = [
   {
     title: 'My Way',
     duration: 245,
-    audio_file: 'my_way.mp3',
+    audioFile: 'my_way.mp3',
     artist: 'Frank Sinatra',
     album: 'In the Wee Small Hours',
     genres: ['Jazz'],
@@ -256,7 +256,7 @@ export const songs = [
   {
     title: 'Strangers in the Night',
     duration: 230,
-    audio_file: 'strangers_in_the_night.mp3',
+    audioFile: 'strangers_in_the_night.mp3',
     artist: 'Frank Sinatra',
     album: 'In the Wee Small Hours',
     genres: ['Jazz'],
@@ -264,7 +264,7 @@ export const songs = [
   {
     title: 'The Lady is a Tramp',
     duration: 225,
-    audio_file: 'the_lady_is_a_tramp.mp3',
+    audioFile: 'the_lady_is_a_tramp.mp3',
     artist: 'Frank Sinatra',
     album: 'In the Wee Small Hours',
     genres: ['Jazz'],
@@ -272,7 +272,7 @@ export const songs = [
   {
     title: 'Night and Day',
     duration: 240,
-    audio_file: 'night_and_day.mp3',
+    audioFile: 'night_and_day.mp3',
     artist: 'Frank Sinatra',
     album: 'In the Wee Small Hours',
     genres: ['Jazz'],
@@ -280,7 +280,7 @@ export const songs = [
   {
     title: 'Young at Heart',
     duration: 200,
-    audio_file: 'young_at_heart.mp3',
+    audioFile: 'young_at_heart.mp3',
     artist: 'Frank Sinatra',
     album: 'In the Wee Small Hours',
     genres: ['Jazz'],
@@ -288,7 +288,7 @@ export const songs = [
   {
     title: 'Come Fly With Me',
     duration: 210,
-    audio_file: 'come_fly_with_me.mp3',
+    audioFile: 'come_fly_with_me.mp3',
     artist: 'Frank Sinatra',
     album: 'In the Wee Small Hours',
     genres: ['Jazz'],
@@ -296,7 +296,7 @@ export const songs = [
   {
     title: 'Witchcraft',
     duration: 220,
-    audio_file: 'witchcraft.mp3',
+    audioFile: 'witchcraft.mp3',
     artist: 'Frank Sinatra',
     album: 'In the Wee Small Hours',
     genres: ['Jazz'],
@@ -306,7 +306,7 @@ export const songs = [
   {
     title: 'Isn’t She Lovely',
     duration: 210,
-    audio_file: 'isnt_she_lovely.mp3',
+    audioFile: 'isnt_she_lovely.mp3',
     artist: 'Stevie Wonder',
     album: 'Songs in the Key of Life',
     genres: ['Soul', 'Pop'],
@@ -314,7 +314,7 @@ export const songs = [
   {
     title: 'Sir Duke',
     duration: 225,
-    audio_file: 'sir_duke.mp3',
+    audioFile: 'sir_duke.mp3',
     artist: 'Stevie Wonder',
     album: 'Songs in the Key of Life',
     genres: ['Soul'],
@@ -322,7 +322,7 @@ export const songs = [
   {
     title: 'I Wish',
     duration: 240,
-    audio_file: 'i_wish.mp3',
+    audioFile: 'i_wish.mp3',
     artist: 'Stevie Wonder',
     album: 'Songs in the Key of Life',
     genres: ['Soul', 'Pop'],
@@ -330,7 +330,7 @@ export const songs = [
   {
     title: 'Pastime Paradise',
     duration: 250,
-    audio_file: 'pastime_paradise.mp3',
+    audioFile: 'pastime_paradise.mp3',
     artist: 'Stevie Wonder',
     album: 'Songs in the Key of Life',
     genres: ['Soul'],
@@ -338,7 +338,7 @@ export const songs = [
   {
     title: 'Isn’t She Lovely',
     duration: 210,
-    audio_file: 'isnt_she_lovely.mp3',
+    audioFile: 'isnt_she_lovely.mp3',
     artist: 'Stevie Wonder',
     album: 'Songs in the Key of Life',
     genres: ['Soul'],
@@ -346,7 +346,7 @@ export const songs = [
   {
     title: 'Golden Lady',
     duration: 240,
-    audio_file: 'golden_lady.mp3',
+    audioFile: 'golden_lady.mp3',
     artist: 'Stevie Wonder',
     album: 'Songs in the Key of Life',
     genres: ['Soul'],
@@ -354,7 +354,7 @@ export const songs = [
   {
     title: 'Joy Inside My Tears',
     duration: 245,
-    audio_file: 'joy_inside_my_tears.mp3',
+    audioFile: 'joy_inside_my_tears.mp3',
     artist: 'Stevie Wonder',
     album: 'Songs in the Key of Life',
     genres: ['Soul'],
@@ -362,7 +362,7 @@ export const songs = [
   {
     title: 'Knocks Me Off My Feet',
     duration: 220,
-    audio_file: 'knocks_me_off_my_feet.mp3',
+    audioFile: 'knocks_me_off_my_feet.mp3',
     artist: 'Stevie Wonder',
     album: 'Songs in the Key of Life',
     genres: ['Soul'],
@@ -370,7 +370,7 @@ export const songs = [
   {
     title: 'Living for the City',
     duration: 300,
-    audio_file: 'living_for_the_city.mp3',
+    audioFile: 'living_for_the_city.mp3',
     artist: 'Stevie Wonder',
     album: 'Songs in the Key of Life',
     genres: ['Soul'],
@@ -378,7 +378,7 @@ export const songs = [
   {
     title: 'All Day Sucker',
     duration: 240,
-    audio_file: 'all_day_sucker.mp3',
+    audioFile: 'all_day_sucker.mp3',
     artist: 'Stevie Wonder',
     album: 'Songs in the Key of Life',
     genres: ['Soul'],
