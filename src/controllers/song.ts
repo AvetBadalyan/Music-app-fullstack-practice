@@ -21,4 +21,17 @@ export class SongController {
       next(error);
     }
   };
+
+  public getAll = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const songs: ISong[] = await this.songService.getAll();
+      res.status(200).json(songs);
+    } catch (error) {
+      next(error);
+    }
+  };
 }
