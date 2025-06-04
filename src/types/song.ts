@@ -5,10 +5,12 @@ export interface ISong {
   title: string;
   duration?: number;
   audioFile?: string;
-  album: {
+  album?: {
+    id: string;
     title: string;
   };
   artist: {
+    id: string;
     name: string;
   };
   genres?: IGenre[];
