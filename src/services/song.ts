@@ -1,6 +1,6 @@
 import { AppDataSource } from '../data-source';
 import { Song } from '../entities/Song';
-import { NotFoundError } from '../utils/errors';
+import { NotFoundError, DatabaseError, CustomError } from '../utils/errors';
 import type { ISong } from '../types/song';
 
 export class SongService {
@@ -31,5 +31,38 @@ export class SongService {
     }
 
     return song;
+  }
+
+  public async getAll(): Promise<ISong[]> {
+    try {
+      const songs = await this.songRepository.find({
+        relations: ['album', 'artist', 'genres'],
+        select: {
+          id: true,
+          title: true,
+          duration: true,
+          audioFile: true,
+          album: {
+            id: true,
+            title: true,
+          },
+          artist: {
+            id: true,
+            name: true,
+          },
+          genres: {
+            id: true,
+            name: true,
+          },
+        },
+      });
+
+      return songs as ISong[];
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+      throw new DatabaseError('Failed to retrieve songs');
+    }
   }
 }
