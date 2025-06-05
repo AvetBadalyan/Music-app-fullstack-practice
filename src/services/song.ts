@@ -1,3 +1,4 @@
+import { ILike } from 'typeorm';
 import { AppDataSource } from '../data-source';
 import { Song } from '../entities/Song';
 import { NotFoundError, DatabaseError, CustomError } from '../utils/errors';
@@ -64,5 +65,32 @@ export class SongService {
       }
       throw new DatabaseError('Failed to retrieve songs');
     }
+  }
+
+  public async searchByTitle(title: string): Promise<ISong[]> {
+    const songs = await this.songRepository.find({
+      where: { title: ILike(`%${title}%`) },
+      relations: ['album', 'artist', 'genres'],
+      select: {
+        id: true,
+        title: true,
+        duration: true,
+        audioFile: true,
+        album: {
+          id: true,
+          title: true,
+        },
+        artist: {
+          id: true,
+          name: true,
+        },
+        genres: {
+          id: true,
+          name: true,
+        },
+      },
+    });
+
+    return songs;
   }
 }
