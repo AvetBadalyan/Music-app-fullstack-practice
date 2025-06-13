@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import { SongService } from '../services/song';
 import type { ISong } from '../types/song';
+import { SearchSongDto } from '../dto/song.dto';
 
 export class SongController {
   private songService: SongService;
@@ -30,6 +31,20 @@ export class SongController {
     try {
       const songs: ISong[] = await this.songService.getAll();
       res.status(200).json(songs);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public searchByTitle = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const { title } = req.validatedData as SearchSongDto;
+      const songs: ISong[] = await this.songService.searchByTitle(title);
+      res.json(songs);
     } catch (error) {
       next(error);
     }
