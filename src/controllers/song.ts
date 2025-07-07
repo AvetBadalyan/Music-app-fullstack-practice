@@ -1,7 +1,8 @@
 import type { Request, Response, NextFunction } from 'express';
+import * as mm from 'music-metadata';
 import { SongService } from '../services/song';
 import type { ISong } from '../types/song';
-import type { SearchSongDto } from '../dto/song.dto';
+import type { SearchSongDto, CreateSongDto } from '../dto/song.dto';
 
 export class SongController {
   private songService: SongService;
@@ -9,6 +10,57 @@ export class SongController {
   constructor() {
     this.songService = new SongService();
   }
+
+  public create = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const songData = req.validatedData as CreateSongDto;
+      const audioFile = req.file;
+
+      if (!audioFile) {
+        res.status(400).json({ error: 'Audio file is required' });
+        return;
+      }
+
+      let durationFromFile: number | undefined;
+
+      try {
+        const metadata = await mm.parseBuffer(
+          audioFile.buffer,
+          audioFile.mimetype,
+        );
+        const duration = metadata?.format?.duration;
+
+        if (!duration || duration < 1) {
+          res.status(400).json({
+            error: 'Extracted audio duration is invalid or missing.',
+          });
+          return;
+        }
+
+        durationFromFile = Math.round(duration);
+      } catch (parseError) {
+        console.error('Failed to parse audio file:', parseError);
+        res.status(400).json({
+          error:
+            'Failed to process audio file. It may be corrupted or unsupported.',
+        });
+        return;
+      }
+
+      const newSong: ISong = await this.songService.create(
+        songData,
+        audioFile,
+        durationFromFile,
+      );
+      res.status(201).json(newSong);
+    } catch (error) {
+      next(error);
+    }
+  };
 
   public getById = async (
     req: Request,
