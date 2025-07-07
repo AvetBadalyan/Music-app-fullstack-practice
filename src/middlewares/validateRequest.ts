@@ -8,10 +8,16 @@ export function validateRequest<T extends Record<string, any>>(
 ) {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const dtoInstance = plainToInstance(dto, {
-        ...req.query,
-        ...req.body,
-      });
+      const dtoInstance = plainToInstance(
+        dto,
+        {
+          ...req.query,
+          ...req.body,
+        },
+        {
+          enableImplicitConversion: true,
+        },
+      );
 
       const errors = await validate(dtoInstance);
 

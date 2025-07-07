@@ -2,10 +2,19 @@ import { Router } from 'express';
 import { SongController } from '../controllers/song';
 import { validateId } from '../middlewares/idValidator';
 import { validateRequest } from '../middlewares/validateRequest';
-import { SearchSongDto } from '../dto/song.dto';
+import { SearchSongDto, CreateSongDto } from '../dto/song.dto';
+import { validateAudioUpload } from '../middlewares/fileUpload';
 
 const router = Router();
 const songController = new SongController();
+
+
+router.post(
+  '/',
+  validateAudioUpload.single('audioFile'),
+  validateRequest(CreateSongDto),
+  songController.create,
+);
 
 router.get('/', songController.getAll);
 router.get(
