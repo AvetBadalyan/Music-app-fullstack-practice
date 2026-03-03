@@ -11,45 +11,78 @@ This project is a backend API for a music app using TypeORM with PostgreSQL.
 
 ## Setup Instructions
 
-1. Install required dependencies:
+### 1. Install required dependencies
 
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
-2. Create a PostgreSQL database named `music_app`:
+### 2. Create a PostgreSQL database named `music_app`
 
-   ```sql
-   CREATE DATABASE music_app;
-   ```
+You can create it using pgAdmin or run:
 
-3. Add your database credentials in the `data-source.ts` file.
+```sql
+CREATE DATABASE music_app;
+```
 
-4. Run the migrations to set up the database schema:
+### 3. Configure Environment Variables
 
-   ```bash
-   npx ts-node src/index.ts
-   ```
+Make sure your `.env` file (or `data-source.ts`) contains the correct database credentials:
 
-5. The following tables are created:
+```env
+DB_HOST=localhost
+DB_USERNAME=postgres
+DB_PASSWORD=your_password
+DB_NAME=music_app
+DB_PORT=5432
+```
 
-   - **Artist**: Stores information about artists.
-   - **Album**: Stores album information.
-   - **Song**: Stores song information.
-   - **Genre**: Stores genres.
-   - **SongGenres**: Many-to-many relationship between songs and genres.
+### 4. Run the project to create database schema
+
+```bash
+npx ts-node src/index.ts
+```
+
+This will:
+
+- Establish a connection to PostgreSQL
+- Create all required tables
+- Print a success message
+
+### 5. Seed the database with initial data
+
+To insert demo data (genres, artists, albums, songs), run:
+
+```bash
+npm run seed
+```
+
+Or:
+
+```bash
+npx ts-node src/seed/seed.ts
+```
+
+This will populate the database with:
+
+- 4 Genres
+- 4 Artists
+- 4 Albums
+- Multiple Songs
+- Song ↔ Genre relationships
 
 ## Database Schema
 
-The following is the relationship between the entities in the database:
+### Entity Relationships
 
-- An **Artist** can have multiple **Albums** and **Songs**.
-- An **Album** can have multiple **Songs**.
-- A **Song** can belong to multiple **Genres** (Many-to-many relationship).
+- An **Artist** can have multiple **Albums**
+- An **Artist** can have multiple **Songs**
+- An **Album** can have multiple **Songs**
+- A **Song** can belong to multiple **Genres** (Many-to-many relationship)
 
-## Available Tables:
+### Tables
 
-### Artist
+#### Artist
 
 | Column          | Type    | Description            |
 | --------------- | ------- | ---------------------- |
@@ -58,7 +91,7 @@ The following is the relationship between the entities in the database:
 | bio             | VARCHAR | Artist Biography       |
 | profile_picture | VARCHAR | URL to Profile Picture |
 
-### Album
+#### Album
 
 | Column       | Type    | Description          |
 | ------------ | ------- | -------------------- |
@@ -68,7 +101,7 @@ The following is the relationship between the entities in the database:
 | cover_image  | VARCHAR | URL to Cover Image   |
 | artistId     | UUID    | Foreign Key (Artist) |
 
-### Song
+#### Song
 
 | Column     | Type    | Description          |
 | ---------- | ------- | -------------------- |
@@ -79,14 +112,14 @@ The following is the relationship between the entities in the database:
 | albumId    | UUID    | Foreign Key (Album)  |
 | artistId   | UUID    | Foreign Key (Artist) |
 
-### Genre
+#### Genre
 
 | Column | Type    | Description |
 | ------ | ------- | ----------- |
 | id     | UUID    | Primary Key |
 | name   | VARCHAR | Genre Name  |
 
-### SongGenres
+#### SongGenres
 
 | Column  | Type | Description         |
 | ------- | ---- | ------------------- |
@@ -95,20 +128,30 @@ The following is the relationship between the entities in the database:
 
 ## Database Relationships
 
-- **Artist** to **Album**: One-to-many relationship.
-- **Artist** to **Song**: One-to-many relationship.
-- **Album** to **Song**: One-to-many relationship.
-- **Song** to **Genre**: Many-to-many relationship.
+- **Artist** to **Album**: One-to-many relationship
+- **Artist** to **Song**: One-to-many relationship
+- **Album** to **Song**: One-to-many relationship
+- **Song** to **Genre**: Many-to-many relationship
 
 ## Run the Project
 
-Run the project with the following command:
+To start the development server:
 
 ```bash
-npx ts-node src/index.ts
+npm run dev
 ```
 
-This will establish a connection to the PostgreSQL database, create the required tables, and print a success message if everything is set up correctly.
+To build the project:
+
+```bash
+npm run build
+```
+
+To run production build:
+
+```bash
+npm start
+```
 
 ## License
 
