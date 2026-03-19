@@ -4,7 +4,7 @@ This project is a backend API for a music app using TypeORM with PostgreSQL.
 
 ## Requirements
 
-- Node.js
+- Node.js 18 or newer
 - TypeScript
 - PostgreSQL
 - TypeORM
@@ -16,6 +16,8 @@ This project is a backend API for a music app using TypeORM with PostgreSQL.
 ```bash
 npm install
 ```
+
+If `npx ts-node src/index.ts` fails with `SyntaxError: Unexpected token '??='`, your Node.js version is too old. This project depends on packages that use modern JavaScript syntax supported in Node.js 18+.
 
 ### 2. Create a PostgreSQL database named `music_app`
 
@@ -140,6 +142,221 @@ To start the development server:
 ```bash
 npm run dev
 ```
+
+The API runs on `http://localhost:3000` by default.
+
+Note: `GET /` is not implemented, so opening `http://localhost:3000/` in the browser will show `Cannot GET /`. Use the `/api/...` routes below.
+
+## Postman Requests
+
+Base URL:
+
+```text
+http://localhost:3000
+```
+
+### General Rules
+
+- For `GET /:id` routes, the `id` path parameter is required.
+- For song creation, the request must be `multipart/form-data` because `audioFile` is required.
+- For artist, album, and genre creation, use `raw` JSON in Postman.
+- Search routes accept query parameters. Because the validation middleware merges query and body, query parameters are the cleanest option for `GET` requests.
+
+### Artists
+
+#### Create artist
+
+- Method: `POST`
+- URL: `http://localhost:3000/api/artists`
+- Body type: `raw` JSON
+
+Required fields:
+
+- `name`: string, max 50 characters
+
+Optional fields:
+
+- `bio`: string, max 1000 characters
+- `profilePicture`: string, max 50 characters
+
+Example body:
+
+```json
+{
+	"name": "Frank Sinatra",
+	"bio": "American singer and actor",
+	"profilePicture": "frank-sinatra.jpg"
+}
+```
+
+#### Get artist by id
+
+- Method: `GET`
+- URL: `http://localhost:3000/api/artists/:id`
+- Required path param: `id`
+
+Example:
+
+```text
+http://localhost:3000/api/artists/efb7647b-8450-4e27-b6d6-60c12e7f3560
+```
+
+#### Search artists by name
+
+- Method: `GET`
+- URL: `http://localhost:3000/api/artists/search?name=Frank`
+
+Required query params:
+
+- `name`: string, not empty, max 100 characters
+
+### Albums
+
+#### Create album
+
+- Method: `POST`
+- URL: `http://localhost:3000/api/albums`
+- Body type: `raw` JSON
+
+Required fields:
+
+- `title`: string, max 100 characters
+- `artistId`: UUID
+
+Optional fields:
+
+- `releaseDate`: valid date string, for example `2024-01-15`
+- `coverImage`: string, max 50 characters
+
+Example body:
+
+```json
+{
+	"title": "My Album",
+	"artistId": "efb7647b-8450-4e27-b6d6-60c12e7f3560",
+	"releaseDate": "2024-01-15",
+	"coverImage": "cover.jpg"
+}
+```
+
+#### Get all albums
+
+- Method: `GET`
+- URL: `http://localhost:3000/api/albums`
+
+#### Get album by id
+
+- Method: `GET`
+- URL: `http://localhost:3000/api/albums/:id`
+- Required path param: `id`
+
+### Genres
+
+#### Create genre
+
+- Method: `POST`
+- URL: `http://localhost:3000/api/genres`
+- Body type: `raw` JSON
+
+Required fields:
+
+- `name`: string, max 50 characters
+
+Optional fields:
+
+- none
+
+Example body:
+
+```json
+{
+	"name": "Jazz"
+}
+```
+
+#### Get all genres
+
+- Method: `GET`
+- URL: `http://localhost:3000/api/genres`
+
+#### Get genre by id
+
+- Method: `GET`
+- URL: `http://localhost:3000/api/genres/:id`
+- Required path param: `id`
+
+### Songs
+
+#### Create song
+
+- Method: `POST`
+- URL: `http://localhost:3000/api/songs`
+- Body type: `form-data`
+
+Required fields:
+
+- `title`: string, max 100 characters
+- `artistId`: UUID
+- `audioFile`: file
+
+Optional fields:
+
+- `albumId`: UUID
+- `genreIds`: array of UUIDs
+
+Postman form-data setup:
+
+- key `title` -> Text
+- key `artistId` -> Text
+- key `albumId` -> Text, optional
+- key `genreIds` -> Text, optional, repeat the same key for multiple genre ids
+- key `audioFile` -> File
+
+Example form-data values:
+
+```text
+title: My Song
+artistId: efb7647b-8450-4e27-b6d6-60c12e7f3560
+albumId: eba44568-4b4f-404c-8bf4-56fcc520df84
+genreIds: 11111111-1111-1111-1111-111111111111
+genreIds: 22222222-2222-2222-2222-222222222222
+audioFile: [select a file in Postman]
+```
+
+Important:
+
+- `title` is required, not optional.
+- `artistId` is required, not optional.
+- `audioFile` is required because the backend extracts the duration from the uploaded file.
+- `duration` is not sent by the client. It is calculated from the uploaded audio file.
+
+#### Get all songs
+
+- Method: `GET`
+- URL: `http://localhost:3000/api/songs`
+
+#### Get song by id
+
+- Method: `GET`
+- URL: `http://localhost:3000/api/songs/:id`
+- Required path param: `id`
+
+#### Search songs by title
+
+- Method: `GET`
+- URL: `http://localhost:3000/api/songs/search?title=Moon`
+
+Required query params:
+
+- `title`: string, not empty, max 100 characters
+
+### Quick Postman Test Order
+
+1. Create a genre with `POST /api/genres`
+2. Create an artist with `POST /api/artists`
+3. Create an album with `POST /api/albums`
+4. Create a song with `POST /api/songs`
+5. Read data with `GET /api/songs`, `GET /api/artists`, `GET /api/albums`, and `GET /api/genres`
 
 To build the project:
 
