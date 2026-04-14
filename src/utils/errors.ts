@@ -15,6 +15,12 @@ export class DatabaseError extends CustomError {
   }
 }
 
+export class StorageError extends CustomError {
+  constructor(message: string) {
+    super('StorageError', message, 500);
+  }
+}
+
 export class ValidationError extends CustomError {
   constructor(message: string) {
     super('ValidationError', message, 400);
