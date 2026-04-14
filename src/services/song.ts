@@ -5,7 +5,7 @@ import { Artist } from '../entities/Artist';
 import { Album } from '../entities/Album';
 import { Genre } from '../entities/Genre';
 import { NotFoundError, DatabaseError, CustomError } from '../utils/errors';
-import { saveAudioFile } from '../middlewares/fileUpload';
+import { supabaseStorage } from './supabaseStorage';
 import type { ISong } from '../types/song';
 import type { CreateSongDto } from '../dto/song.dto';
 import type { Express } from 'express';
@@ -54,16 +54,20 @@ export class SongService {
         }
       }
 
-      // Only save file to disk after all validations pass
-      const audioFileName = saveAudioFile(
-        audioFile.buffer,
-        audioFile.originalname,
-      );
+      // Only upload the file after all validations pass.
+
+      const audioUrl = await supabaseStorage.uploadSongAudio({
+        fileBuffer: audioFile.buffer,
+        songTitle: songData.title,
+        originalFileName: audioFile.originalname,
+        mimeType: audioFile.mimetype,
+      });
+
 
       const songCreateData: Partial<Song> = {
         title: songData.title,
         duration,
-        audioFile: audioFileName,
+        audioFile: audioUrl,
         artist,
         genres,
       };

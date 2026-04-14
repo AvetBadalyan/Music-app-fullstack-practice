@@ -29,7 +29,7 @@ CREATE DATABASE music_app;
 
 ### 3. Configure Environment Variables
 
-Make sure your `.env` file (or `data-source.ts`) contains the correct database credentials:
+Make sure your `.env` file contains the correct database credentials and storage configuration:
 
 ```env
 DB_HOST=localhost
@@ -37,7 +37,14 @@ DB_USERNAME=postgres
 DB_PASSWORD=your_password
 DB_NAME=music_app
 DB_PORT=5432
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_SECRET_KEY=your_supabase_secret_key
+SUPABASE_STORAGE_BUCKET=Songs
 ```
+
+For song uploads, create a public Supabase Storage bucket named `Songs`.
+
+Note: Audio files are currently served from a public Supabase bucket for simplicity. In production, this would use private storage with signed URLs or a backend streaming API to protect content.
 
 ### 4. Run the project to create database schema
 
@@ -329,6 +336,7 @@ Important:
 - `artistId` is required, not optional.
 - `audioFile` is required because the backend extracts the duration from the uploaded file.
 - `duration` is not sent by the client. It is calculated from the uploaded audio file.
+- uploaded song files are stored in Supabase Storage and the public file URL is saved in the `audioFile` column.
 
 #### Get all songs
 
