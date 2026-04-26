@@ -1,0 +1,244 @@
+.create-page {
+  padding: 24px;
+
+  .page-header {
+    margin-bottom: 24px;
+
+    .eyebrow {
+      color: #1db954;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      color: #fff;
+      font-size: 2.25rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .page-copy {
+      color: #b3b3b3;
+      max-width: 720px;
+      line-height: 1.5;
+    }
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .form-card {
+    background: #181818;
+    border: 1px solid #282828;
+    border-radius: 12px;
+    padding: 20px;
+
+    &.song-card {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .card-header {
+    margin-bottom: 16px;
+
+    h2 {
+      color: #fff;
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    p {
+      color: #b3b3b3;
+      font-size: 0.875rem;
+    }
+  }
+
+  form {
+    display: grid;
+    gap: 14px;
+  }
+
+  label,
+  .genre-selector,
+  .artist-picker {
+    display: grid;
+    gap: 8px;
+
+    span {
+      color: #fff;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+  }
+
+  input,
+  textarea,
+  select {
+    width: 100%;
+    background: #121212;
+    border: 1px solid #333;
+    border-radius: 10px;
+    color: #fff;
+    padding: 12px 14px;
+    outline: none;
+
+    &:focus {
+      border-color: #1db954;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 96px;
+  }
+
+  button[type='submit'] {
+    background: #1db954;
+    border: none;
+    border-radius: 999px;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 700;
+    padding: 12px 18px;
+    justify-self: start;
+
+    &:disabled {
+      cursor: wait;
+      opacity: 0.7;
+    }
+  }
+
+  .field-hint {
+    color: #8c8c8c;
+    font-size: 0.8rem;
+    margin-top: -2px;
+  }
+
+  .selected-pill {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: #202020;
+    border-radius: 10px;
+    padding: 10px 12px;
+    color: #fff;
+
+    button {
+      background: transparent;
+      border: none;
+      color: #b3b3b3;
+      cursor: pointer;
+      font-weight: 600;
+    }
+  }
+
+  .picker-results {
+    display: grid;
+    gap: 8px;
+
+    p {
+      color: #b3b3b3;
+      font-size: 0.875rem;
+    }
+  }
+
+  .picker-option {
+    background: #202020;
+    border: 1px solid #2f2f2f;
+    border-radius: 10px;
+    color: #fff;
+    cursor: pointer;
+    display: grid;
+    gap: 4px;
+    justify-items: start;
+    padding: 12px;
+    text-align: left;
+
+    span {
+      color: #b3b3b3;
+      font-size: 0.8rem;
+      font-weight: 400;
+    }
+  }
+
+  .checkbox-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .checkbox-pill {
+    align-items: center;
+    background: #202020;
+    border: 1px solid #2f2f2f;
+    border-radius: 999px;
+    cursor: pointer;
+    display: inline-flex;
+    gap: 8px;
+    padding: 10px 14px;
+
+    input {
+      width: auto;
+      margin: 0;
+    }
+
+    span {
+      color: #fff;
+      font-weight: 500;
+    }
+  }
+
+  .feedback {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-radius: 10px;
+
+    &.success {
+      background: rgba(29, 185, 84, 0.12);
+      border: 1px solid rgba(29, 185, 84, 0.3);
+      color: #d5ffe4;
+    }
+
+    &.error {
+      background: rgba(255, 86, 86, 0.12);
+      border: 1px solid rgba(255, 86, 86, 0.3);
+      color: #ffd2d2;
+    }
+
+    a {
+      color: inherit;
+      font-weight: 700;
+      text-decoration: underline;
+      white-space: nowrap;
+    }
+  }
+}
+
+@media (max-width: 960px) {
+  .create-page {
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .form-card.song-card {
+      grid-column: auto;
+    }
+
+    .feedback {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+}

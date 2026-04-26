@@ -1,0 +1,16 @@
+.genre-detail-page {
+  padding: 24px;
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 20px;
+  }
+
+  .loading,
+  .error,
+  .empty {
+    color: #b3b3b3;
+  }
+}

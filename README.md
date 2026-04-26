@@ -1,35 +1,42 @@
-# Music App Database
+# Music App
 
-This project is a backend API for a music app using TypeORM with PostgreSQL.
+This repository contains a full-stack music app:
 
-## Requirements
+- `src/` contains the Express + TypeORM backend.
+- `client/` contains the React + Vite frontend.
 
-- Node.js 18 or newer
-- TypeScript
-- PostgreSQL
-- TypeORM
+In development, the frontend calls `/api/...` and Vite proxies those requests to the backend at `http://localhost:3000`.
 
-## Setup Instructions
+## Quick Start From Zero
 
-### 1. Install required dependencies
+If you just cloned the repo and want to run the app locally, use this order:
+
+1. Clone the repository and enter the project folder.
+
+```bash
+git clone <your-repo-url>
+cd music-app
+```
+
+2. Install backend dependencies.
 
 ```bash
 npm install
 ```
 
-If `npx ts-node src/index.ts` fails with `SyntaxError: Unexpected token '??='`, your Node.js version is too old. This project depends on packages that use modern JavaScript syntax supported in Node.js 18+.
+3. Install frontend dependencies.
 
-### 2. Create a PostgreSQL database named `music_app`
+```bash
+npm --prefix client install
+```
 
-You can create it using pgAdmin or run:
+4. Create a PostgreSQL database named `music_app`.
 
 ```sql
 CREATE DATABASE music_app;
 ```
 
-### 3. Configure Environment Variables
-
-Make sure your `.env` file contains the correct database credentials and storage configuration:
+5. Create the root `.env` file with your database and Supabase values.
 
 ```env
 DB_HOST=localhost
@@ -40,121 +47,206 @@ DB_PORT=5432
 SUPABASE_URL=your_supabase_project_url
 SUPABASE_SECRET_KEY=your_supabase_secret_key
 SUPABASE_STORAGE_BUCKET=Songs
+PORT=3000
 ```
 
-For song uploads, create a public Supabase Storage bucket named `Songs`.
-
-Note: Audio files are currently served from a public Supabase bucket for simplicity. In production, this would use private storage with signed URLs or a backend streaming API to protect content.
-
-### 4. Run the project to create database schema
-
-```bash
-npx ts-node src/index.ts
-```
-
-This will:
-
-- Establish a connection to PostgreSQL
-- Create all required tables
-- Print a success message
-
-### 5. Seed the database with initial data
-
-To insert demo data (genres, artists, albums, songs), run:
-
-```bash
-npm run seed
-```
-
-Or:
-
-```bash
-npx ts-node src/seed/seed.ts
-```
-
-This will populate the database with:
-
-- 4 Genres
-- 4 Artists
-- 4 Albums
-- Multiple Songs
-- Song ↔ Genre relationships
-
-## Database Schema
-
-### Entity Relationships
-
-- An **Artist** can have multiple **Albums**
-- An **Artist** can have multiple **Songs**
-- An **Album** can have multiple **Songs**
-- A **Song** can belong to multiple **Genres** (Many-to-many relationship)
-
-### Tables
-
-#### Artist
-
-| Column          | Type    | Description            |
-| --------------- | ------- | ---------------------- |
-| id              | UUID    | Primary Key            |
-| name            | VARCHAR | Artist Name            |
-| bio             | VARCHAR | Artist Biography       |
-| profile_picture | VARCHAR | URL to Profile Picture |
-
-#### Album
-
-| Column       | Type    | Description          |
-| ------------ | ------- | -------------------- |
-| id           | UUID    | Primary Key          |
-| title        | VARCHAR | Album Title          |
-| release_date | DATE    | Date of Release      |
-| cover_image  | VARCHAR | URL to Cover Image   |
-| artistId     | UUID    | Foreign Key (Artist) |
-
-#### Song
-
-| Column     | Type    | Description          |
-| ---------- | ------- | -------------------- |
-| id         | UUID    | Primary Key          |
-| title      | VARCHAR | Song Title           |
-| duration   | INT     | Duration in seconds  |
-| audio_file | VARCHAR | URL to Audio File    |
-| albumId    | UUID    | Foreign Key (Album)  |
-| artistId   | UUID    | Foreign Key (Artist) |
-
-#### Genre
-
-| Column | Type    | Description |
-| ------ | ------- | ----------- |
-| id     | UUID    | Primary Key |
-| name   | VARCHAR | Genre Name  |
-
-#### SongGenres
-
-| Column  | Type | Description         |
-| ------- | ---- | ------------------- |
-| songId  | UUID | Foreign Key (Song)  |
-| genreId | UUID | Foreign Key (Genre) |
-
-## Database Relationships
-
-- **Artist** to **Album**: One-to-many relationship
-- **Artist** to **Song**: One-to-many relationship
-- **Album** to **Song**: One-to-many relationship
-- **Song** to **Genre**: Many-to-many relationship
-
-## Run the Project
-
-To start the development server:
+6. Start the backend in terminal 1.
 
 ```bash
 npm run dev
 ```
 
-The API runs on `http://localhost:3000` by default.
+7. Start the frontend in terminal 2.
 
-Note: `GET /` is not implemented, so opening `http://localhost:3000/` in the browser will show `Cannot GET /`. Use the `/api/...` routes below.
+```bash
+npm run dev:client
+```
 
-## Postman Requests
+8. Open the app in the browser.
+
+```text
+http://localhost:5173
+```
+
+Optional: seed demo data after the backend is configured.
+
+```bash
+npm run seed
+```
+
+If only the frontend is running, the page shell will open, but API data will not load because the backend is required.
+
+## Stack
+
+- Backend: Express, TypeORM, PostgreSQL, Supabase Storage, TypeScript
+- Frontend: React, Vite, Redux Toolkit, RTK Query, React Router, Sass
+
+## Requirements
+
+- Node.js 18 or newer
+- PostgreSQL
+- A `.env` file for backend configuration
+- A public Supabase Storage bucket named `Songs` for song uploads
+
+## Project Structure
+
+```text
+music-app/
+├── src/          # backend
+├── client/       # frontend
+├── package.json  # backend scripts
+└── README.md
+```
+
+## Backend Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+DB_HOST=localhost
+DB_USERNAME=postgres
+DB_PASSWORD=your_password
+DB_NAME=music_app
+DB_PORT=5432
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_SECRET_KEY=your_supabase_secret_key
+SUPABASE_STORAGE_BUCKET=Songs
+PORT=3000
+```
+
+Note: uploaded song audio is stored in Supabase Storage and the public URL is saved in the database.
+
+## Install
+
+These are the same commands from the quick start, kept here as a reference section.
+
+Install backend dependencies:
+
+```bash
+npm install
+```
+
+Install frontend dependencies:
+
+```bash
+npm --prefix client install
+```
+
+## Database Setup
+
+Create the PostgreSQL database:
+
+```sql
+CREATE DATABASE music_app;
+```
+
+To create the schema without starting the full backend server, you can run:
+
+```bash
+npx ts-node src/index.ts
+```
+
+Or you can simply start the backend once with `npm run dev`, which also initializes TypeORM and creates the schema.
+
+To seed demo data:
+
+```bash
+npm run seed
+```
+
+This inserts sample genres, artists, albums, songs, and song-genre relationships.
+
+## Run In Development
+
+Use two terminals.
+
+Start the backend in one terminal:
+
+```bash
+npm run dev
+```
+
+Start the frontend in a second terminal:
+
+```bash
+npm run dev:client
+```
+
+You can also run the frontend directly inside `client/`:
+
+```bash
+cd client
+npm run dev
+```
+
+Default local URLs:
+
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:3000`
+
+Important: if only the frontend is running, the app shell will open in the browser, but API data will fail to load because the backend is not running.
+
+Expected successful startup:
+
+- Backend terminal shows `Database connected successfully` and `Server running at http://localhost:3000`
+- Frontend terminal shows Vite ready on `http://localhost:5173`
+
+## Build And Production
+
+Build the backend:
+
+```bash
+npm run build
+```
+
+Run the compiled backend:
+
+```bash
+npm start
+```
+
+Build the frontend:
+
+```bash
+npm run build:client
+```
+
+Preview the frontend production build locally:
+
+```bash
+npm run preview:client
+```
+
+The frontend production output is generated in `client/dist`.
+
+## Useful Scripts
+
+Root scripts:
+
+- `npm run dev` - start the backend dev server
+- `npm run dev:client` - start the frontend dev server from the project root
+- `npm run build` - build the backend TypeScript output into `dist`
+- `npm run build:client` - build the frontend for production
+- `npm run preview:client` - preview the frontend production build
+- `npm run seed` - seed demo data
+
+## What To Run Most Often
+
+For daily development:
+
+```bash
+npm run dev
+```
+
+and in another terminal:
+
+```bash
+npm run dev:client
+```
+
+Then open `http://localhost:5173`.
+
+## Backend API
 
 Base URL:
 
@@ -162,16 +254,38 @@ Base URL:
 http://localhost:3000
 ```
 
+Notes:
+
+- `GET /` is not implemented, so opening `http://localhost:3000/` in the browser returns `Cannot GET /`.
+- Search endpoints use query parameters.
+- Artist, album, and genre creation use raw JSON bodies.
+- Song creation uses `multipart/form-data` because `audioFile` is required.
+
+### API Route Groups
+
+- `GET/POST /api/songs`
+- `GET /api/songs/search`
+- `GET /api/songs/:id`
+- `POST /api/artists`
+- `GET /api/artists/search`
+- `GET /api/artists/:id`
+- `GET/POST /api/albums`
+- `GET /api/albums/:id`
+- `GET/POST /api/genres`
+- `GET /api/genres/:id`
+
+## Postman Requests
+
 ### General Rules
 
 - For `GET /:id` routes, the `id` path parameter is required.
 - For song creation, the request must be `multipart/form-data` because `audioFile` is required.
-- For artist, album, and genre creation, use `raw` JSON in Postman.
+- For artist, album, and genre creation, use raw JSON in Postman.
 - Search routes accept query parameters. Because the validation middleware merges query and body, query parameters are the cleanest option for `GET` requests.
 
 ### Artists
 
-#### Create artist
+#### Create Artist
 
 - Method: `POST`
 - URL: `http://localhost:3000/api/artists`
@@ -190,25 +304,18 @@ Example body:
 
 ```json
 {
-	"name": "Frank Sinatra",
-	"bio": "American singer and actor",
-	"profilePicture": "frank-sinatra.jpg"
+  "name": "Frank Sinatra",
+  "bio": "American singer and actor",
+  "profilePicture": "frank-sinatra.jpg"
 }
 ```
 
-#### Get artist by id
+#### Get Artist By Id
 
 - Method: `GET`
 - URL: `http://localhost:3000/api/artists/:id`
-- Required path param: `id`
 
-Example:
-
-```text
-http://localhost:3000/api/artists/efb7647b-8450-4e27-b6d6-60c12e7f3560
-```
-
-#### Search artists by name
+#### Search Artists By Name
 
 - Method: `GET`
 - URL: `http://localhost:3000/api/artists/search?name=Frank`
@@ -219,7 +326,7 @@ Required query params:
 
 ### Albums
 
-#### Create album
+#### Create Album
 
 - Method: `POST`
 - URL: `http://localhost:3000/api/albums`
@@ -239,27 +346,26 @@ Example body:
 
 ```json
 {
-	"title": "My Album",
-	"artistId": "efb7647b-8450-4e27-b6d6-60c12e7f3560",
-	"releaseDate": "2024-01-15",
-	"coverImage": "cover.jpg"
+  "title": "My Album",
+  "artistId": "efb7647b-8450-4e27-b6d6-60c12e7f3560",
+  "releaseDate": "2024-01-15",
+  "coverImage": "cover.jpg"
 }
 ```
 
-#### Get all albums
+#### Get All Albums
 
 - Method: `GET`
 - URL: `http://localhost:3000/api/albums`
 
-#### Get album by id
+#### Get Album By Id
 
 - Method: `GET`
 - URL: `http://localhost:3000/api/albums/:id`
-- Required path param: `id`
 
 ### Genres
 
-#### Create genre
+#### Create Genre
 
 - Method: `POST`
 - URL: `http://localhost:3000/api/genres`
@@ -269,32 +375,27 @@ Required fields:
 
 - `name`: string, max 50 characters
 
-Optional fields:
-
-- none
-
 Example body:
 
 ```json
 {
-	"name": "Jazz"
+  "name": "Jazz"
 }
 ```
 
-#### Get all genres
+#### Get All Genres
 
 - Method: `GET`
 - URL: `http://localhost:3000/api/genres`
 
-#### Get genre by id
+#### Get Genre By Id
 
 - Method: `GET`
 - URL: `http://localhost:3000/api/genres/:id`
-- Required path param: `id`
 
 ### Songs
 
-#### Create song
+#### Create Song
 
 - Method: `POST`
 - URL: `http://localhost:3000/api/songs`
@@ -332,24 +433,22 @@ audioFile: [select a file in Postman]
 
 Important:
 
-- `title` is required, not optional.
-- `artistId` is required, not optional.
+- `title` is required.
+- `artistId` is required.
 - `audioFile` is required because the backend extracts the duration from the uploaded file.
 - `duration` is not sent by the client. It is calculated from the uploaded audio file.
-- uploaded song files are stored in Supabase Storage and the public file URL is saved in the `audioFile` column.
 
-#### Get all songs
+#### Get All Songs
 
 - Method: `GET`
 - URL: `http://localhost:3000/api/songs`
 
-#### Get song by id
+#### Get Song By Id
 
 - Method: `GET`
 - URL: `http://localhost:3000/api/songs/:id`
-- Required path param: `id`
 
-#### Search songs by title
+#### Search Songs By Title
 
 - Method: `GET`
 - URL: `http://localhost:3000/api/songs/search?title=Moon`
@@ -358,26 +457,69 @@ Required query params:
 
 - `title`: string, not empty, max 100 characters
 
-### Quick Postman Test Order
+## Quick Postman Test Order
 
 1. Create a genre with `POST /api/genres`
 2. Create an artist with `POST /api/artists`
 3. Create an album with `POST /api/albums`
 4. Create a song with `POST /api/songs`
-5. Read data with `GET /api/songs`, `GET /api/artists`, `GET /api/albums`, and `GET /api/genres`
+5. Read data with `GET /api/songs`, `GET /api/artists/:id`, `GET /api/albums`, and `GET /api/genres`
 
-To build the project:
+## Database Schema
 
-```bash
-npm run build
-```
+### Entity Relationships
 
-To run production build:
+- An **Artist** can have multiple **Albums**
+- An **Artist** can have multiple **Songs**
+- An **Album** can have multiple **Songs**
+- A **Song** can belong to multiple **Genres**
 
-```bash
-npm start
-```
+### Tables
 
-## License
+#### Artist
 
-This project is licensed under the MIT License.
+| Column          | Type    | Description            |
+| --------------- | ------- | ---------------------- |
+| id              | UUID    | Primary Key            |
+| name            | VARCHAR | Artist name            |
+| bio             | VARCHAR | Artist biography       |
+| profile_picture | VARCHAR | Profile picture path   |
+
+#### Album
+
+| Column       | Type    | Description          |
+| ------------ | ------- | -------------------- |
+| id           | UUID    | Primary Key          |
+| title        | VARCHAR | Album title          |
+| release_date | DATE    | Release date         |
+| cover_image  | VARCHAR | Cover image path     |
+| artistId     | UUID    | Foreign Key (Artist) |
+
+#### Song
+
+| Column     | Type    | Description          |
+| ---------- | ------- | -------------------- |
+| id         | UUID    | Primary Key          |
+| title      | VARCHAR | Song title           |
+| duration   | INT     | Duration in seconds  |
+| audio_file | VARCHAR | Supabase public URL  |
+| albumId    | UUID    | Foreign Key (Album)  |
+| artistId   | UUID    | Foreign Key (Artist) |
+
+#### Genre
+
+| Column | Type    | Description |
+| ------ | ------- | ----------- |
+| id     | UUID    | Primary Key |
+| name   | VARCHAR | Genre name  |
+
+#### SongGenres
+
+| Column  | Type | Description         |
+| ------- | ---- | ------------------- |
+| songId  | UUID | Foreign Key (Song)  |
+| genreId | UUID | Foreign Key (Genre) |
+
+## Package License
+
+The package metadata currently declares the license as `ISC`.

@@ -1,0 +1,49 @@
+.artist-detail-page {
+  padding: 24px;
+
+  .artist-header {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    margin-bottom: 32px;
+
+    .profile-picture {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .artist-info {
+      h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 8px;
+      }
+
+      .bio {
+        color: #b3b3b3;
+        max-width: 600px;
+        line-height: 1.5;
+      }
+    }
+  }
+
+  .artist-section {
+    margin-bottom: 32px;
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 16px;
+    }
+  }
+
+  .loading,
+  .error {
+    color: #b3b3b3;
+    padding: 24px;
+  }
+}

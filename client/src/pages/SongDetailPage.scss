@@ -1,0 +1,75 @@
+.song-detail-page {
+  padding: 24px;
+
+  .song-header {
+    margin-bottom: 24px;
+  }
+
+  .song-info {
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .artist a,
+    .album a {
+      color: #b3b3b3;
+      text-decoration: none;
+      font-size: 1rem;
+
+      &:hover {
+        color: #fff;
+        text-decoration: underline;
+      }
+    }
+
+    .duration {
+      color: #b3b3b3;
+      margin-top: 4px;
+    }
+
+    .genres {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .genre-tag {
+      background: #333;
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-size: 0.8rem;
+      text-decoration: none;
+
+      &:hover {
+        background: #444;
+      }
+    }
+  }
+
+  .play-btn {
+    background: #1db954;
+    color: #fff;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      background: #1ed760;
+      transform: scale(1.02);
+    }
+  }
+
+  .loading,
+  .error {
+    color: #b3b3b3;
+    padding: 24px;
+  }
+}
