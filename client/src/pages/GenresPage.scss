@@ -1,60 +1,46 @@
 .genres-page {
-  padding: var(--space-5);
-
-  h1 {
-    font-size: var(--font-xl);
-    font-weight: var(--weight-bold);
-    color: var(--color-text);
-    margin-bottom: var(--space-5);
-  }
-
-  .genre-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
-    gap: var(--space-5);
-  }
-
-  .genre-card {
-    background: linear-gradient(135deg, var(--color-accent-strong), #1b1526);
-    color: var(--color-text);
-    padding: var(--space-5) var(--space-4);
-    border-radius: var(--radius-md);
-    text-decoration: none;
-    font-size: var(--font-lg);
-    font-weight: var(--weight-bold);
-    box-shadow: var(--shadow-elevation);
-    transition: transform var(--transition), box-shadow var(--transition);
-
-    @media (hover: hover) {
-      &:hover {
-        transform: scale(1.03);
-        box-shadow: var(--shadow-glow);
-      }
-    }
-  }
-
-  .loading {
-    color: var(--color-text-muted);
-  }
-}
-
-@media (max-width: 480px) {
-  .genres-page {
-    padding: var(--space-4);
-
-    h1 {
-      font-size: var(--font-lg);
-      margin-bottom: var(--space-4);
-    }
-
     .genre-grid {
-      grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
-      gap: var(--space-3);
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+        gap: var(--space-5);
     }
 
     .genre-card {
-      font-size: var(--font-md);
-      padding: var(--space-4) var(--space-3);
+        background: linear-gradient(
+            135deg,
+            var(--color-accent-strong),
+            #1b1526
+        );
+        color: var(--color-text);
+        padding: var(--space-5) var(--space-4);
+        border-radius: var(--radius-md);
+        text-decoration: none;
+        font-size: var(--font-lg);
+        font-weight: var(--weight-bold);
+        box-shadow: var(--shadow-elevation);
+        transition:
+            transform var(--transition),
+            box-shadow var(--transition);
+
+        @media (hover: hover) {
+            &:hover {
+                transform: scale(1.03);
+                box-shadow: var(--shadow-glow);
+            }
+        }
     }
-  }
+}
+
+@media (max-width: 480px) {
+    .genres-page {
+        .genre-grid {
+            grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+            gap: var(--space-3);
+        }
+
+        .genre-card {
+            font-size: var(--font-md);
+            padding: var(--space-4) var(--space-3);
+        }
+    }
 }
