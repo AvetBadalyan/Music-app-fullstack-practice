@@ -7,11 +7,11 @@
     padding: var(--space-5) var(--space-5);
     margin-bottom: var(--space-5);
     background:
-      radial-gradient(circle at 84% 18%, rgba(169, 120, 255, 0.28), transparent 54%),
+      radial-gradient(circle at 84% 18%, rgba(148, 102, 238, 0.28), transparent 54%),
       radial-gradient(circle at 14% 86%, rgba(108, 73, 166, 0.22), transparent 58%),
       linear-gradient(135deg, #2a1835 0%, #1b1526 58%, #121018 100%);
     overflow: hidden;
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-elevation);
 
     .hero-content {
       max-width: 64rem;
@@ -54,13 +54,15 @@
       font-size: var(--font-sm);
       font-weight: var(--weight-bold);
       cursor: pointer;
-      transition: transform var(--transition-fast), background var(--transition-base), box-shadow var(--transition-base);
+      transition: transform var(--transition), background var(--transition), box-shadow var(--transition);
       box-shadow: var(--shadow-glow);
 
-      &:hover:not(:disabled) {
-        background: var(--color-accent-hover);
-        transform: translateY(-1px);
-        box-shadow: 0 12px 24px rgba(169, 120, 255, 0.38);
+      @media (hover: hover) {
+        &:hover:not(:disabled) {
+          background: var(--color-accent-hover);
+          transform: translateY(-1px);
+          box-shadow: var(--shadow-glow);
+        }
       }
 
       &:disabled {
@@ -118,7 +120,7 @@
   }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 480px) {
   .home-page {
     padding: var(--space-4);
 

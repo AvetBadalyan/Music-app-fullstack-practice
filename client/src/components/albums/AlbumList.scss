@@ -8,17 +8,19 @@
     border-radius: var(--radius-md);
     padding: var(--space-4);
     text-decoration: none;
-    transition: background var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
+    transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
     display: block;
 
-    &:hover {
-      background: var(--color-surface-hover);
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-lg);
+    @media (hover: hover) {
+      &:hover {
+        background: var(--color-surface-hover);
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-elevation);
 
-      .album-cover .play-overlay {
-        opacity: 1;
-        transform: translate(-4px, -4px);
+        .album-cover .play-overlay {
+          opacity: 1;
+          transform: translate(-4px, -4px);
+        }
       }
     }
 
@@ -29,7 +31,7 @@
       border-radius: var(--radius-md);
       overflow: hidden;
       margin-bottom: var(--space-3);
-      box-shadow: var(--shadow-md);
+      box-shadow: var(--shadow-elevation);
 
       img {
         width: 100%;
@@ -62,10 +64,10 @@
         justify-content: center;
         font-size: var(--font-md);
         padding-left: 3px;
-        box-shadow: var(--shadow-md);
+        box-shadow: var(--shadow-elevation);
         opacity: 0;
         transform: translate(0, 8px);
-        transition: opacity var(--transition-base), transform var(--transition-base);
+        transition: opacity var(--transition), transform var(--transition);
       }
     }
 
@@ -91,4 +93,15 @@
 
 .empty {
   color: var(--color-text-muted);
+}
+
+@media (max-width: 480px) {
+  .album-grid {
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+    gap: var(--space-4);
+
+    .album-card {
+      padding: var(--space-3);
+    }
+  }
 }

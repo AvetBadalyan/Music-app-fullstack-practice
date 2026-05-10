@@ -49,12 +49,14 @@
     font-size: var(--font-sm);
     font-weight: var(--weight-bold);
     text-decoration: none;
-    transition: background var(--transition-base), transform var(--transition-fast);
+    transition: background var(--transition), transform var(--transition);
     box-shadow: var(--shadow-glow);
 
-    &:hover {
-      background: var(--color-accent-hover);
-      transform: translateY(-1px);
+    @media (hover: hover) {
+      &:hover {
+        background: var(--color-accent-hover);
+        transform: translateY(-1px);
+      }
     }
   }
 }

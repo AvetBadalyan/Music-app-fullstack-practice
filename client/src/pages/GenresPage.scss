@@ -22,16 +22,39 @@
     text-decoration: none;
     font-size: var(--font-lg);
     font-weight: var(--weight-bold);
-    box-shadow: var(--shadow-sm);
-    transition: transform var(--transition-base), box-shadow var(--transition-base);
+    box-shadow: var(--shadow-elevation);
+    transition: transform var(--transition), box-shadow var(--transition);
 
-    &:hover {
-      transform: scale(1.03);
-      box-shadow: var(--shadow-glow);
+    @media (hover: hover) {
+      &:hover {
+        transform: scale(1.03);
+        box-shadow: var(--shadow-glow);
+      }
     }
   }
 
   .loading {
     color: var(--color-text-muted);
+  }
+}
+
+@media (max-width: 480px) {
+  .genres-page {
+    padding: var(--space-4);
+
+    h1 {
+      font-size: var(--font-lg);
+      margin-bottom: var(--space-4);
+    }
+
+    .genre-grid {
+      grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+      gap: var(--space-3);
+    }
+
+    .genre-card {
+      font-size: var(--font-md);
+      padding: var(--space-4) var(--space-3);
+    }
   }
 }

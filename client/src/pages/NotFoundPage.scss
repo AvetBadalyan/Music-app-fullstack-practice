@@ -27,10 +27,24 @@
     text-decoration: none;
     font-weight: var(--weight-bold);
     box-shadow: var(--shadow-glow);
-    transition: background var(--transition-base);
+    transition: background var(--transition);
 
     &:hover {
       background: var(--color-accent-hover);
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .not-found-page {
+    padding: 0 var(--space-4);
+
+    h1 {
+      font-size: var(--font-xl);
+    }
+
+    p {
+      font-size: var(--font-md);
     }
   }
 }

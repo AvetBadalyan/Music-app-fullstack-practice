@@ -9,7 +9,7 @@
     padding: var(--space-4);
     text-decoration: none;
     text-align: center;
-    transition: background var(--transition-base);
+    transition: background var(--transition);
 
     &:hover {
       background: var(--color-surface-hover);
@@ -55,4 +55,20 @@
 
 .empty {
   color: var(--color-text-muted);
+}
+
+@media (max-width: 480px) {
+  .artist-grid {
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+    gap: var(--space-4);
+
+    .artist-card {
+      padding: var(--space-3);
+
+      .artist-avatar {
+        width: 11rem;
+        height: 11rem;
+      }
+    }
+  }
 }

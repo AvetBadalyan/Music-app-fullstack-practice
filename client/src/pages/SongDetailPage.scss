@@ -44,7 +44,7 @@
       border-radius: var(--radius-pill);
       font-size: var(--font-xs);
       text-decoration: none;
-      transition: background var(--transition-base);
+      transition: background var(--transition);
 
       &:hover {
         background: var(--color-surface-hover);
@@ -62,11 +62,13 @@
     font-weight: var(--weight-bold);
     cursor: pointer;
     box-shadow: var(--shadow-glow);
-    transition: background var(--transition-base), transform var(--transition-base);
+    transition: background var(--transition), transform var(--transition);
 
-    &:hover {
-      background: var(--color-accent-hover);
-      transform: scale(1.02);
+    @media (hover: hover) {
+      &:hover {
+        background: var(--color-accent-hover);
+        transform: scale(1.02);
+      }
     }
   }
 
@@ -74,5 +76,15 @@
   .error {
     color: var(--color-text-muted);
     padding: var(--space-5);
+  }
+}
+
+@media (max-width: 480px) {
+  .song-detail-page {
+    padding: var(--space-4);
+
+    .song-info h1 {
+      font-size: var(--font-xl);
+    }
   }
 }

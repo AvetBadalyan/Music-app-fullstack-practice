@@ -4,7 +4,6 @@
   --color-bg-elevated: #15121c;
   --color-surface: #1d1926;
   --color-surface-hover: #272233;
-  --color-surface-translucent: rgba(169, 120, 255, 0.08);
   --color-border: rgba(255, 255, 255, 0.08);
 
   /* Text */
@@ -13,12 +12,10 @@
   --color-text-subtle: #81788f;
 
   /* Brand */
-  --color-accent: #a978ff;
-  --color-accent-hover: #c39cff;
-  --color-accent-strong: #8b5ee6;
-  --color-accent-soft: rgba(169, 120, 255, 0.14);
-  --color-accent-glow: rgba(169, 120, 255, 0.32);
-  --color-pink: #d98ad1;
+  --color-accent: #9466ee;
+  --color-accent-hover: #a87fff;
+  --color-accent-strong: #7847cf;
+  --color-accent-soft: rgba(148, 102, 238, 0.14);
 
   /* Status */
   --color-success: #10b981;
@@ -49,15 +46,18 @@
   --weight-regular: 400; /* default body */
   --weight-bold:    700; /* emphasis: titles, song names, active nav */
 
-  /* Shadows */
-  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.25);
-  --shadow-md: 0 6px 14px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 8px 22px rgba(169, 120, 255, 0.34);
+  /* Shadows — one neutral, one accent. */
+  --shadow-elevation: 0 2px 8px rgba(0, 0, 0, 0.35);          /* cards, covers, toasts, hero panels */
+  --shadow-glow:      0 8px 22px rgba(148, 102, 238, 0.36);   /* primary buttons, equalizer */
 
   /* Transition */
-  --transition-fast: 0.15s ease;
-  --transition-base: 0.2s ease;
+  --transition: 0.2s ease;
+
+  /* Breakpoints — chosen by real device widths, not Bootstrap conventions.
+       ≤  480px  → phones (iPhone 14 = 430, Samsung A51 = 412) — single-column layout, smallest paddings
+       ≤ 1024px  → small tablets through iPad Pro portrait (iPad Air = 820, iPad Mini = 768) — sidebar drawer, stacked player
+       ≥ 1025px  → laptops & desktops — full sidebar, horizontal player
+  */
 }
 
 *,
@@ -149,7 +149,7 @@ button {
   color: var(--color-text) !important;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md) !important;
-  box-shadow: var(--shadow-lg) !important;
+  box-shadow: var(--shadow-elevation) !important;
   font-family: inherit;
 }
 

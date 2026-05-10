@@ -13,3 +13,14 @@
     color: var(--color-text-muted);
   }
 }
+
+@media (max-width: 480px) {
+  .artists-page {
+    padding: var(--space-4);
+
+    h1 {
+      font-size: var(--font-lg);
+      margin-bottom: var(--space-4);
+    }
+  }
+}

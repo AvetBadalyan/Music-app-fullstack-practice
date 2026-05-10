@@ -19,7 +19,7 @@
       height: 22rem;
       border-radius: var(--radius-md);
       object-fit: cover;
-      box-shadow: var(--shadow-lg);
+      box-shadow: var(--shadow-elevation);
       flex-shrink: 0;
     }
 
@@ -92,5 +92,34 @@
   .error {
     color: var(--color-text-muted);
     padding: var(--space-5);
+  }
+}
+
+@media (max-width: 480px) {
+  .album-detail-page {
+    .album-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-4);
+      padding: var(--space-5) var(--space-4);
+      text-align: left;
+
+      .cover-image {
+        width: 16rem;
+        height: 16rem;
+      }
+
+      .album-info h1 {
+        font-size: var(--font-xl);
+      }
+    }
+
+    .tracklist {
+      padding: 0 var(--space-4);
+
+      ol {
+        padding-left: var(--space-4);
+      }
+    }
   }
 }
