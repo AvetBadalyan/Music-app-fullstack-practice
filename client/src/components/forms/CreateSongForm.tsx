@@ -1,0 +1,149 @@
+import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useGetAllAlbumsQuery } from '../../services/albumsApi';
+import { useGetAllGenresQuery } from '../../services/genresApi';
+import { useCreateSongMutation } from '../../services/songsApi';
+import type { IArtist } from '../../types/artist';
+import ArtistPicker from './ArtistPicker';
+import { idleFeedback, getErrorMessage, type FormFeedback } from './formHelpers';
+import './forms.scss';
+
+const CreateSongForm = () => {
+  const [title, setTitle] = useState('');
+  const [artist, setArtist] = useState<IArtist | null>(null);
+  const [albumId, setAlbumId] = useState('');
+  const [genreIds, setGenreIds] = useState<string[]>([]);
+  const [audioFile, setAudioFile] = useState<File | null>(null);
+  const [feedback, setFeedback] = useState<FormFeedback>(idleFeedback);
+
+  const [createSong, { isLoading }] = useCreateSongMutation();
+  const { data: genres } = useGetAllGenresQuery();
+  const { data: albums } = useGetAllAlbumsQuery();
+
+  const filteredAlbums = useMemo(() => {
+    if (!albums) return [];
+    if (!artist) return albums;
+    return albums.filter((album) => album.artist?.id === artist.id);
+  }, [albums, artist]);
+
+  const handleArtistSelect = (next: IArtist | null) => {
+    setArtist(next);
+    setAlbumId('');
+  };
+
+  const toggleGenre = (genreId: string) => {
+    setGenreIds((current) =>
+      current.includes(genreId)
+        ? current.filter((id) => id !== genreId)
+        : [...current, genreId],
+    );
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setFeedback(idleFeedback);
+
+    if (!artist) {
+      setFeedback({ kind: 'error', message: 'Select an artist before creating a song.' });
+      return;
+    }
+
+    if (!audioFile) {
+      setFeedback({ kind: 'error', message: 'Choose an audio file before submitting.' });
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('artistId', artist.id);
+    if (albumId) formData.append('albumId', albumId);
+    genreIds.forEach((id) => formData.append('genreIds', id));
+    formData.append('audioFile', audioFile);
+
+    try {
+      const created = await createSong(formData).unwrap();
+      setTitle('');
+      setArtist(null);
+      setAlbumId('');
+      setGenreIds([]);
+      setAudioFile(null);
+      toast.success(`Song “${created.title}” created`);
+      setFeedback({
+        kind: 'success',
+        message: `Song "${created.title}" created successfully.`,
+        linkPath: `/songs/${created.id}`,
+        linkLabel: 'Open song',
+      });
+    } catch (error) {
+      setFeedback({ kind: 'error', message: getErrorMessage(error) });
+    }
+  };
+
+  return (
+    <section className="entity-form">
+      <form onSubmit={handleSubmit}>
+        <label>
+          <span>Title</span>
+          <input value={title} onChange={(e) => setTitle(e.target.value)} required />
+        </label>
+        <ArtistPicker
+          label="Artist"
+          selectedArtist={artist}
+          onSelect={handleArtistSelect}
+          required
+          hint="Pick an artist first. Album options update after selection."
+        />
+        <label>
+          <span>Album (optional)</span>
+          <select value={albumId} onChange={(e) => setAlbumId(e.target.value)}>
+            <option value="">No album</option>
+            {filteredAlbums.map((album) => (
+              <option key={album.id} value={album.id}>
+                {album.title}
+                {album.artist?.name ? ` - ${album.artist.name}` : ''}
+              </option>
+            ))}
+          </select>
+        </label>
+        <div className="genre-selector">
+          <span>Genres (optional)</span>
+          <div className="checkbox-grid">
+            {(genres ?? []).map((genre) => (
+              <label key={genre.id} className="checkbox-pill">
+                <input
+                  type="checkbox"
+                  checked={genreIds.includes(genre.id)}
+                  onChange={() => toggleGenre(genre.id)}
+                />
+                <span>{genre.name}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+        <label>
+          <span>Audio file</span>
+          <input
+            type="file"
+            accept="audio/*"
+            onChange={(e) => setAudioFile(e.target.files?.[0] ?? null)}
+            required
+          />
+        </label>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? 'Uploading...' : 'Create song'}
+        </button>
+      </form>
+      {feedback.kind !== 'idle' && (
+        <div className={`feedback ${feedback.kind}`}>
+          <span>{feedback.message}</span>
+          {feedback.linkPath && feedback.linkLabel && (
+            <Link to={feedback.linkPath}>{feedback.linkLabel}</Link>
+          )}
+        </div>
+      )}
+    </section>
+  );
+};
+
+export default CreateSongForm;

@@ -27,7 +27,7 @@ const SongList = ({ songs }: SongListProps) => {
                 title="No songs yet"
                 description="Your library is quiet. Add a track to get the music going."
                 actionLabel="Add a song"
-                actionTo="/create"
+                actionTo="/songs"
             />
         )
     }
