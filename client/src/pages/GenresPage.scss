@@ -1,27 +1,27 @@
 .genres-page {
-  padding: 24px;
+  padding: var(--space-5);
 
   h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #fff;
-    margin-bottom: 20px;
+    font-size: var(--font-xl);
+    font-weight: var(--weight-bold);
+    color: var(--color-text);
+    margin-bottom: var(--space-5);
   }
 
   .genre-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    gap: var(--space-5);
   }
 
   .genre-card {
     background: linear-gradient(135deg, var(--color-accent-strong), #1b1526);
-    color: #fff;
-    padding: 24px 16px;
+    color: var(--color-text);
+    padding: var(--space-5) var(--space-4);
     border-radius: var(--radius-md);
     text-decoration: none;
-    font-size: 1.25rem;
-    font-weight: 700;
+    font-size: var(--font-lg);
+    font-weight: var(--weight-bold);
     box-shadow: var(--shadow-sm);
     transition: transform var(--transition-base), box-shadow var(--transition-base);
 
@@ -32,6 +32,6 @@
   }
 
   .loading {
-    color: #b3b3b3;
+    color: var(--color-text-muted);
   }
 }

@@ -1,49 +1,49 @@
 .artist-detail-page {
-  padding: 24px;
+  padding: var(--space-5);
 
   .artist-header {
     display: flex;
-    gap: 24px;
+    gap: var(--space-5);
     align-items: center;
-    margin-bottom: 32px;
+    margin-bottom: var(--space-5);
 
     .profile-picture {
-      width: 200px;
-      height: 200px;
+      width: 20rem;
+      height: 20rem;
       border-radius: 50%;
       object-fit: cover;
     }
 
     .artist-info {
       h1 {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: #fff;
-        margin-bottom: 8px;
+        font-size: var(--font-hero);
+        font-weight: var(--weight-bold);
+        color: var(--color-text);
+        margin-bottom: var(--space-2);
       }
 
       .bio {
-        color: #b3b3b3;
-        max-width: 600px;
+        color: var(--color-text-muted);
+        max-width: 60rem;
         line-height: 1.5;
       }
     }
   }
 
   .artist-section {
-    margin-bottom: 32px;
+    margin-bottom: var(--space-5);
 
     h2 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 16px;
+      font-size: var(--font-lg);
+      font-weight: var(--weight-bold);
+      color: var(--color-text);
+      margin-bottom: var(--space-4);
     }
   }
 
   .loading,
   .error {
-    color: #b3b3b3;
-    padding: 24px;
+    color: var(--color-text-muted);
+    padding: var(--space-5);
   }
 }

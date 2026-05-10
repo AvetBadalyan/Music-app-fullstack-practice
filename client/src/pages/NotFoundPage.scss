@@ -7,25 +7,25 @@
   text-align: center;
 
   h1 {
-    font-size: 6rem;
-    font-weight: 700;
-    color: #fff;
-    margin-bottom: 8px;
+    font-size: var(--font-hero);
+    font-weight: var(--weight-bold);
+    color: var(--color-text);
+    margin-bottom: var(--space-2);
   }
 
   p {
-    color: #b3b3b3;
-    font-size: 1.25rem;
-    margin-bottom: 24px;
+    color: var(--color-text-muted);
+    font-size: var(--font-lg);
+    margin-bottom: var(--space-5);
   }
 
   .home-link {
     background: var(--color-accent);
-    color: #fff;
-    padding: 12px 32px;
-    border-radius: 24px;
+    color: var(--color-text);
+    padding: var(--space-3) var(--space-5);
+    border-radius: var(--radius-pill);
     text-decoration: none;
-    font-weight: 600;
+    font-weight: var(--weight-bold);
     box-shadow: var(--shadow-glow);
     transition: background var(--transition-base);
 

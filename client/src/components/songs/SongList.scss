@@ -4,7 +4,7 @@
 
   .song-row {
     display: grid;
-    grid-template-columns: 40px minmax(0, 2fr) minmax(0, 1.4fr) 56px;
+    grid-template-columns: 4rem minmax(0, 2fr) minmax(0, 1.4fr) 5.6rem;
     align-items: center;
     gap: var(--space-4);
     padding: var(--space-2) var(--space-3);
@@ -29,8 +29,8 @@
 
     .index-play {
       position: relative;
-      width: 32px;
-      height: 32px;
+      width: 3.2rem;
+      height: 3.2rem;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -51,14 +51,14 @@
       }
 
       .index {
-        font-size: 0.95rem;
+        font-size: var(--font-md);
         color: inherit;
         opacity: 1;
       }
 
       .play-icon {
         color: var(--color-text);
-        font-size: 0.8rem;
+        font-size: var(--font-xs);
         letter-spacing: -1px;
         opacity: 0;
       }
@@ -83,8 +83,8 @@
       .title {
         color: var(--color-text);
         text-decoration: none;
-        font-size: 0.95rem;
-        font-weight: 500;
+        font-size: var(--font-md);
+        font-weight: var(--weight-regular);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -97,7 +97,7 @@
       .artist {
         color: var(--color-text-muted);
         text-decoration: none;
-        font-size: 0.82rem;
+        font-size: var(--font-xs);
         margin-top: 2px;
         white-space: nowrap;
         overflow: hidden;
@@ -112,7 +112,7 @@
 
     .album-col {
       color: var(--color-text-muted);
-      font-size: 0.85rem;
+      font-size: var(--font-sm);
       text-decoration: none;
       white-space: nowrap;
       overflow: hidden;
@@ -130,7 +130,7 @@
 
     .duration {
       color: var(--color-text-muted);
-      font-size: 0.85rem;
+      font-size: var(--font-sm);
       text-align: right;
       font-variant-numeric: tabular-nums;
     }
@@ -139,7 +139,7 @@
 
 @media (max-width: 720px) {
   .song-list .song-row {
-    grid-template-columns: 32px minmax(0, 1fr) 48px;
+    grid-template-columns: 3.2rem minmax(0, 1fr) 4.8rem;
     gap: var(--space-3);
 
     .album-col {

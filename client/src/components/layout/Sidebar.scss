@@ -1,5 +1,5 @@
 .sidebar {
-  width: 220px;
+  width: 22rem;
   background: var(--color-bg);
   padding: var(--space-4) 0;
   display: flex;
@@ -10,9 +10,9 @@
   a {
     color: var(--color-text-muted);
     text-decoration: none;
-    padding: 10px 24px;
-    font-size: 0.9rem;
-    font-weight: 600;
+    padding: var(--space-3) var(--space-5);
+    font-size: var(--font-md);
+    font-weight: var(--weight-bold);
     transition: color var(--transition-base), background var(--transition-base), border-color var(--transition-base);
 
     &:hover {

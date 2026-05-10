@@ -1,7 +1,16 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { togglePlay, nextSong, prevSong, pause } from '../../features/player/playerSlice';
+import {
+  togglePlay,
+  nextSong,
+  prevSong,
+  pause,
+  setVolume,
+  toggleMute,
+  toggleShuffle,
+  cycleRepeat,
+} from '../../features/player/playerSlice';
 import './MusicPlayer.scss';
 
 type TimelineState = {
@@ -23,6 +32,17 @@ const formatTime = (timeInSeconds: number) => {
   return `${minutes}:${seconds}`;
 };
 
+const isTypingTarget = (target: EventTarget | null) => {
+  if (!(target instanceof HTMLElement)) return false;
+  const tag = target.tagName;
+  return (
+    tag === 'INPUT' ||
+    tag === 'TEXTAREA' ||
+    tag === 'SELECT' ||
+    target.isContentEditable
+  );
+};
+
 const MusicPlayer = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [timeline, setTimeline] = useState<TimelineState>({
@@ -30,9 +50,19 @@ const MusicPlayer = () => {
     currentTime: 0,
     duration: 0,
   });
-  const { currentSong, isPlaying, queue, currentIndex } = useAppSelector((state) => state.player);
+  const {
+    currentSong,
+    isPlaying,
+    queue,
+    currentIndex,
+    volume,
+    isMuted,
+    shuffle,
+    repeat,
+  } = useAppSelector((state) => state.player);
   const dispatch = useAppDispatch();
 
+  // Play/pause sync
   useEffect(() => {
     if (!audioRef.current) return;
 
@@ -42,6 +72,76 @@ const MusicPlayer = () => {
       audioRef.current.pause();
     }
   }, [isPlaying, currentSong?.audioFile]);
+
+  // Volume / mute sync
+  useEffect(() => {
+    if (!audioRef.current) return;
+    audioRef.current.volume = isMuted ? 0 : volume;
+    audioRef.current.muted = isMuted;
+  }, [volume, isMuted]);
+
+  // Global keyboard shortcuts
+  useEffect(() => {
+    if (!currentSong) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (isTypingTarget(event.target)) return;
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+
+      switch (event.code) {
+        case 'Space':
+          event.preventDefault();
+          dispatch(togglePlay());
+          break;
+        case 'ArrowRight':
+          if (audioRef.current) {
+            event.preventDefault();
+            audioRef.current.currentTime = Math.min(
+              audioRef.current.currentTime + 5,
+              audioRef.current.duration || audioRef.current.currentTime + 5
+            );
+          }
+          break;
+        case 'ArrowLeft':
+          if (audioRef.current) {
+            event.preventDefault();
+            audioRef.current.currentTime = Math.max(audioRef.current.currentTime - 5, 0);
+          }
+          break;
+        case 'ArrowUp':
+          event.preventDefault();
+          dispatch(setVolume(Math.min(1, volume + 0.05)));
+          break;
+        case 'ArrowDown':
+          event.preventDefault();
+          dispatch(setVolume(Math.max(0, volume - 0.05)));
+          break;
+        case 'KeyM':
+          event.preventDefault();
+          dispatch(toggleMute());
+          break;
+        case 'KeyN':
+          event.preventDefault();
+          dispatch(nextSong());
+          break;
+        case 'KeyP':
+          event.preventDefault();
+          dispatch(prevSong());
+          break;
+        case 'KeyS':
+          event.preventDefault();
+          dispatch(toggleShuffle());
+          break;
+        case 'KeyR':
+          event.preventDefault();
+          dispatch(cycleRepeat());
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [dispatch, volume, currentSong]);
 
   const syncTimeline = () => {
     if (!audioRef.current || !currentSong) {
@@ -69,10 +169,20 @@ const MusicPlayer = () => {
     });
   };
 
-  const handleEnded = () => {
-    const hasNextSong = currentIndex >= 0 && currentIndex < queue.length - 1;
+  const handleVolumeChange = (event: ChangeEvent<HTMLInputElement>) => {
+    dispatch(setVolume(Number(event.currentTarget.value) / 100));
+  };
 
-    if (hasNextSong) {
+  const handleEnded = () => {
+    // Repeat one: replay current song
+    if (repeat === 'one' && audioRef.current) {
+      audioRef.current.currentTime = 0;
+      void audioRef.current.play().catch(() => {});
+      return;
+    }
+
+    const hasNextInQueue = currentIndex >= 0 && currentIndex < queue.length - 1;
+    if (hasNextInQueue || shuffle || repeat === 'all') {
       dispatch(nextSong());
       return;
     }
@@ -95,10 +205,16 @@ const MusicPlayer = () => {
       ? timeline
       : { songId: currentSong.id, currentTime: 0, duration: 0 };
 
-  const isPreviousDisabled = currentIndex <= 0;
-  const isNextDisabled = currentIndex < 0 || currentIndex >= queue.length - 1;
+  // With repeat=all or shuffle, prev/next are always allowed when queue has items
+  const canWrap = repeat === 'all' || shuffle;
+  const isPreviousDisabled = !canWrap && currentIndex <= 0;
+  const isNextDisabled = !canWrap && (currentIndex < 0 || currentIndex >= queue.length - 1);
   const progressMax = activeTimeline.duration > 0 ? activeTimeline.duration : 0;
   const progressValue = progressMax > 0 ? Math.min(activeTimeline.currentTime, progressMax) : 0;
+
+  const repeatLabel =
+    repeat === 'one' ? 'Repeat one (on)' : repeat === 'all' ? 'Repeat all (on)' : 'Repeat (off)';
+  const volumeIcon = isMuted || volume === 0 ? '🔇' : volume < 0.4 ? '🔈' : volume < 0.75 ? '🔉' : '🔊';
 
   return (
     <div className="music-player">
@@ -132,17 +248,29 @@ const MusicPlayer = () => {
       <div className="player-center">
         <div className="controls transport-controls">
           <button
+            type="button"
+            className={`mode-btn${shuffle ? ' is-active' : ''}`}
+            onClick={() => dispatch(toggleShuffle())}
+            title={shuffle ? 'Shuffle on' : 'Shuffle off'}
+            aria-label={shuffle ? 'Disable shuffle' : 'Enable shuffle'}
+            aria-pressed={shuffle}
+          >
+            <span className="transport-icon" aria-hidden="true">🔀</span>
+          </button>
+          <button
+            type="button"
             onClick={() => dispatch(prevSong())}
-            title="Previous"
+            title="Previous (P)"
             aria-label="Previous song"
             disabled={isPreviousDisabled}
           >
             <span className="transport-icon" aria-hidden="true">⏮</span>
           </button>
           <button
+            type="button"
             onClick={() => dispatch(togglePlay())}
             className="play-pause"
-            title={isPlaying ? 'Pause' : 'Play'}
+            title={isPlaying ? 'Pause (Space)' : 'Play (Space)'}
             aria-label={isPlaying ? 'Pause current song' : 'Play current song'}
           >
             {isPlaying ? (
@@ -155,12 +283,24 @@ const MusicPlayer = () => {
             )}
           </button>
           <button
+            type="button"
             onClick={() => dispatch(nextSong())}
-            title="Next"
+            title="Next (N)"
             aria-label="Next song"
             disabled={isNextDisabled}
           >
             <span className="transport-icon" aria-hidden="true">⏭</span>
+          </button>
+          <button
+            type="button"
+            className={`mode-btn${repeat !== 'off' ? ' is-active' : ''}`}
+            onClick={() => dispatch(cycleRepeat())}
+            title={repeatLabel}
+            aria-label={repeatLabel}
+          >
+            <span className="transport-icon" aria-hidden="true">
+              {repeat === 'one' ? '🔂' : '🔁'}
+            </span>
           </button>
         </div>
 
@@ -179,6 +319,29 @@ const MusicPlayer = () => {
           />
           <span className="time">{formatTime(activeTimeline.duration)}</span>
         </div>
+      </div>
+
+      <div className="volume-control">
+        <button
+          type="button"
+          className="volume-btn"
+          onClick={() => dispatch(toggleMute())}
+          title={isMuted ? 'Unmute (M)' : 'Mute (M)'}
+          aria-label={isMuted ? 'Unmute' : 'Mute'}
+          aria-pressed={isMuted}
+        >
+          <span aria-hidden="true">{volumeIcon}</span>
+        </button>
+        <input
+          className="volume-bar"
+          type="range"
+          min="0"
+          max="100"
+          step="1"
+          value={Math.round((isMuted ? 0 : volume) * 100)}
+          onChange={handleVolumeChange}
+          aria-label="Volume"
+        />
       </div>
     </div>
   );

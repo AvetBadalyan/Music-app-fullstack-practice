@@ -1,20 +1,20 @@
 .album-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+  gap: var(--space-5);
 
   .album-card {
-    background: #181818;
-    border-radius: 10px;
-    padding: 16px;
+    background: var(--color-bg-elevated);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
     text-decoration: none;
-    transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+    transition: background var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
     display: block;
 
     &:hover {
-      background: #282828;
+      background: var(--color-surface-hover);
       transform: translateY(-4px);
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
+      box-shadow: var(--shadow-lg);
 
       .album-cover .play-overlay {
         opacity: 1;
@@ -26,10 +26,10 @@
       position: relative;
       width: 100%;
       aspect-ratio: 1;
-      border-radius: 6px;
+      border-radius: var(--radius-md);
       overflow: hidden;
-      margin-bottom: 12px;
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
+      margin-bottom: var(--space-3);
+      box-shadow: var(--shadow-md);
 
       img {
         width: 100%;
@@ -44,44 +44,44 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 3rem;
+        font-size: var(--font-hero);
         color: rgba(255, 255, 255, 0.35);
       }
 
       .play-overlay {
         position: absolute;
-        right: 8px;
-        bottom: 8px;
-        width: 44px;
-        height: 44px;
+        right: var(--space-2);
+        bottom: var(--space-2);
+        width: 4.4rem;
+        height: 4.4rem;
         border-radius: 50%;
-        background: #8b5cf6;
-        color: #fff;
+        background: var(--color-accent);
+        color: var(--color-text);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.95rem;
+        font-size: var(--font-md);
         padding-left: 3px;
-        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
+        box-shadow: var(--shadow-md);
         opacity: 0;
         transform: translate(0, 8px);
-        transition: opacity 0.2s ease, transform 0.2s ease;
+        transition: opacity var(--transition-base), transform var(--transition-base);
       }
     }
 
     .album-title {
-      color: #fff;
-      font-weight: 600;
-      font-size: 0.95rem;
+      color: var(--color-text);
+      font-weight: var(--weight-bold);
+      font-size: var(--font-md);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
     .album-artist {
-      color: #b3b3b3;
-      font-size: 0.8rem;
-      margin-top: 4px;
+      color: var(--color-text-muted);
+      font-size: var(--font-xs);
+      margin-top: var(--space-1);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -90,5 +90,5 @@
 }
 
 .empty {
-  color: #b3b3b3;
+  color: var(--color-text-muted);
 }
