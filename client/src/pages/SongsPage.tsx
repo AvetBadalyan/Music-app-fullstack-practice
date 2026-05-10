@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useGetAllSongsQuery, useSearchSongsQuery } from '../services/songsApi';
 import SongList from '../components/songs/SongList';
 import SearchBar from '../components/common/SearchBar';
+import { SongListSkeleton } from '../components/common/Skeleton';
 import './SongsPage.scss';
 
 const SongsPage = () => {
@@ -24,7 +25,7 @@ const SongsPage = () => {
         onChange={setSearchTerm}
       />
       {isLoading ? (
-        <p className="loading">Loading...</p>
+        <SongListSkeleton rows={10} />
       ) : (
         <SongList songs={songs ?? []} />
       )}

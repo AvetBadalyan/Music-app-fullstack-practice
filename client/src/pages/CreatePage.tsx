@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { useCreateAlbumMutation, useGetAllAlbumsQuery } from '../services/albumsApi';
 import {
   useCreateArtistMutation,
@@ -148,10 +149,6 @@ const CreatePage = () => {
   const { data: genres } = useGetAllGenresQuery();
   const { data: albums } = useGetAllAlbumsQuery();
 
-  useEffect(() => {
-    setSongAlbumId('');
-  }, [songArtist?.id]);
-
   const filteredAlbums = useMemo(() => {
     if (!albums) {
       return [];
@@ -178,6 +175,7 @@ const CreatePage = () => {
       setArtistName('');
       setArtistBio('');
       setArtistProfilePicture('');
+      toast.success(`Artist “${createdArtist.name}” created`);
       setArtistFeedback({
         kind: 'success',
         message: `Artist "${createdArtist.name}" created successfully.`,
@@ -199,6 +197,7 @@ const CreatePage = () => {
     try {
       const createdGenre = await createGenre({ name: genreName }).unwrap();
       setGenreName('');
+      toast.success(`Genre “${createdGenre.name}” created`);
       setGenreFeedback({
         kind: 'success',
         message: `Genre "${createdGenre.name}" created successfully.`,
@@ -237,6 +236,7 @@ const CreatePage = () => {
       setAlbumReleaseDate('');
       setAlbumCoverImage('');
       setAlbumArtist(null);
+      toast.success(`Album “${createdAlbum.title}” created`);
       setAlbumFeedback({
         kind: 'success',
         message: `Album "${createdAlbum.title}" created successfully.`,
@@ -292,6 +292,7 @@ const CreatePage = () => {
       setSongAlbumId('');
       setSongGenreIds([]);
       setAudioFile(null);
+      toast.success(`Song “${createdSong.title}” created`);
       setSongFeedback({
         kind: 'success',
         message: `Song "${createdSong.title}" created successfully.`,
@@ -312,6 +313,11 @@ const CreatePage = () => {
         ? current.filter((id) => id !== genreId)
         : [...current, genreId]
     );
+  };
+
+  const handleSongArtistSelect = (artist: IArtist | null) => {
+    setSongArtist(artist);
+    setSongAlbumId('');
   };
 
   return (
@@ -446,7 +452,7 @@ const CreatePage = () => {
             <ArtistPicker
               label="Artist"
               selectedArtist={songArtist}
-              onSelect={setSongArtist}
+              onSelect={handleSongArtistSelect}
               required
               hint="Pick an artist first. Album options update after selection."
             />

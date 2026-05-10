@@ -52,7 +52,7 @@
   }
 
   .play-btn {
-    background: #1db954;
+    background: var(--color-accent);
     color: #fff;
     border: none;
     padding: 12px 32px;
@@ -60,9 +60,11 @@
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
+    box-shadow: var(--shadow-glow);
+    transition: background var(--transition-base), transform var(--transition-base);
 
     &:hover {
-      background: #1ed760;
+      background: var(--color-accent-hover);
       transform: scale(1.02);
     }
   }

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import EmptyState from '../common/EmptyState';
 import type { IAlbum } from '../../types/album';
 import './AlbumList.scss';
 
@@ -8,7 +9,15 @@ interface AlbumListProps {
 
 const AlbumList = ({ albums }: AlbumListProps) => {
   if (albums.length === 0) {
-    return <p className="empty">No albums found.</p>;
+    return (
+      <EmptyState
+        icon="◎"
+        title="No albums to show"
+        description="Create your first album to start curating your collection."
+        actionLabel="Create an album"
+        actionTo="/create"
+      />
+    );
   }
 
   return (
@@ -21,6 +30,7 @@ const AlbumList = ({ albums }: AlbumListProps) => {
             ) : (
               <div className="placeholder">♪</div>
             )}
+            <span className="play-overlay" aria-hidden="true">▶</span>
           </div>
           <p className="album-title">{album.title}</p>
           {album.artist && <p className="album-artist">{album.artist.name}</p>}

@@ -1,3 +1,57 @@
+:root {
+  /* Surfaces */
+  --color-bg: #0d0b11;
+  --color-bg-elevated: #15121c;
+  --color-surface: #1d1926;
+  --color-surface-hover: #272233;
+  --color-surface-translucent: rgba(169, 120, 255, 0.08);
+  --color-border: rgba(255, 255, 255, 0.08);
+
+  /* Text */
+  --color-text: #ffffff;
+  --color-text-muted: #b8b0c6;
+  --color-text-subtle: #81788f;
+
+  /* Brand */
+  --color-accent: #a978ff;
+  --color-accent-hover: #c39cff;
+  --color-accent-strong: #8b5ee6;
+  --color-accent-soft: rgba(169, 120, 255, 0.14);
+  --color-accent-glow: rgba(169, 120, 255, 0.32);
+  --color-pink: #d98ad1;
+
+  /* Status */
+  --color-success: #10b981;
+  --color-danger: #ef4444;
+  --color-warning: #f59e0b;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-pill: 999px;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 6px 14px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 8px 22px rgba(169, 120, 255, 0.34);
+
+  /* Transition */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.2s ease;
+}
+
 *,
 *::before,
 *::after {
@@ -9,8 +63,8 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
     Ubuntu, Cantarell, sans-serif;
-  background: #121212;
-  color: #fff;
+  background: var(--color-bg);
+  color: var(--color-text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -21,4 +75,74 @@ a {
 
 button {
   font-family: inherit;
+}
+
+/* Skeleton shimmer */
+@keyframes skeleton-shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface) 0%,
+    var(--color-surface-hover) 50%,
+    var(--color-surface) 100%
+  );
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+  display: block;
+}
+
+/* Now-playing equalizer */
+@keyframes eq-bounce {
+  0%, 100% { transform: scaleY(0.4); }
+  50%      { transform: scaleY(1); }
+}
+
+.equalizer {
+  display: inline-flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+  width: 14px;
+  height: 14px;
+
+  span {
+    display: inline-block;
+    width: 3px;
+    height: 100%;
+    background: var(--color-accent);
+    transform-origin: bottom;
+    animation: eq-bounce 1s ease-in-out infinite;
+  }
+
+  span:nth-child(2) { animation-delay: 0.2s; }
+  span:nth-child(3) { animation-delay: 0.4s; }
+
+  &.is-paused span {
+    animation-play-state: paused;
+    transform: scaleY(0.5);
+  }
+}
+
+/* Toastify theme overrides */
+.Toastify__toast {
+  background: var(--color-bg-elevated) !important;
+  color: var(--color-text) !important;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-lg) !important;
+  font-family: inherit;
+}
+
+.Toastify__toast--success { border-left: 3px solid var(--color-success); }
+.Toastify__toast--error   { border-left: 3px solid var(--color-danger); }
+.Toastify__toast--info    { border-left: 3px solid var(--color-accent); }
+.Toastify__toast--warning { border-left: 3px solid var(--color-warning); }
+
+.Toastify__progress-bar {
+  background: var(--color-accent) !important;
 }

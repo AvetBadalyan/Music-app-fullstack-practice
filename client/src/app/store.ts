@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { api } from '../services/api';
 import playerReducer from '../features/player/playerSlice';
+import { rtkQueryErrorToast } from './errorMiddleware';
 
 export const store = configureStore({
   reducer: {
@@ -8,7 +9,7 @@ export const store = configureStore({
     player: playerReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(api.middleware),
+    getDefaultMiddleware().concat(api.middleware, rtkQueryErrorToast),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

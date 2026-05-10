@@ -5,7 +5,7 @@
     margin-bottom: 24px;
 
     .eyebrow {
-      color: #1db954;
+      color: var(--color-accent);
       font-size: 0.75rem;
       font-weight: 700;
       letter-spacing: 0.12em;
@@ -90,7 +90,7 @@
     outline: none;
 
     &:focus {
-      border-color: #1db954;
+      border-color: var(--color-accent);
     }
   }
 
@@ -100,7 +100,7 @@
   }
 
   button[type='submit'] {
-    background: #1db954;
+    background: var(--color-accent);
     border: none;
     border-radius: 999px;
     color: #fff;
@@ -108,6 +108,11 @@
     font-weight: 700;
     padding: 12px 18px;
     justify-self: start;
+    transition: background var(--transition-base);
+
+    &:hover:not(:disabled) {
+      background: var(--color-accent-hover);
+    }
 
     &:disabled {
       cursor: wait;
@@ -206,9 +211,9 @@
     border-radius: 10px;
 
     &.success {
-      background: rgba(29, 185, 84, 0.12);
-      border: 1px solid rgba(29, 185, 84, 0.3);
-      color: #d5ffe4;
+      background: var(--color-accent-soft);
+      border: 1px solid rgba(169, 120, 255, 0.3);
+      color: #ece1ff;
     }
 
     &.error {

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import EmptyState from '../common/EmptyState';
 import type { IArtist } from '../../types/artist';
 import './ArtistList.scss';
 
@@ -8,7 +9,15 @@ interface ArtistListProps {
 
 const ArtistList = ({ artists }: ArtistListProps) => {
   if (artists.length === 0) {
-    return <p className="empty">No artists found.</p>;
+    return (
+      <EmptyState
+        icon="♪"
+        title="No artists found"
+        description="Try a different search, or add a new artist to your library."
+        actionLabel="Add an artist"
+        actionTo="/create"
+      />
+    );
   }
 
   return (

@@ -1,28 +1,29 @@
 .sidebar {
   width: 220px;
-  background: #000;
-  padding: 16px 0;
+  background: var(--color-bg);
+  padding: var(--space-4) 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  border-right: 1px solid #282828;
+  gap: var(--space-1);
+  border-right: 1px solid var(--color-border);
 
   a {
-    color: #b3b3b3;
+    color: var(--color-text-muted);
     text-decoration: none;
     padding: 10px 24px;
     font-size: 0.9rem;
     font-weight: 600;
-    transition: color 0.2s;
+    transition: color var(--transition-base), background var(--transition-base), border-color var(--transition-base);
 
     &:hover {
-      color: #fff;
+      color: var(--color-text);
     }
 
     &.active {
-      color: #fff;
-      background: #282828;
-      border-right: 3px solid #1db954;
+      color: var(--color-text);
+      background: var(--color-surface);
+      border-right: 3px solid var(--color-accent);
+      box-shadow: inset 0 0 0 1px rgba(169, 120, 255, 0.06);
     }
   }
 }

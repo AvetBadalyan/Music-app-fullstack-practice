@@ -20,15 +20,17 @@
   }
 
   .home-link {
-    background: #1db954;
+    background: var(--color-accent);
     color: #fff;
     padding: 12px 32px;
     border-radius: 24px;
     text-decoration: none;
     font-weight: 600;
+    box-shadow: var(--shadow-glow);
+    transition: background var(--transition-base);
 
     &:hover {
-      background: #1ed760;
+      background: var(--color-accent-hover);
     }
   }
 }
