@@ -1,17 +1,25 @@
 .artist-detail-page {
-  padding: var(--space-5);
+  padding: 0 0 var(--space-5);
 
   .artist-header {
     display: flex;
     gap: var(--space-5);
     align-items: center;
+    padding: 6.4rem var(--space-5) var(--space-5);
     margin-bottom: var(--space-5);
+    transition: background 0.4s ease;
+
+    &.has-hero {
+      box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+    }
 
     .profile-picture {
       width: 20rem;
       height: 20rem;
       border-radius: 50%;
       object-fit: cover;
+      box-shadow: var(--shadow-lg);
+      flex-shrink: 0;
     }
 
     .artist-info {
@@ -23,7 +31,8 @@
       }
 
       .bio {
-        color: var(--color-text-muted);
+        color: var(--color-text);
+        opacity: 0.85;
         max-width: 60rem;
         line-height: 1.5;
       }
@@ -31,6 +40,7 @@
   }
 
   .artist-section {
+    padding: 0 var(--space-5);
     margin-bottom: var(--space-5);
 
     h2 {

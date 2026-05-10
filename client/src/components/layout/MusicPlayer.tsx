@@ -1,5 +1,18 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
+import {
+  Pause,
+  Play,
+  Repeat,
+  Repeat1,
+  Shuffle,
+  SkipBack,
+  SkipForward,
+  Volume,
+  Volume1,
+  Volume2,
+  VolumeX,
+} from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
   togglePlay,
@@ -214,7 +227,14 @@ const MusicPlayer = () => {
 
   const repeatLabel =
     repeat === 'one' ? 'Repeat one (on)' : repeat === 'all' ? 'Repeat all (on)' : 'Repeat (off)';
-  const volumeIcon = isMuted || volume === 0 ? '🔇' : volume < 0.4 ? '🔈' : volume < 0.75 ? '🔉' : '🔊';
+
+  const VolumeIcon =
+    isMuted || volume === 0 ? VolumeX :
+    volume < 0.4 ? Volume :
+    volume < 0.75 ? Volume1 : Volume2;
+
+  const progressPct = progressMax > 0 ? (progressValue / progressMax) * 100 : 0;
+  const volumePct = Math.round((isMuted ? 0 : volume) * 100);
 
   return (
     <div className="music-player">
@@ -255,7 +275,7 @@ const MusicPlayer = () => {
             aria-label={shuffle ? 'Disable shuffle' : 'Enable shuffle'}
             aria-pressed={shuffle}
           >
-            <span className="transport-icon" aria-hidden="true">🔀</span>
+            <Shuffle size={16} strokeWidth={2} className="transport-icon" aria-hidden="true" />
           </button>
           <button
             type="button"
@@ -264,7 +284,7 @@ const MusicPlayer = () => {
             aria-label="Previous song"
             disabled={isPreviousDisabled}
           >
-            <span className="transport-icon" aria-hidden="true">⏮</span>
+            <SkipBack size={20} strokeWidth={2} fill="currentColor" className="transport-icon" aria-hidden="true" />
           </button>
           <button
             type="button"
@@ -273,14 +293,9 @@ const MusicPlayer = () => {
             title={isPlaying ? 'Pause (Space)' : 'Play (Space)'}
             aria-label={isPlaying ? 'Pause current song' : 'Play current song'}
           >
-            {isPlaying ? (
-              <span className="pause-glyph" aria-hidden="true">
-                <span />
-                <span />
-              </span>
-            ) : (
-              <span className="play-glyph" aria-hidden="true" />
-            )}
+            {isPlaying
+              ? <Pause size={20} strokeWidth={2.5} fill="currentColor" aria-hidden="true" />
+              : <Play  size={20} strokeWidth={2.5} fill="currentColor" aria-hidden="true" style={{ marginLeft: 2 }} />}
           </button>
           <button
             type="button"
@@ -289,7 +304,7 @@ const MusicPlayer = () => {
             aria-label="Next song"
             disabled={isNextDisabled}
           >
-            <span className="transport-icon" aria-hidden="true">⏭</span>
+            <SkipForward size={20} strokeWidth={2} fill="currentColor" className="transport-icon" aria-hidden="true" />
           </button>
           <button
             type="button"
@@ -298,16 +313,16 @@ const MusicPlayer = () => {
             title={repeatLabel}
             aria-label={repeatLabel}
           >
-            <span className="transport-icon" aria-hidden="true">
-              {repeat === 'one' ? '🔂' : '🔁'}
-            </span>
+            {repeat === 'one'
+              ? <Repeat1 size={16} strokeWidth={2} className="transport-icon" aria-hidden="true" />
+              : <Repeat  size={16} strokeWidth={2} className="transport-icon" aria-hidden="true" />}
           </button>
         </div>
 
         <div className="progress-row">
           <span className="time">{formatTime(activeTimeline.currentTime)}</span>
           <input
-            className="progress-bar"
+            className="range progress-bar"
             type="range"
             min="0"
             max={progressMax}
@@ -316,6 +331,7 @@ const MusicPlayer = () => {
             onChange={handleSeek}
             aria-label="Seek within current song"
             disabled={progressMax === 0}
+            style={{ ['--progress' as string]: `${progressPct}%` }}
           />
           <span className="time">{formatTime(activeTimeline.duration)}</span>
         </div>
@@ -330,17 +346,18 @@ const MusicPlayer = () => {
           aria-label={isMuted ? 'Unmute' : 'Mute'}
           aria-pressed={isMuted}
         >
-          <span aria-hidden="true">{volumeIcon}</span>
+          <VolumeIcon size={18} strokeWidth={2} aria-hidden="true" />
         </button>
         <input
-          className="volume-bar"
+          className="range volume-bar"
           type="range"
           min="0"
           max="100"
           step="1"
-          value={Math.round((isMuted ? 0 : volume) * 100)}
+          value={volumePct}
           onChange={handleVolumeChange}
           aria-label="Volume"
+          style={{ ['--progress' as string]: `${volumePct}%` }}
         />
       </div>
     </div>

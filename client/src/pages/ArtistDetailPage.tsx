@@ -1,19 +1,28 @@
 import { useParams } from 'react-router-dom';
 import { useGetArtistByIdQuery } from '../services/artistsApi';
+import { useDominantColor } from '../app/useDominantColor';
 import SongList from '../components/songs/SongList';
 import AlbumList from '../components/albums/AlbumList';
 import './ArtistDetailPage.scss';
 
+const FALLBACK_COLOR = 'rgb(60, 40, 95)';
+
 const ArtistDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const { data: artist, isLoading, error } = useGetArtistByIdQuery(id!);
+  const dominant = useDominantColor(artist?.profilePicture);
 
   if (isLoading) return <p className="loading">Loading...</p>;
   if (error || !artist) return <p className="error">Artist not found.</p>;
 
+  const heroColor = dominant ?? FALLBACK_COLOR;
+  const heroStyle = {
+    background: `linear-gradient(180deg, ${heroColor} 0%, var(--color-bg) 100%)`,
+  };
+
   return (
     <div className="artist-detail-page">
-      <div className="artist-header">
+      <div className="artist-header has-hero" style={heroStyle}>
         {artist.profilePicture && (
           <img
             className="profile-picture"

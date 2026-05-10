@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Search, X } from 'lucide-react';
 import { useDebouncedValue } from '../../app/useDebouncedValue';
 import './SearchBar.scss';
 
@@ -33,7 +34,7 @@ const SearchBar = ({ placeholder, value, onChange, debounceMs = 250 }: SearchBar
 
   return (
     <div className="search-bar">
-      <span className="search-icon" aria-hidden="true">🔍</span>
+      <Search size={16} strokeWidth={2} className="search-icon" aria-hidden="true" />
       <input
         type="text"
         placeholder={placeholder}
@@ -48,7 +49,7 @@ const SearchBar = ({ placeholder, value, onChange, debounceMs = 250 }: SearchBar
           onClick={() => setLocal('')}
           aria-label="Clear search"
         >
-          ×
+          <X size={16} strokeWidth={2} aria-hidden="true" />
         </button>
       )}
     </div>

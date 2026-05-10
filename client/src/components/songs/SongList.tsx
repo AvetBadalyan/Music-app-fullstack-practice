@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { Pause, Play } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { playSong, togglePlay } from '../../features/player/playerSlice';
 import EmptyState from '../common/EmptyState';
@@ -58,7 +59,9 @@ const SongList = ({ songs }: SongListProps) => {
             >
               <span className="index">{index + 1}</span>
               <span className="play-icon" aria-hidden="true">
-                {isActivePlaying ? '❚❚' : '▶'}
+                {isActivePlaying
+                  ? <Pause size={14} strokeWidth={2.5} fill="currentColor" />
+                  : <Play  size={14} strokeWidth={2.5} fill="currentColor" />}
               </span>
             </button>
             <div className="song-info">

@@ -13,7 +13,14 @@
     padding: var(--space-3) var(--space-5);
     font-size: var(--font-md);
     font-weight: var(--weight-bold);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
     transition: color var(--transition-base), background var(--transition-base), border-color var(--transition-base);
+
+    svg {
+      flex-shrink: 0;
+    }
 
     &:hover {
       color: var(--color-text);

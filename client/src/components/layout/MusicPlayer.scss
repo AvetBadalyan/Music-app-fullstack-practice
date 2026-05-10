@@ -187,14 +187,6 @@
 
     .progress-bar {
       width: 100%;
-      margin: 0;
-      accent-color: var(--color-accent);
-      cursor: pointer;
-
-      &:disabled {
-        cursor: not-allowed;
-        opacity: 0.55;
-      }
     }
   }
 
@@ -226,10 +218,92 @@
     .volume-bar {
       flex: 1;
       min-width: 0;
-      margin: 0;
-      accent-color: var(--color-accent);
-      cursor: pointer;
     }
+  }
+}
+
+/* Custom range slider — used for progress + volume.
+   The filled portion is driven by an inline --progress: 0..100% set in TSX. */
+.range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 1.6rem;          /* hit area */
+  margin: 0;
+  background: transparent; /* track is drawn below */
+  cursor: pointer;
+
+  --progress: 0%;
+  --track-bg: rgba(255, 255, 255, 0.14);
+  --track-fill: var(--color-accent);
+  --track-h: 0.4rem;
+  --thumb-size: 1.2rem;
+
+  /* WebKit / Blink */
+  &::-webkit-slider-runnable-track {
+    height: var(--track-h);
+    border-radius: var(--radius-pill);
+    background: linear-gradient(
+      to right,
+      var(--track-fill) 0%,
+      var(--track-fill) var(--progress),
+      var(--track-bg) var(--progress),
+      var(--track-bg) 100%
+    );
+  }
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: var(--thumb-size);
+    height: var(--thumb-size);
+    border-radius: 50%;
+    background: var(--color-text);
+    border: none;
+    margin-top: calc((var(--track-h) - var(--thumb-size)) / 2);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+  }
+
+  /* Firefox */
+  &::-moz-range-track {
+    height: var(--track-h);
+    border-radius: var(--radius-pill);
+    background: var(--track-bg);
+  }
+
+  &::-moz-range-progress {
+    height: var(--track-h);
+    border-radius: var(--radius-pill);
+    background: var(--track-fill);
+  }
+
+  &::-moz-range-thumb {
+    width: var(--thumb-size);
+    height: var(--thumb-size);
+    border-radius: 50%;
+    background: var(--color-text);
+    border: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+  }
+
+  /* Reveal thumb on hover/focus, brighten fill */
+  &:hover, &:focus-visible {
+    --track-fill: var(--color-accent-hover);
+  }
+  &:hover::-webkit-slider-thumb,
+  &:focus-visible::-webkit-slider-thumb { opacity: 1; }
+  &:hover::-moz-range-thumb,
+  &:focus-visible::-moz-range-thumb     { opacity: 1; }
+
+  &:focus-visible { outline: none; }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
   }
 }
 

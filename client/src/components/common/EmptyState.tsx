@@ -1,8 +1,10 @@
+import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { Music } from 'lucide-react';
 import './EmptyState.scss';
 
 interface EmptyStateProps {
-  icon?: string;
+  icon?: ReactNode;
   title: string;
   description?: string;
   actionLabel?: string;
@@ -10,14 +12,16 @@ interface EmptyStateProps {
 }
 
 const EmptyState = ({
-  icon = '♪',
+  icon,
   title,
   description,
   actionLabel,
   actionTo,
 }: EmptyStateProps) => (
   <div className="empty-state">
-    <div className="empty-icon" aria-hidden="true">{icon}</div>
+    <div className="empty-icon" aria-hidden="true">
+      {icon ?? <Music size={32} strokeWidth={1.75} />}
+    </div>
     <h3>{title}</h3>
     {description && <p>{description}</p>}
     {actionLabel && actionTo && (

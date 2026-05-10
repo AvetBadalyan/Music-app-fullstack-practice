@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { Mic2 } from 'lucide-react';
 import EmptyState from '../common/EmptyState';
 import type { IArtist } from '../../types/artist';
 import './ArtistList.scss';
@@ -11,7 +12,7 @@ const ArtistList = ({ artists }: ArtistListProps) => {
   if (artists.length === 0) {
     return (
       <EmptyState
-        icon="♪"
+        icon={<Mic2 size={32} strokeWidth={1.75} />}
         title="No artists found"
         description="Try a different search, or add a new artist to your library."
         actionLabel="Add an artist"
