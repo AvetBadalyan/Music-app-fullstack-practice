@@ -1,7 +1,7 @@
 import { ILike } from 'typeorm';
 import { AppDataSource } from '../data-source';
 import { Artist } from '../entities/Artist';
-import { NotFoundError } from '../utils/errors';
+import { DatabaseError, NotFoundError } from '../utils/errors';
 import type { IArtist } from '../types/artist';
 import type { CreateArtistDto } from '../dto/artist.dto';
 
@@ -20,7 +20,6 @@ export class ArtistService {
   public async getById(id: string): Promise<IArtist> {
     const artist = await this.artistRepository.findOne({
       where: { id },
-      relations: ['albums', 'songs'],
       select: {
         id: true,
         name: true,
@@ -29,10 +28,29 @@ export class ArtistService {
         albums: {
           id: true,
           title: true,
+          coverImage: true,
+          releaseDate: true,
         },
         songs: {
           id: true,
           title: true,
+          duration: true,
+          audioFile: true,
+          album: {
+            id: true,
+            title: true,
+          },
+          genres: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+      relations: {
+        albums: true,
+        songs: {
+          album: true,
+          genres: true,
         },
       },
     });
@@ -65,5 +83,22 @@ export class ArtistService {
     });
 
     return artists;
+  }
+
+  public async getAll(): Promise<IArtist[]> {
+    try {
+      const artists = await this.artistRepository.find({
+        select: {
+          id: true,
+          name: true,
+          bio: true,
+          profilePicture: true,
+        },
+      });
+
+      return artists as IArtist[];
+    } catch (error) {
+      throw new DatabaseError('Failed to retrieve artists');
+    }
   }
 }

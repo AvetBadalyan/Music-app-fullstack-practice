@@ -9,6 +9,10 @@ interface CreateArtistPayload {
 
 export const artistsApi = api.injectEndpoints({
   endpoints: (build) => ({
+    getAllArtists: build.query<IArtist[], void>({
+      query: () => '/artists',
+      providesTags: ['Artist'],
+    }),
     getArtistById: build.query<IArtist, string>({
       query: (id) => `/artists/${id}`,
       providesTags: ['Artist'],
@@ -32,6 +36,7 @@ export const artistsApi = api.injectEndpoints({
 });
 
 export const {
+  useGetAllArtistsQuery,
   useGetArtistByIdQuery,
   useSearchArtistsQuery,
   useCreateArtistMutation,

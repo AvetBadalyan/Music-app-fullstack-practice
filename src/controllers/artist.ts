@@ -50,4 +50,17 @@ export class ArtistController {
       next(error);
     }
   };
+
+  public getAll = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const artists: IArtist[] = await this.artistService.getAll();
+      res.status(200).json(artists);
+    } catch (error) {
+      next(error);
+    }
+  };
 }

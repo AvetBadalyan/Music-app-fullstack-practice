@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { Plus, X } from 'lucide-react'
-import { useSearchArtistsQuery } from '../services/artistsApi'
+import {
+    useGetAllArtistsQuery,
+    useSearchArtistsQuery,
+} from '../services/artistsApi'
 import SearchBar from '../components/common/SearchBar'
 import ArtistList from '../components/artists/ArtistList'
 import CreateArtistForm from '../components/forms/CreateArtistForm'
@@ -8,9 +11,16 @@ import CreateArtistForm from '../components/forms/CreateArtistForm'
 const ArtistsPage = () => {
     const [searchTerm, setSearchTerm] = useState('')
     const [showForm, setShowForm] = useState(false)
-    const { data: artists, isLoading } = useSearchArtistsQuery(searchTerm, {
-        skip: searchTerm.length === 0
-    })
+    const isSearching = searchTerm.length > 0
+    const { data: allArtists, isLoading: isLoadingAll } = useGetAllArtistsQuery(
+        undefined,
+        { skip: isSearching },
+    )
+    const { data: searchResults, isLoading: isSearchLoading } =
+        useSearchArtistsQuery(searchTerm, { skip: !isSearching })
+
+    const artists = isSearching ? searchResults : allArtists
+    const isLoading = isSearching ? isSearchLoading : isLoadingAll
 
     return (
         <div className="artists-page">
@@ -31,9 +41,7 @@ const ArtistsPage = () => {
                 value={searchTerm}
                 onChange={setSearchTerm}
             />
-            {searchTerm.length === 0 ? (
-                <p className="hint">Start typing to search for artists...</p>
-            ) : isLoading ? (
+            {isLoading ? (
                 <p className="loading">Loading...</p>
             ) : (
                 <ArtistList artists={artists ?? []} />

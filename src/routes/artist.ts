@@ -8,6 +8,7 @@ const router = Router();
 const artistController = new ArtistController();
 
 router.post('/', validateRequest(CreateArtistDto), artistController.create);
+router.get('/', artistController.getAll);
 router.get(
   '/search',
   validateRequest(SearchArtistDto),
