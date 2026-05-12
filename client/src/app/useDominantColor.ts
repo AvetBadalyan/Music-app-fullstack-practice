@@ -32,7 +32,10 @@ export function useDominantColor(src?: string | null): string | null {
         ctx.drawImage(img, 0, 0, size, size);
         const { data } = ctx.getImageData(0, 0, size, size);
 
-        let r = 0, g = 0, b = 0, count = 0;
+        let r = 0,
+          g = 0,
+          b = 0,
+          count = 0;
         for (let i = 0; i < data.length; i += 4) {
           const alpha = data[i + 3];
           if (alpha < 128) continue; // skip mostly-transparent pixels
@@ -74,5 +77,5 @@ export function useDominantColor(src?: string | null): string | null {
     };
   }, [src, colorBySrc]);
 
-  return src ? colorBySrc[src] ?? null : null;
+  return src ? (colorBySrc[src] ?? null) : null;
 }

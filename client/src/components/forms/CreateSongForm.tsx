@@ -5,7 +5,11 @@ import { useGetAllGenresQuery } from '../../services/genresApi';
 import { useCreateSongMutation } from '../../services/songsApi';
 import type { IArtist } from '../../types/artist';
 import ArtistPicker from './ArtistPicker';
-import { idleFeedback, getErrorMessage, type FormFeedback } from './formHelpers';
+import {
+  idleFeedback,
+  getErrorMessage,
+  type FormFeedback,
+} from './formHelpers';
 import './forms.scss';
 
 const CreateSongForm = () => {
@@ -44,12 +48,18 @@ const CreateSongForm = () => {
     setFeedback(idleFeedback);
 
     if (!artist) {
-      setFeedback({ kind: 'error', message: 'Select an artist before creating a song.' });
+      setFeedback({
+        kind: 'error',
+        message: 'Select an artist before creating a song.',
+      });
       return;
     }
 
     if (!audioFile) {
-      setFeedback({ kind: 'error', message: 'Choose an audio file before submitting.' });
+      setFeedback({
+        kind: 'error',
+        message: 'Choose an audio file before submitting.',
+      });
       return;
     }
 
@@ -84,7 +94,11 @@ const CreateSongForm = () => {
           <span>
             Title <span className="required-mark">*</span>
           </span>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} required />
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
         </label>
         <ArtistPicker
           label="Artist"

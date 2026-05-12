@@ -49,7 +49,9 @@
     font-size: var(--font-sm);
     font-weight: var(--weight-bold);
     text-decoration: none;
-    transition: background var(--transition), transform var(--transition);
+    transition:
+      background var(--transition),
+      transform var(--transition);
     box-shadow: var(--shadow-glow);
 
     @media (hover: hover) {

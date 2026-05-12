@@ -11,7 +11,12 @@ interface SearchBarProps {
   debounceMs?: number;
 }
 
-const SearchBar = ({ placeholder, value, onChange, debounceMs = 250 }: SearchBarProps) => {
+const SearchBar = ({
+  placeholder,
+  value,
+  onChange,
+  debounceMs = 250,
+}: SearchBarProps) => {
   const [local, setLocal] = useState(value);
   const debounced = useDebouncedValue(local, debounceMs);
   const lastNotifiedRef = useRef(value);
@@ -34,7 +39,12 @@ const SearchBar = ({ placeholder, value, onChange, debounceMs = 250 }: SearchBar
 
   return (
     <div className="search-bar">
-      <Search size={16} strokeWidth={2} className="search-icon" aria-hidden="true" />
+      <Search
+        size={16}
+        strokeWidth={2}
+        className="search-icon"
+        aria-hidden="true"
+      />
       <input
         type="text"
         placeholder={placeholder}

@@ -67,25 +67,6 @@
       color: var(--color-text);
       margin-bottom: var(--space-3);
     }
-
-    ol {
-      list-style: decimal;
-      padding-left: var(--space-5);
-
-      li {
-        padding: var(--space-2) 0;
-        border-bottom: 1px solid var(--color-border);
-
-        a {
-          color: var(--color-text);
-          text-decoration: none;
-
-          &:hover {
-            text-decoration: underline;
-          }
-        }
-      }
-    }
   }
 
   .loading,
@@ -116,10 +97,6 @@
 
     .tracklist {
       padding: 0 var(--space-4);
-
-      ol {
-        padding-left: var(--space-4);
-      }
     }
   }
 }

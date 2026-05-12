@@ -25,7 +25,9 @@ const EmptyState = ({
     <h3>{title}</h3>
     {description && <p>{description}</p>}
     {actionLabel && actionTo && (
-      <Link to={actionTo} className="empty-action">{actionLabel}</Link>
+      <Link to={actionTo} className="empty-action">
+        {actionLabel}
+      </Link>
     )}
   </div>
 );

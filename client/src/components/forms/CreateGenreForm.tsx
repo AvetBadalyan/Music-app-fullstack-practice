@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCreateGenreMutation } from '../../services/genresApi';
-import { idleFeedback, getErrorMessage, type FormFeedback } from './formHelpers';
+import {
+  idleFeedback,
+  getErrorMessage,
+  type FormFeedback,
+} from './formHelpers';
 import './forms.scss';
 
 const CreateGenreForm = () => {
@@ -34,7 +38,11 @@ const CreateGenreForm = () => {
           <span>
             Name <span className="required-mark">*</span>
           </span>
-          <input value={name} onChange={(e) => setName(e.target.value)} required />
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
         </label>
         <button type="submit" disabled={isLoading}>
           {isLoading ? 'Creating...' : 'Create genre'}

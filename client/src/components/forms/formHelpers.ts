@@ -19,12 +19,19 @@ export const getErrorMessage = (error: unknown): string => {
         return apiError.data;
       }
 
-      if (apiError.data && typeof apiError.data === 'object' && 'error' in apiError.data) {
+      if (
+        apiError.data &&
+        typeof apiError.data === 'object' &&
+        'error' in apiError.data
+      ) {
         return apiError.data.error ?? 'Request failed.';
       }
     }
 
-    if ('message' in error && typeof (error as { message?: unknown }).message === 'string') {
+    if (
+      'message' in error &&
+      typeof (error as { message?: unknown }).message === 'string'
+    ) {
       return (error as { message: string }).message;
     }
   }

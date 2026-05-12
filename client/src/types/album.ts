@@ -1,3 +1,5 @@
+import type { ISong } from './song';
+
 export interface IAlbum {
   id: string;
   title: string;
@@ -7,8 +9,5 @@ export interface IAlbum {
     id: string;
     name: string;
   };
-  songs?: {
-    id: string;
-    title: string;
-  }[];
+  songs?: ISong[];
 }

@@ -48,7 +48,7 @@ const playerSlice = createSlice({
       if (action.payload.queue) {
         state.queue = action.payload.queue;
         state.currentIndex = action.payload.queue.findIndex(
-          (s) => s.id === action.payload.song.id
+          (s) => s.id === action.payload.song.id,
         );
       } else {
         state.queue = [action.payload.song];
@@ -65,7 +65,10 @@ const playerSlice = createSlice({
       if (state.queue.length === 0) return;
 
       if (state.shuffle) {
-        const nextIndex = pickRandomIndex(state.queue.length, state.currentIndex);
+        const nextIndex = pickRandomIndex(
+          state.queue.length,
+          state.currentIndex,
+        );
         setCurrentByIndex(state, nextIndex);
         return;
       }
@@ -83,7 +86,10 @@ const playerSlice = createSlice({
       if (state.queue.length === 0) return;
 
       if (state.shuffle) {
-        const prevIndex = pickRandomIndex(state.queue.length, state.currentIndex);
+        const prevIndex = pickRandomIndex(
+          state.queue.length,
+          state.currentIndex,
+        );
         setCurrentByIndex(state, prevIndex);
         return;
       }
@@ -109,7 +115,8 @@ const playerSlice = createSlice({
       state.shuffle = !state.shuffle;
     },
     cycleRepeat(state) {
-      state.repeat = state.repeat === 'off' ? 'all' : state.repeat === 'all' ? 'one' : 'off';
+      state.repeat =
+        state.repeat === 'off' ? 'all' : state.repeat === 'all' ? 'one' : 'off';
     },
   },
 });

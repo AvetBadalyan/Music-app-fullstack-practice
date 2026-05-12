@@ -7,8 +7,8 @@ import { rtkQueryErrorToast } from './errorMiddleware';
 export const store = configureStore({
   // `reducer` tells Redux what state pieces to manage
   reducer: {
-    api: api.reducer,          // RTK Query manages all server data (songs, albums, etc.)
-    player: playerReducer,     // Our manual slice for the music player state
+    api: api.reducer, // RTK Query manages all server data (songs, albums, etc.)
+    player: playerReducer, // Our manual slice for the music player state
   },
 
   // `middleware` are functions that intercept state changes.

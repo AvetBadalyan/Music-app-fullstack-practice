@@ -1,50 +1,49 @@
-import { Link } from 'react-router-dom'
-import { Mic2 } from 'lucide-react'
-import EmptyState from '../common/EmptyState'
-import type { IArtist } from '../../types/artist'
-import './ArtistList.scss'
+import { Link } from 'react-router-dom';
+import { Mic2 } from 'lucide-react';
+import EmptyState from '../common/EmptyState';
+import type { IArtist } from '../../types/artist';
+import './ArtistList.scss';
 
 interface ArtistListProps {
-    artists: IArtist[]
+  artists: IArtist[];
 }
 
 const ArtistList = ({ artists }: ArtistListProps) => {
-    if (artists.length === 0) {
-        return (
-            <EmptyState
-                icon={<Mic2 size={32} strokeWidth={1.75} />}
-                title="No artists found"
-                description="Try a different search, or add a new artist to your library."
-                actionLabel="Add an artist"
-                actionTo="/artists"
-            />
-        )
-    }
-
+  if (artists.length === 0) {
     return (
-        <div className="artist-grid">
-            {artists.map((artist) => (
-                <Link
-                    key={artist.id}
-                    to={`/artists/${artist.id}`}
-                    className="artist-card"
-                >
-                    <div className="artist-avatar">
-                        {artist.profilePicture ? (
-                            <img
-                                src={artist.profilePicture}
-                                alt={artist.name}
-                            />
-                        ) : (
-                            <div className="placeholder">🎤</div>
-                        )}
-                    </div>
-                    <p className="artist-name">{artist.name}</p>
-                    <p className="artist-label">Artist</p>
-                </Link>
-            ))}
-        </div>
-    )
-}
+      <EmptyState
+        icon={<Mic2 size={32} strokeWidth={1.75} />}
+        title="No artists found"
+        description="Try a different search, or add a new artist to your library."
+        actionLabel="Add an artist"
+        actionTo="/artists"
+      />
+    );
+  }
 
-export default ArtistList
+  return (
+    <div className="artist-grid">
+      {artists.map((artist) => (
+        <Link
+          key={artist.id}
+          to={`/artists/${artist.id}`}
+          className="artist-card"
+        >
+          <div className="artist-avatar">
+            {artist.profilePicture ? (
+              <img src={artist.profilePicture} alt={artist.name} />
+            ) : (
+              <div className="placeholder" aria-hidden="true">
+                <Mic2 size={32} strokeWidth={1.5} />
+              </div>
+            )}
+          </div>
+          <p className="artist-name">{artist.name}</p>
+          <p className="artist-label">Artist</p>
+        </Link>
+      ))}
+    </div>
+  );
+};
+
+export default ArtistList;

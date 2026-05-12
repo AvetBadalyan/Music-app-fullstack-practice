@@ -111,14 +111,17 @@ const MusicPlayer = () => {
             event.preventDefault();
             audioRef.current.currentTime = Math.min(
               audioRef.current.currentTime + 5,
-              audioRef.current.duration || audioRef.current.currentTime + 5
+              audioRef.current.duration || audioRef.current.currentTime + 5,
             );
           }
           break;
         case 'ArrowLeft':
           if (audioRef.current) {
             event.preventDefault();
-            audioRef.current.currentTime = Math.max(audioRef.current.currentTime - 5, 0);
+            audioRef.current.currentTime = Math.max(
+              audioRef.current.currentTime - 5,
+              0,
+            );
           }
           break;
         case 'ArrowUp':
@@ -173,7 +176,10 @@ const MusicPlayer = () => {
       return;
     }
 
-    const nextTime = Math.min(Number(event.currentTarget.value), activeTimeline.duration);
+    const nextTime = Math.min(
+      Number(event.currentTarget.value),
+      activeTimeline.duration,
+    );
     audioRef.current.currentTime = nextTime;
     setTimeline({
       songId: currentSong.id,
@@ -221,17 +227,27 @@ const MusicPlayer = () => {
   // With repeat=all or shuffle, prev/next are always allowed when queue has items
   const canWrap = repeat === 'all' || shuffle;
   const isPreviousDisabled = !canWrap && currentIndex <= 0;
-  const isNextDisabled = !canWrap && (currentIndex < 0 || currentIndex >= queue.length - 1);
+  const isNextDisabled =
+    !canWrap && (currentIndex < 0 || currentIndex >= queue.length - 1);
   const progressMax = activeTimeline.duration > 0 ? activeTimeline.duration : 0;
-  const progressValue = progressMax > 0 ? Math.min(activeTimeline.currentTime, progressMax) : 0;
+  const progressValue =
+    progressMax > 0 ? Math.min(activeTimeline.currentTime, progressMax) : 0;
 
   const repeatLabel =
-    repeat === 'one' ? 'Repeat one (on)' : repeat === 'all' ? 'Repeat all (on)' : 'Repeat (off)';
+    repeat === 'one'
+      ? 'Repeat one (on)'
+      : repeat === 'all'
+        ? 'Repeat all (on)'
+        : 'Repeat (off)';
 
   const VolumeIcon =
-    isMuted || volume === 0 ? VolumeX :
-    volume < 0.4 ? Volume :
-    volume < 0.75 ? Volume1 : Volume2;
+    isMuted || volume === 0
+      ? VolumeX
+      : volume < 0.4
+        ? Volume
+        : volume < 0.75
+          ? Volume1
+          : Volume2;
 
   const progressPct = progressMax > 0 ? (progressValue / progressMax) * 100 : 0;
   const volumePct = Math.round((isMuted ? 0 : volume) * 100);
@@ -253,13 +269,18 @@ const MusicPlayer = () => {
         <Link to={`/songs/${currentSong.id}`} className="song-title">
           {isPlaying && (
             <span className="equalizer now-playing-status" aria-hidden="true">
-              <span /><span /><span />
+              <span />
+              <span />
+              <span />
             </span>
           )}
           <span className="song-title-text">{currentSong.title}</span>
         </Link>
         {currentSong.artist && (
-          <Link to={`/artists/${currentSong.artist.id}`} className="artist-name">
+          <Link
+            to={`/artists/${currentSong.artist.id}`}
+            className="artist-name"
+          >
             {currentSong.artist.name}
           </Link>
         )}
@@ -275,7 +296,12 @@ const MusicPlayer = () => {
             aria-label={shuffle ? 'Disable shuffle' : 'Enable shuffle'}
             aria-pressed={shuffle}
           >
-            <Shuffle size={16} strokeWidth={2} className="transport-icon" aria-hidden="true" />
+            <Shuffle
+              size={16}
+              strokeWidth={2}
+              className="transport-icon"
+              aria-hidden="true"
+            />
           </button>
           <button
             type="button"
@@ -284,7 +310,13 @@ const MusicPlayer = () => {
             aria-label="Previous song"
             disabled={isPreviousDisabled}
           >
-            <SkipBack size={20} strokeWidth={2} fill="currentColor" className="transport-icon" aria-hidden="true" />
+            <SkipBack
+              size={20}
+              strokeWidth={2}
+              fill="currentColor"
+              className="transport-icon"
+              aria-hidden="true"
+            />
           </button>
           <button
             type="button"
@@ -293,9 +325,22 @@ const MusicPlayer = () => {
             title={isPlaying ? 'Pause (Space)' : 'Play (Space)'}
             aria-label={isPlaying ? 'Pause current song' : 'Play current song'}
           >
-            {isPlaying
-              ? <Pause size={20} strokeWidth={2.5} fill="currentColor" aria-hidden="true" />
-              : <Play  size={20} strokeWidth={2.5} fill="currentColor" aria-hidden="true" style={{ marginLeft: 2 }} />}
+            {isPlaying ? (
+              <Pause
+                size={20}
+                strokeWidth={2.5}
+                fill="currentColor"
+                aria-hidden="true"
+              />
+            ) : (
+              <Play
+                size={20}
+                strokeWidth={2.5}
+                fill="currentColor"
+                aria-hidden="true"
+                style={{ marginLeft: 2 }}
+              />
+            )}
           </button>
           <button
             type="button"
@@ -304,7 +349,13 @@ const MusicPlayer = () => {
             aria-label="Next song"
             disabled={isNextDisabled}
           >
-            <SkipForward size={20} strokeWidth={2} fill="currentColor" className="transport-icon" aria-hidden="true" />
+            <SkipForward
+              size={20}
+              strokeWidth={2}
+              fill="currentColor"
+              className="transport-icon"
+              aria-hidden="true"
+            />
           </button>
           <button
             type="button"
@@ -313,9 +364,21 @@ const MusicPlayer = () => {
             title={repeatLabel}
             aria-label={repeatLabel}
           >
-            {repeat === 'one'
-              ? <Repeat1 size={16} strokeWidth={2} className="transport-icon" aria-hidden="true" />
-              : <Repeat  size={16} strokeWidth={2} className="transport-icon" aria-hidden="true" />}
+            {repeat === 'one' ? (
+              <Repeat1
+                size={16}
+                strokeWidth={2}
+                className="transport-icon"
+                aria-hidden="true"
+              />
+            ) : (
+              <Repeat
+                size={16}
+                strokeWidth={2}
+                className="transport-icon"
+                aria-hidden="true"
+              />
+            )}
           </button>
         </div>
 

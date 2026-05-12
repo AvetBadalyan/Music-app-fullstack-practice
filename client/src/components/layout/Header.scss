@@ -7,10 +7,10 @@
   padding: 0 var(--space-5);
   border-bottom: 1px solid var(--color-border);
   position: relative;
-  z-index: 95;            // above sidebar drawer + backdrop
+  z-index: 95; // above sidebar drawer + backdrop
 
   .menu-btn {
-    display: none;        // hidden on desktop
+    display: none; // hidden on desktop
     align-items: center;
     justify-content: center;
     background: none;
@@ -54,4 +54,3 @@
     }
   }
 }
-

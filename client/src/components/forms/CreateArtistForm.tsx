@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCreateArtistMutation } from '../../services/artistsApi';
-import { idleFeedback, getErrorMessage, type FormFeedback } from './formHelpers';
+import {
+  idleFeedback,
+  getErrorMessage,
+  type FormFeedback,
+} from './formHelpers';
 import './forms.scss';
 
 const CreateArtistForm = () => {
@@ -43,11 +47,19 @@ const CreateArtistForm = () => {
           <span>
             Name <span className="required-mark">*</span>
           </span>
-          <input value={name} onChange={(e) => setName(e.target.value)} required />
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
         </label>
         <label>
           <span>Bio</span>
-          <textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={4} />
+          <textarea
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            rows={4}
+          />
         </label>
         <label>
           <span>Profile picture</span>

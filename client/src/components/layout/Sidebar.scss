@@ -17,7 +17,10 @@
     display: flex;
     align-items: center;
     gap: var(--space-3);
-    transition: color var(--transition), background var(--transition), border-color var(--transition);
+    transition:
+      color var(--transition),
+      background var(--transition),
+      border-color var(--transition);
 
     svg {
       flex-shrink: 0;
@@ -44,7 +47,7 @@
 @media (max-width: 1024px) {
   .sidebar {
     position: fixed;
-    top: 6.4rem;            // sit below the header
+    top: 6.4rem; // sit below the header
     left: 0;
     bottom: 0;
     width: min(28rem, 80vw);
@@ -74,4 +77,3 @@
     }
   }
 }
-

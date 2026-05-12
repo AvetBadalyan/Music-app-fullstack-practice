@@ -23,18 +23,26 @@ const AlbumDetailPage = () => {
     <div className="album-detail-page">
       <div className="album-header has-hero" style={heroStyle}>
         {album.coverImage && (
-          <img className="cover-image" src={album.coverImage} alt={album.title} />
+          <img
+            className="cover-image"
+            src={album.coverImage}
+            alt={album.title}
+          />
         )}
         <div className="album-info">
           <p className="label">Album</p>
           <h1>{album.title}</h1>
           {album.artist && (
             <p className="artist">
-              <Link to={`/artists/${album.artist.id}`}>{album.artist.name}</Link>
+              <Link to={`/artists/${album.artist.id}`}>
+                {album.artist.name}
+              </Link>
             </p>
           )}
           {album.releaseDate && (
-            <p className="release-date">{new Date(album.releaseDate).getFullYear()}</p>
+            <p className="release-date">
+              {new Date(album.releaseDate).getFullYear()}
+            </p>
           )}
         </div>
       </div>

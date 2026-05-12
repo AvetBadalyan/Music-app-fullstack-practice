@@ -3,7 +3,11 @@ import { Link } from 'react-router-dom';
 import { useCreateAlbumMutation } from '../../services/albumsApi';
 import type { IArtist } from '../../types/artist';
 import ArtistPicker from './ArtistPicker';
-import { idleFeedback, getErrorMessage, type FormFeedback } from './formHelpers';
+import {
+  idleFeedback,
+  getErrorMessage,
+  type FormFeedback,
+} from './formHelpers';
 import './forms.scss';
 
 const CreateAlbumForm = () => {
@@ -19,7 +23,10 @@ const CreateAlbumForm = () => {
     setFeedback(idleFeedback);
 
     if (!artist) {
-      setFeedback({ kind: 'error', message: 'Select an artist before creating an album.' });
+      setFeedback({
+        kind: 'error',
+        message: 'Select an artist before creating an album.',
+      });
       return;
     }
 
@@ -53,7 +60,11 @@ const CreateAlbumForm = () => {
           <span>
             Title <span className="required-mark">*</span>
           </span>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} required />
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
         </label>
         <ArtistPicker
           label="Artist"
