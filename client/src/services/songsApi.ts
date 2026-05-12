@@ -1,6 +1,14 @@
 import { api } from './api';
 import type { ISong } from '../types/song';
 
+export interface CreateSongPayload {
+  title: string;
+  artistId: string;
+  audioFile: File;
+  albumId?: string;
+  genreIds?: string[];
+}
+
 export const songsApi = api.injectEndpoints({
   endpoints: (build) => ({
     getAllSongs: build.query<ISong[], void>({
@@ -18,12 +26,21 @@ export const songsApi = api.injectEndpoints({
       }),
       providesTags: ['Song'],
     }),
-    createSong: build.mutation<ISong, FormData>({
-      query: (formData) => ({
-        url: '/songs',
-        method: 'POST',
-        body: formData,
-      }),
+    createSong: build.mutation<ISong, CreateSongPayload>({
+      query: ({ title, artistId, audioFile, albumId, genreIds }) => {
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('artistId', artistId);
+        if (albumId) formData.append('albumId', albumId);
+        genreIds?.forEach((id) => formData.append('genreIds', id));
+        formData.append('audioFile', audioFile);
+
+        return {
+          url: '/songs',
+          method: 'POST',
+          body: formData,
+        };
+      },
       invalidatesTags: ['Song'],
     }),
   }),

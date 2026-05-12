@@ -42,7 +42,9 @@ const CreateArtistForm = () => {
     <section className="entity-form">
       <form onSubmit={handleSubmit}>
         <label>
-          <span>Name</span>
+          <span>
+            Name <span className="required-mark">*</span>
+          </span>
           <input value={name} onChange={(e) => setName(e.target.value)} required />
         </label>
         <label>

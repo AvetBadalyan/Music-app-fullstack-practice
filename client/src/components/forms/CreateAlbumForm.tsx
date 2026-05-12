@@ -52,7 +52,9 @@ const CreateAlbumForm = () => {
     <section className="entity-form">
       <form onSubmit={handleSubmit}>
         <label>
-          <span>Title</span>
+          <span>
+            Title <span className="required-mark">*</span>
+          </span>
           <input value={title} onChange={(e) => setTitle(e.target.value)} required />
         </label>
         <ArtistPicker

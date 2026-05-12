@@ -54,15 +54,14 @@ const CreateSongForm = () => {
       return;
     }
 
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('artistId', artist.id);
-    if (albumId) formData.append('albumId', albumId);
-    genreIds.forEach((id) => formData.append('genreIds', id));
-    formData.append('audioFile', audioFile);
-
     try {
-      const created = await createSong(formData).unwrap();
+      const created = await createSong({
+        title,
+        artistId: artist.id,
+        audioFile,
+        albumId: albumId || undefined,
+        genreIds,
+      }).unwrap();
       setTitle('');
       setArtist(null);
       setAlbumId('');
@@ -84,7 +83,9 @@ const CreateSongForm = () => {
     <section className="entity-form">
       <form onSubmit={handleSubmit}>
         <label>
-          <span>Title</span>
+          <span>
+            Title <span className="required-mark">*</span>
+          </span>
           <input value={title} onChange={(e) => setTitle(e.target.value)} required />
         </label>
         <ArtistPicker
@@ -122,7 +123,9 @@ const CreateSongForm = () => {
           </div>
         </div>
         <label>
-          <span>Audio file</span>
+          <span>
+            Audio file <span className="required-mark">*</span>
+          </span>
           <input
             type="file"
             accept="audio/*"

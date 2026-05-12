@@ -26,7 +26,10 @@ const ArtistPicker = ({
   return (
     <div className="artist-picker">
       <label>
-        <span>{label}</span>
+        <span>
+          {label}
+          {required && <span className="required-mark">*</span>}
+        </span>
         <input
           type="text"
           value={searchTerm}
