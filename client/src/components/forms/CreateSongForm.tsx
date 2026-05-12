@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import { useGetAllAlbumsQuery } from '../../services/albumsApi';
 import { useGetAllGenresQuery } from '../../services/genresApi';
 import { useCreateSongMutation } from '../../services/songsApi';
@@ -56,7 +55,7 @@ const CreateSongForm = () => {
 
     try {
       const created = await createSong({
-        title,
+        title: title.trim(),
         artistId: artist.id,
         audioFile,
         albumId: albumId || undefined,
@@ -67,7 +66,6 @@ const CreateSongForm = () => {
       setAlbumId('');
       setGenreIds([]);
       setAudioFile(null);
-      toast.success(`Song “${created.title}” created`);
       setFeedback({
         kind: 'success',
         message: `Song "${created.title}" created successfully.`,

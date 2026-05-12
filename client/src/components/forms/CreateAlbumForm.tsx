@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import { useCreateAlbumMutation } from '../../services/albumsApi';
 import type { IArtist } from '../../types/artist';
 import ArtistPicker from './ArtistPicker';
@@ -26,17 +25,16 @@ const CreateAlbumForm = () => {
 
     try {
       const created = await createAlbum({
-        title,
+        title: title.trim(),
         artistId: artist.id,
         releaseDate: releaseDate || undefined,
-        coverImage: coverImage || undefined,
+        coverImage: coverImage.trim() || undefined,
       }).unwrap();
 
       setTitle('');
       setReleaseDate('');
       setCoverImage('');
       setArtist(null);
-      toast.success(`Album “${created.title}” created`);
       setFeedback({
         kind: 'success',
         message: `Album "${created.title}" created successfully.`,

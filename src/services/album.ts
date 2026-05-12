@@ -49,11 +49,24 @@ export class AlbumService {
           songs: {
             id: true,
             title: true,
+            duration: true,
+            audioFile: true,
+            artist: {
+              id: true,
+              name: true,
+            },
+            genres: {
+              id: true,
+              name: true,
+            },
           },
         },
         relations: {
           artist: true,
-          songs: true,
+          songs: {
+            artist: true,
+            genres: true,
+          },
         },
       });
 

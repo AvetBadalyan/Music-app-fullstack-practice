@@ -19,7 +19,7 @@ export class CreateAlbumDto {
 
   @IsString()
   @IsOptional()
-  @MaxLength(50)
+  @MaxLength(500)
   coverImage?: string;
 
   @IsUUID()

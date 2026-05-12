@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import { useCreateArtistMutation } from '../../services/artistsApi';
 import { idleFeedback, getErrorMessage, type FormFeedback } from './formHelpers';
 import './forms.scss';
@@ -18,15 +17,14 @@ const CreateArtistForm = () => {
 
     try {
       const created = await createArtist({
-        name,
-        bio: bio || undefined,
-        profilePicture: profilePicture || undefined,
+        name: name.trim(),
+        bio: bio.trim() || undefined,
+        profilePicture: profilePicture.trim() || undefined,
       }).unwrap();
 
       setName('');
       setBio('');
       setProfilePicture('');
-      toast.success(`Artist “${created.name}” created`);
       setFeedback({
         kind: 'success',
         message: `Artist "${created.name}" created successfully.`,

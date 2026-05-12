@@ -13,7 +13,7 @@ export class CreateArtistDto {
 
   @IsString()
   @IsOptional()
-  @MaxLength(50)
+  @MaxLength(500)
   profilePicture?: string;
 }
 

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import { useCreateGenreMutation } from '../../services/genresApi';
 import { idleFeedback, getErrorMessage, type FormFeedback } from './formHelpers';
 import './forms.scss';
@@ -15,9 +14,8 @@ const CreateGenreForm = () => {
     setFeedback(idleFeedback);
 
     try {
-      const created = await createGenre({ name }).unwrap();
+      const created = await createGenre({ name: name.trim() }).unwrap();
       setName('');
-      toast.success(`Genre “${created.name}” created`);
       setFeedback({
         kind: 'success',
         message: `Genre "${created.name}" created successfully.`,

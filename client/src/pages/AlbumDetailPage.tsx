@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { useGetAlbumByIdQuery } from '../services/albumsApi';
 import { useDominantColor } from '../app/useDominantColor';
+import SongList from '../components/songs/SongList';
 import './AlbumDetailPage.scss';
 
 const FALLBACK_COLOR = 'rgb(60, 40, 95)';
@@ -41,13 +42,7 @@ const AlbumDetailPage = () => {
       {album.songs && album.songs.length > 0 && (
         <section className="tracklist">
           <h2>Tracklist</h2>
-          <ol>
-            {album.songs.map((song) => (
-              <li key={song.id}>
-                <Link to={`/songs/${song.id}`}>{song.title}</Link>
-              </li>
-            ))}
-          </ol>
+          <SongList songs={album.songs} />
         </section>
       )}
     </div>
