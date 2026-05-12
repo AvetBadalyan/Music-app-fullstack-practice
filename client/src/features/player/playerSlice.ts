@@ -32,6 +32,12 @@ const pickRandomIndex = (length: number, exclude: number) => {
   return next;
 };
 
+const setCurrentByIndex = (state: PlayerState, index: number) => {
+  state.currentIndex = index;
+  state.currentSong = state.queue[index];
+  state.isPlaying = true;
+};
+
 const playerSlice = createSlice({
   name: 'player',
   initialState,
@@ -59,46 +65,36 @@ const playerSlice = createSlice({
       if (state.queue.length === 0) return;
 
       if (state.shuffle) {
-        state.currentIndex = pickRandomIndex(state.queue.length, state.currentIndex);
-        state.currentSong = state.queue[state.currentIndex];
-        state.isPlaying = true;
+        const nextIndex = pickRandomIndex(state.queue.length, state.currentIndex);
+        setCurrentByIndex(state, nextIndex);
         return;
       }
 
       if (state.currentIndex < state.queue.length - 1) {
-        state.currentIndex += 1;
-        state.currentSong = state.queue[state.currentIndex];
-        state.isPlaying = true;
+        setCurrentByIndex(state, state.currentIndex + 1);
         return;
       }
 
       if (state.repeat === 'all') {
-        state.currentIndex = 0;
-        state.currentSong = state.queue[0];
-        state.isPlaying = true;
+        setCurrentByIndex(state, 0);
       }
     },
     prevSong(state) {
       if (state.queue.length === 0) return;
 
       if (state.shuffle) {
-        state.currentIndex = pickRandomIndex(state.queue.length, state.currentIndex);
-        state.currentSong = state.queue[state.currentIndex];
-        state.isPlaying = true;
+        const prevIndex = pickRandomIndex(state.queue.length, state.currentIndex);
+        setCurrentByIndex(state, prevIndex);
         return;
       }
 
       if (state.currentIndex > 0) {
-        state.currentIndex -= 1;
-        state.currentSong = state.queue[state.currentIndex];
-        state.isPlaying = true;
+        setCurrentByIndex(state, state.currentIndex - 1);
         return;
       }
 
       if (state.repeat === 'all') {
-        state.currentIndex = state.queue.length - 1;
-        state.currentSong = state.queue[state.currentIndex];
-        state.isPlaying = true;
+        setCurrentByIndex(state, state.queue.length - 1);
       }
     },
     setVolume(state, action: PayloadAction<number>) {
