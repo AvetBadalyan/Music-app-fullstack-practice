@@ -12,7 +12,10 @@ const MainLayout = () => {
 
   return (
     <div className="main-layout">
-      <Header menuOpen={menuOpen} onMenuToggle={() => setMenuOpen((o) => !o)} />
+      <Header
+        menuOpen={menuOpen}
+        onMenuToggle={() => setMenuOpen((prev) => !prev)}
+      />
       <div className="layout-body">
         <Sidebar open={menuOpen} onClose={() => setMenuOpen(false)} />
         <main className="content">

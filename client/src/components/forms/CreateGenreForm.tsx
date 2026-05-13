@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCreateGenreMutation } from '../../services/genresApi';
+import { FIELD_LIMITS } from '../../constants/fieldLimits';
 import {
   idleFeedback,
   getErrorMessage,
@@ -40,8 +41,9 @@ const CreateGenreForm = () => {
           </span>
           <input
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(event) => setName(event.target.value)}
             required
+            maxLength={FIELD_LIMITS.genreName}
           />
         </label>
         <button type="submit" disabled={isLoading}>

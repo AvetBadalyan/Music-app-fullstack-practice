@@ -1,5 +1,9 @@
-import { useState } from 'react';
-import { useSearchArtistsQuery } from '../../services/artistsApi';
+import { useRef, useState } from 'react';
+import {
+  useGetAllArtistsQuery,
+  useSearchArtistsQuery,
+} from '../../services/artistsApi';
+import { FIELD_LIMITS } from '../../constants/fieldLimits';
 import type { IArtist } from '../../types/artist';
 
 interface ArtistPickerProps {
@@ -18,10 +22,38 @@ const ArtistPicker = ({
   hint,
 }: ArtistPickerProps) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
+  const blurTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const trimmedSearch = searchTerm.trim();
-  const { data: artists, isFetching } = useSearchArtistsQuery(trimmedSearch, {
-    skip: trimmedSearch.length === 0,
-  });
+  const isSearching = trimmedSearch.length > 0;
+
+  const { data: allArtists, isFetching: allFetching } = useGetAllArtistsQuery(
+    undefined,
+    { skip: isSearching },
+  );
+  const { data: searchResults, isFetching: searchFetching } =
+    useSearchArtistsQuery(trimmedSearch, { skip: !isSearching });
+
+  const artists = isSearching ? searchResults : allArtists;
+  const isFetching = isSearching ? searchFetching : allFetching;
+  const showResults = isFocused && !selectedArtist;
+
+  const handleFocus = () => {
+    if (blurTimeout.current) clearTimeout(blurTimeout.current);
+    setIsFocused(true);
+  };
+
+  const handleBlur = () => {
+    // Delay so option click registers before the list collapses.
+    blurTimeout.current = setTimeout(() => setIsFocused(false), 150);
+  };
+
+  const handleSelect = (artist: IArtist) => {
+    onSelect(artist);
+    setSearchTerm('');
+    setIsFocused(false);
+  };
 
   return (
     <div className="artist-picker">
@@ -34,8 +66,11 @@ const ArtistPicker = ({
           type="text"
           value={searchTerm}
           onChange={(event) => setSearchTerm(event.target.value)}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           placeholder="Search artists by name"
           required={required && !selectedArtist}
+          maxLength={FIELD_LIMITS.searchQuery}
         />
       </label>
 
@@ -50,20 +85,18 @@ const ArtistPicker = ({
         </div>
       )}
 
-      {trimmedSearch.length > 0 && (
+      {showResults && (
         <div className="picker-results">
           {isFetching ? (
-            <p>Searching...</p>
+            <p>Loading...</p>
           ) : artists && artists.length > 0 ? (
             artists.map((artist) => (
               <button
                 key={artist.id}
                 type="button"
                 className="picker-option"
-                onClick={() => {
-                  onSelect(artist);
-                  setSearchTerm('');
-                }}
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={() => handleSelect(artist)}
               >
                 <strong>{artist.name}</strong>
                 {artist.bio && <span>{artist.bio}</span>}

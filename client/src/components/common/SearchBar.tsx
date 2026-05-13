@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Search, X } from 'lucide-react';
 import { useDebouncedValue } from '../../app/useDebouncedValue';
+import { FIELD_LIMITS } from '../../constants/fieldLimits';
 import './SearchBar.scss';
 
 interface SearchBarProps {
@@ -9,6 +10,8 @@ interface SearchBarProps {
   onChange: (value: string) => void;
   /** Debounce delay in ms before notifying the parent. Defaults to 250. */
   debounceMs?: number;
+  /** Max characters the user can type. Defaults to the backend search limit. */
+  maxLength?: number;
 }
 
 const SearchBar = ({
@@ -16,6 +19,7 @@ const SearchBar = ({
   value,
   onChange,
   debounceMs = 250,
+  maxLength = FIELD_LIMITS.searchQuery,
 }: SearchBarProps) => {
   const [local, setLocal] = useState(value);
   const debounced = useDebouncedValue(local, debounceMs);
@@ -49,8 +53,9 @@ const SearchBar = ({
         type="text"
         placeholder={placeholder}
         value={local}
-        onChange={(e) => setLocal(e.target.value)}
+        onChange={(event) => setLocal(event.target.value)}
         aria-label={placeholder}
+        maxLength={maxLength}
       />
       {local && (
         <button

@@ -48,7 +48,7 @@ const playerSlice = createSlice({
       if (action.payload.queue) {
         state.queue = action.payload.queue;
         state.currentIndex = action.payload.queue.findIndex(
-          (s) => s.id === action.payload.song.id,
+          (song) => song.id === action.payload.song.id,
         );
       } else {
         state.queue = [action.payload.song];

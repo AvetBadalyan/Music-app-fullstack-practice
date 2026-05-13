@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useCreateAlbumMutation } from '../../services/albumsApi';
 import type { IArtist } from '../../types/artist';
 import ArtistPicker from './ArtistPicker';
+import { FIELD_LIMITS, IMAGE_URL_WARN_AT } from '../../constants/fieldLimits';
 import {
   idleFeedback,
   getErrorMessage,
@@ -62,8 +63,9 @@ const CreateAlbumForm = () => {
           </span>
           <input
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(event) => setTitle(event.target.value)}
             required
+            maxLength={FIELD_LIMITS.albumTitle}
           />
         </label>
         <ArtistPicker
@@ -78,17 +80,24 @@ const CreateAlbumForm = () => {
           <input
             type="date"
             value={releaseDate}
-            onChange={(e) => setReleaseDate(e.target.value)}
+            onChange={(event) => setReleaseDate(event.target.value)}
           />
         </label>
         <label>
           <span>Cover image</span>
           <input
             value={coverImage}
-            onChange={(e) => setCoverImage(e.target.value)}
+            onChange={(event) => setCoverImage(event.target.value)}
             placeholder="Image URL or file name"
+            maxLength={FIELD_LIMITS.imageUrl}
           />
         </label>
+        {coverImage.length >= IMAGE_URL_WARN_AT && (
+          <p className="field-warning">
+            This URL is very long ({coverImage.length}/{FIELD_LIMITS.imageUrl}).
+            Please shorten the source filename before uploading.
+          </p>
+        )}
         <button type="submit" disabled={isLoading}>
           {isLoading ? 'Creating...' : 'Create album'}
         </button>

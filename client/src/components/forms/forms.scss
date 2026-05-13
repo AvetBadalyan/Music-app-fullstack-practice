@@ -112,6 +112,12 @@
     margin-top: -2px;
   }
 
+  .field-warning {
+    color: var(--color-warning, #f5a623);
+    font-size: var(--font-xs);
+    margin-top: -2px;
+  }
+
   .selected-pill {
     display: flex;
     align-items: center;
@@ -250,24 +256,24 @@
   h1 {
     margin-bottom: 0;
   }
+}
 
-  .toolbar-toggle {
-    align-items: center;
-    background: var(--color-accent);
-    border: none;
-    border-radius: var(--radius-pill);
-    color: var(--color-text);
-    cursor: pointer;
-    display: inline-flex;
-    font-size: var(--font-sm);
-    font-weight: var(--weight-bold);
-    gap: var(--space-2);
-    padding: var(--space-2) var(--space-4);
-    transition: background var(--transition);
+.toolbar-toggle {
+  align-items: center;
+  background: var(--color-accent);
+  border: none;
+  border-radius: var(--radius-pill);
+  color: var(--color-text);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: var(--font-sm);
+  font-weight: var(--weight-bold);
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  transition: background var(--transition);
 
-    &:hover {
-      background: var(--color-accent-hover);
-    }
+  &:hover {
+    background: var(--color-accent-hover);
   }
 }
 
@@ -278,9 +284,9 @@
 
   .page-toolbar {
     margin-bottom: var(--space-4);
+  }
 
-    .toolbar-toggle span {
-      display: none;
-    }
+  .toolbar-toggle span {
+    display: none;
   }
 }

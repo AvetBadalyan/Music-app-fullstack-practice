@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCreateArtistMutation } from '../../services/artistsApi';
+import { FIELD_LIMITS, IMAGE_URL_WARN_AT } from '../../constants/fieldLimits';
 import {
   idleFeedback,
   getErrorMessage,
@@ -49,26 +50,36 @@ const CreateArtistForm = () => {
           </span>
           <input
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(event) => setName(event.target.value)}
             required
+            maxLength={FIELD_LIMITS.artistName}
           />
         </label>
         <label>
           <span>Bio</span>
           <textarea
             value={bio}
-            onChange={(e) => setBio(e.target.value)}
+            onChange={(event) => setBio(event.target.value)}
             rows={4}
+            maxLength={FIELD_LIMITS.artistBio}
           />
         </label>
         <label>
           <span>Profile picture</span>
           <input
             value={profilePicture}
-            onChange={(e) => setProfilePicture(e.target.value)}
+            onChange={(event) => setProfilePicture(event.target.value)}
             placeholder="Image URL or file name"
+            maxLength={FIELD_LIMITS.imageUrl}
           />
         </label>
+        {profilePicture.length >= IMAGE_URL_WARN_AT && (
+          <p className="field-warning">
+            This URL is very long ({profilePicture.length}/
+            {FIELD_LIMITS.imageUrl}). Please shorten the source filename before
+            uploading.
+          </p>
+        )}
         <button type="submit" disabled={isLoading}>
           {isLoading ? 'Creating...' : 'Create artist'}
         </button>

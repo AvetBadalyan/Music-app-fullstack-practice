@@ -29,7 +29,7 @@ const ArtistsPage = () => {
         <button
           type="button"
           className="toolbar-toggle"
-          onClick={() => setShowForm((v) => !v)}
+          onClick={() => setShowForm((prev) => !prev)}
         >
           {showForm ? <X size={16} /> : <Plus size={16} />}
           <span>{showForm ? 'Close' : 'New artist'}</span>

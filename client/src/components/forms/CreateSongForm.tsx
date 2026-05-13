@@ -5,6 +5,7 @@ import { useGetAllGenresQuery } from '../../services/genresApi';
 import { useCreateSongMutation } from '../../services/songsApi';
 import type { IArtist } from '../../types/artist';
 import ArtistPicker from './ArtistPicker';
+import { FIELD_LIMITS } from '../../constants/fieldLimits';
 import {
   idleFeedback,
   getErrorMessage,
@@ -12,9 +13,13 @@ import {
 } from './formHelpers';
 import './forms.scss';
 
-const CreateSongForm = () => {
+interface CreateSongFormProps {
+  initialArtist?: IArtist | null;
+}
+
+const CreateSongForm = ({ initialArtist = null }: CreateSongFormProps) => {
   const [title, setTitle] = useState('');
-  const [artist, setArtist] = useState<IArtist | null>(null);
+  const [artist, setArtist] = useState<IArtist | null>(initialArtist);
   const [albumId, setAlbumId] = useState('');
   const [genreIds, setGenreIds] = useState<string[]>([]);
   const [audioFile, setAudioFile] = useState<File | null>(null);
@@ -96,8 +101,9 @@ const CreateSongForm = () => {
           </span>
           <input
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(event) => setTitle(event.target.value)}
             required
+            maxLength={FIELD_LIMITS.songTitle}
           />
         </label>
         <ArtistPicker
@@ -109,7 +115,10 @@ const CreateSongForm = () => {
         />
         <label>
           <span>Album (optional)</span>
-          <select value={albumId} onChange={(e) => setAlbumId(e.target.value)}>
+          <select
+            value={albumId}
+            onChange={(event) => setAlbumId(event.target.value)}
+          >
             <option value="">No album</option>
             {filteredAlbums.map((album) => (
               <option key={album.id} value={album.id}>
@@ -141,7 +150,7 @@ const CreateSongForm = () => {
           <input
             type="file"
             accept="audio/*"
-            onChange={(e) => setAudioFile(e.target.files?.[0] ?? null)}
+            onChange={(event) => setAudioFile(event.target.files?.[0] ?? null)}
             required
           />
         </label>

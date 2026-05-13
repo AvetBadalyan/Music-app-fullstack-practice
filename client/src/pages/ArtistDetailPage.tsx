@@ -1,4 +1,5 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Plus } from 'lucide-react';
 import { useGetArtistByIdQuery } from '../services/artistsApi';
 import { useDominantColor } from '../app/useDominantColor';
 import SongList from '../components/songs/SongList';
@@ -9,6 +10,7 @@ const FALLBACK_COLOR = 'rgb(60, 40, 95)';
 
 const ArtistDetailPage = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { data: artist, isLoading, error } = useGetArtistByIdQuery(id!);
   const dominant = useDominantColor(artist?.profilePicture);
 
@@ -33,6 +35,18 @@ const ArtistDetailPage = () => {
         <div className="artist-info">
           <h1>{artist.name}</h1>
           {artist.bio && <p className="bio">{artist.bio}</p>}
+          <button
+            type="button"
+            className="toolbar-toggle"
+            onClick={() =>
+              navigate('/songs', {
+                state: { createSong: true, artist },
+              })
+            }
+          >
+            <Plus size={16} strokeWidth={2.5} />
+            <span>Add song</span>
+          </button>
         </div>
       </div>
 
