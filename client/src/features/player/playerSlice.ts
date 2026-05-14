@@ -118,6 +118,12 @@ const playerSlice = createSlice({
       state.repeat =
         state.repeat === 'off' ? 'all' : state.repeat === 'all' ? 'one' : 'off';
     },
+    closePlayer(state) {
+      state.currentSong = null;
+      state.isPlaying = false;
+      state.queue = [];
+      state.currentIndex = -1;
+    },
   },
 });
 
@@ -131,5 +137,6 @@ export const {
   toggleMute,
   toggleShuffle,
   cycleRepeat,
+  closePlayer,
 } = playerSlice.actions;
 export default playerSlice.reducer;

@@ -16,6 +16,27 @@
   padding: var(--space-3) var(--space-5);
   z-index: 100;
 
+  .close-btn {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: var(--space-1);
+    border-radius: var(--radius-sm);
+    transition: color var(--transition), background var(--transition);
+
+    &:hover {
+      color: var(--color-text);
+      background: rgba(255, 255, 255, 0.06);
+    }
+  }
+
   .now-playing {
     display: flex;
     flex-direction: column;

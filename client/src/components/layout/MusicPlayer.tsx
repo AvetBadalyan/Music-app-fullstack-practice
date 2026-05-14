@@ -12,6 +12,7 @@ import {
   Volume1,
   Volume2,
   VolumeX,
+  X,
 } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
@@ -23,6 +24,7 @@ import {
   toggleMute,
   toggleShuffle,
   cycleRepeat,
+  closePlayer,
 } from '../../features/player/playerSlice';
 import './MusicPlayer.scss';
 
@@ -423,6 +425,16 @@ const MusicPlayer = () => {
           style={{ ['--progress' as string]: `${volumePct}%` }}
         />
       </div>
+
+      <button
+        type="button"
+        className="close-btn"
+        onClick={() => dispatch(closePlayer())}
+        title="Close player"
+        aria-label="Close player"
+      >
+        <X size={16} strokeWidth={2} aria-hidden="true" />
+      </button>
     </div>
   );
 };
