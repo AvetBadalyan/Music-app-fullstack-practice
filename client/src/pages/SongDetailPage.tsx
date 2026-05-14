@@ -7,9 +7,9 @@ import {
   useDeleteSongMutation,
 } from '../services/songsApi';
 import { useGetAlbumByIdQuery } from '../services/albumsApi';
-import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { useAppDispatch } from '../app/hooks';
 import { useDominantColor } from '../app/useDominantColor';
-import { playSong, closePlayer } from '../features/player/playerSlice';
+import { playSong } from '../features/player/playerSlice';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import './SongDetailPage.scss';
 
@@ -25,7 +25,6 @@ const SongDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const currentSongId = useAppSelector((state) => state.player.currentSong?.id);
   const [deleteSong, { isLoading: isDeleting }] = useDeleteSongMutation();
   const { data: song, isLoading, error } = useGetSongByIdQuery(id!);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -44,9 +43,6 @@ const SongDetailPage = () => {
     navigate('/songs');
     try {
       await deleteSong(target.id).unwrap();
-      if (currentSongId === target.id) {
-        dispatch(closePlayer());
-      }
       toast.success(`Deleted "${target.title}"`);
     } catch {
       toast.error(`Failed to delete "${target.title}"`);
