@@ -43,6 +43,13 @@ export const songsApi = api.injectEndpoints({
       },
       invalidatesTags: ['Song'],
     }),
+    deleteSong: build.mutation<void, string>({
+      query: (id) => ({
+        url: `/songs/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Song', 'Album', 'Artist', 'Genre'],
+    }),
   }),
 });
 
@@ -51,4 +58,5 @@ export const {
   useGetSongByIdQuery,
   useSearchSongsQuery,
   useCreateSongMutation,
+  useDeleteSongMutation,
 } = songsApi;

@@ -40,6 +40,18 @@
       .toolbar-toggle {
         margin-top: var(--space-3);
       }
+
+      .artist-actions {
+        margin-top: var(--space-3);
+        display: flex;
+        gap: var(--space-3);
+        flex-wrap: wrap;
+        align-items: center;
+
+        .toolbar-toggle {
+          margin-top: 0;
+        }
+      }
     }
   }
 

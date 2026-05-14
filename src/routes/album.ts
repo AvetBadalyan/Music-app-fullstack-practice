@@ -9,5 +9,6 @@ const albumController = new AlbumController();
 router.post('/', validateRequest(CreateAlbumDto), albumController.create);
 router.get('/', albumController.getAll);
 router.get('/:id', albumController.getById);
+router.delete('/:id', albumController.delete);
 
 export { router as albumRouter };

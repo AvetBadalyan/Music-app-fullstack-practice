@@ -26,6 +26,14 @@ export const albumsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Album'],
     }),
+    deleteAlbum: build.mutation<void, string>({
+      query: (id) => ({
+        url: `/albums/${id}`,
+        method: 'DELETE',
+      }),
+      // Deleting an album DB-cascades to its songs.
+      invalidatesTags: ['Album', 'Song', 'Artist', 'Genre'],
+    }),
   }),
 });
 
@@ -33,4 +41,5 @@ export const {
   useGetAllAlbumsQuery,
   useGetAlbumByIdQuery,
   useCreateAlbumMutation,
+  useDeleteAlbumMutation,
 } = albumsApi;

@@ -15,5 +15,6 @@ router.get(
   artistController.searchByName,
 );
 router.get('/:id', validateId, artistController.getById);
+router.delete('/:id', validateId, artistController.delete);
 
 export { router as artistRouter };

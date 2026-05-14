@@ -32,6 +32,14 @@ export const artistsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Artist'],
     }),
+    deleteArtist: build.mutation<void, string>({
+      query: (id) => ({
+        url: `/artists/${id}`,
+        method: 'DELETE',
+      }),
+      // Deleting an artist DB-cascades to their albums and songs.
+      invalidatesTags: ['Artist', 'Album', 'Song', 'Genre'],
+    }),
   }),
 });
 
@@ -40,4 +48,5 @@ export const {
   useGetArtistByIdQuery,
   useSearchArtistsQuery,
   useCreateArtistMutation,
+  useDeleteArtistMutation,
 } = artistsApi;

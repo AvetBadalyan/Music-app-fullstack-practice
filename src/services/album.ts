@@ -4,6 +4,7 @@ import { Artist } from '../entities/Artist';
 import type { IAlbum } from '../types/album';
 import type { CreateAlbumDto } from '../dto/album.dto';
 import { CustomError, DatabaseError, NotFoundError } from '../utils/errors';
+import { supabaseStorage } from './supabaseStorage';
 
 export class AlbumService {
   private albumRepository = AppDataSource.getRepository(Album);
@@ -104,6 +105,43 @@ export class AlbumService {
       return albums as IAlbum[];
     } catch (error) {
       throw new DatabaseError('Failed to retrieve albums');
+    }
+  }
+
+  public async delete(id: string): Promise<void> {
+    try {
+      const album = await this.albumRepository.findOne({
+        where: { id },
+        relations: { songs: true },
+      });
+
+      if (!album) {
+        throw new NotFoundError(`Album with ID ${id} not found`);
+      }
+
+      const audioFiles = (album.songs ?? [])
+        .map((song) => song.audioFile)
+        .filter((url): url is string => Boolean(url));
+
+      // DB cascade (Song.album onDelete CASCADE) removes the songs rows.
+      await this.albumRepository.remove(album);
+
+      const results = await Promise.allSettled(
+        audioFiles.map((url) => supabaseStorage.deleteByPublicUrl(url)),
+      );
+      results.forEach((r) => {
+        if (r.status === 'rejected') {
+          console.error(
+            'Failed to delete song audio file from storage:',
+            r.reason,
+          );
+        }
+      });
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+      throw new DatabaseError('Failed to delete album');
     }
   }
 }

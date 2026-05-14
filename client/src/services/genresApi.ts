@@ -19,6 +19,15 @@ export const genresApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Genre'],
     }),
+    deleteGenre: build.mutation<void, string>({
+      query: (id) => ({
+        url: `/genres/${id}`,
+        method: 'DELETE',
+      }),
+      // Removes genre + join-table rows; songs themselves are unaffected
+      // but their genre lists change, so invalidate Song too.
+      invalidatesTags: ['Genre', 'Song'],
+    }),
   }),
 });
 
@@ -26,4 +35,5 @@ export const {
   useGetAllGenresQuery,
   useGetGenreByIdQuery,
   useCreateGenreMutation,
+  useDeleteGenreMutation,
 } = genresApi;

@@ -49,4 +49,17 @@ export class GenreController {
       next(error);
     }
   };
+
+  public delete = async (
+    { params: { id } }: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      await this.genreService.delete(id);
+      res.status(204).send();
+    } catch (error) {
+      next(error);
+    }
+  };
 }

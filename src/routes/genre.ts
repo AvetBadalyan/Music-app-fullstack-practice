@@ -9,5 +9,6 @@ const genreController = new GenreController();
 router.post('/', validateRequest(CreateGenreDto), genreController.create);
 router.get('/', genreController.getAll);
 router.get('/:id', genreController.getById);
+router.delete('/:id', genreController.delete);
 
 export { router as genreRouter };

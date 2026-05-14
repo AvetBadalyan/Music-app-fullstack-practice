@@ -63,7 +63,6 @@ export class SongService {
         mimeType: audioFile.mimetype,
       });
 
-
       const songCreateData: Partial<Song> = {
         title: songData.title,
         duration,
@@ -179,5 +178,35 @@ export class SongService {
     });
 
     return songs;
+  }
+
+  public async delete(id: string): Promise<void> {
+    try {
+      const song = await this.songRepository.findOne({ where: { id } });
+
+      if (!song) {
+        throw new NotFoundError(`Song with ID ${id} not found`);
+      }
+
+      const { audioFile } = song;
+      await this.songRepository.remove(song);
+
+      if (audioFile) {
+        try {
+          await supabaseStorage.deleteByPublicUrl(audioFile);
+        } catch (storageError) {
+          // Row is gone; orphaned file is non-fatal. Log and move on.
+          console.error(
+            'Failed to delete audio file from storage:',
+            storageError,
+          );
+        }
+      }
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+      throw new DatabaseError('Failed to delete song');
+    }
   }
 }

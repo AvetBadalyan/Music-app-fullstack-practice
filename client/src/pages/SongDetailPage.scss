@@ -135,6 +135,14 @@
     }
   }
 
+  .delete-btn {
+    /* Use the global `.delete-btn` defaults from forms.scss and only
+       override the sizing so it visually matches the larger `.play-btn`. */
+    padding: var(--space-3) var(--space-5);
+    font-size: var(--font-md);
+    margin-left: var(--space-3);
+  }
+
   .loading,
   .error {
     color: var(--color-text-muted);
