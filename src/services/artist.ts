@@ -2,12 +2,13 @@ import { ILike } from 'typeorm';
 import { AppDataSource } from '../data-source';
 import { Artist } from '../entities/Artist';
 import { CustomError, DatabaseError, NotFoundError } from '../utils/errors';
-import { supabaseStorage } from './supabaseStorage';
+import { SupabaseStorage } from './supabaseStorage';
 import type { IArtist } from '../types/artist';
 import type { CreateArtistDto } from '../dto/artist.dto';
 
 export class ArtistService {
   private artistRepository = AppDataSource.getRepository(Artist);
+  private supabaseStorage = new SupabaseStorage();
 
   public async create(
     artistData: CreateArtistDto,
@@ -16,7 +17,7 @@ export class ArtistService {
     try {
       let profilePictureUrl: string | undefined;
       if (profilePictureFile) {
-        profilePictureUrl = await supabaseStorage.uploadArtistImage({
+        profilePictureUrl = await this.supabaseStorage.uploadArtistImage({
           fileBuffer: profilePictureFile.buffer,
           entityName: artistData.name,
           originalFileName: profilePictureFile.originalname,
@@ -144,7 +145,7 @@ export class ArtistService {
       await this.artistRepository.remove(artist);
 
       const results = await Promise.allSettled(
-        storageUrls.map((url) => supabaseStorage.deleteByPublicUrl(url)),
+        storageUrls.map((url) => this.supabaseStorage.deleteByPublicUrl(url)),
       );
       results.forEach((r) => {
         if (r.status === 'rejected') {

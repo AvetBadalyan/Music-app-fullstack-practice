@@ -4,11 +4,12 @@ import { Artist } from '../entities/Artist';
 import type { IAlbum } from '../types/album';
 import type { CreateAlbumDto } from '../dto/album.dto';
 import { CustomError, DatabaseError, NotFoundError } from '../utils/errors';
-import { supabaseStorage } from './supabaseStorage';
+import { SupabaseStorage } from './supabaseStorage';
 
 export class AlbumService {
   private albumRepository = AppDataSource.getRepository(Album);
   private artistRepository = AppDataSource.getRepository(Artist);
+  private supabaseStorage = new SupabaseStorage();
 
   public async create(
     albumData: CreateAlbumDto,
@@ -28,7 +29,7 @@ export class AlbumService {
       // Only upload the cover image after all validations pass.
       let coverImageUrl: string | undefined;
       if (coverImageFile) {
-        coverImageUrl = await supabaseStorage.uploadAlbumCover({
+        coverImageUrl = await this.supabaseStorage.uploadAlbumCover({
           fileBuffer: coverImageFile.buffer,
           entityName: albumData.title,
           originalFileName: coverImageFile.originalname,
@@ -146,7 +147,7 @@ export class AlbumService {
       await this.albumRepository.remove(album);
 
       const results = await Promise.allSettled(
-        storageUrls.map((url) => supabaseStorage.deleteByPublicUrl(url)),
+        storageUrls.map((url) => this.supabaseStorage.deleteByPublicUrl(url)),
       );
       results.forEach((r) => {
         if (r.status === 'rejected') {

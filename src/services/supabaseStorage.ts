@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { StorageError } from '../utils/errors';
+import { requireEnv } from '../utils/env';
 import { buildStoragePath } from '../utils/storagePath';
 import type { StorageConfig, UploadFileInput } from '../types/supabase';
 
@@ -9,12 +10,12 @@ class SupabaseStorage {
 
   constructor() {
     const config: StorageConfig = {
-      projectUrl: process.env.SUPABASE_URL as string,
-      secretKey: process.env.SUPABASE_SECRET_KEY as string,
+      projectUrl: requireEnv('SUPABASE_URL'),
+      secretKey: requireEnv('SUPABASE_SECRET_KEY'),
       buckets: {
-        songs: process.env.SUPABASE_SONGS_BUCKET as string,
-        albumCovers: process.env.SUPABASE_ALBUM_COVERS_BUCKET as string,
-        artistImages: process.env.SUPABASE_ARTIST_IMAGES_BUCKET as string,
+        songs: requireEnv('SUPABASE_SONGS_BUCKET'),
+        albumCovers: requireEnv('SUPABASE_ALBUM_COVERS_BUCKET'),
+        artistImages: requireEnv('SUPABASE_ARTIST_IMAGES_BUCKET'),
       },
     };
 
@@ -107,4 +108,4 @@ class SupabaseStorage {
   }
 }
 
-export const supabaseStorage = new SupabaseStorage();
+export { SupabaseStorage };
