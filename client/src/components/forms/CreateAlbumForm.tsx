@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useCreateAlbumMutation } from '../../services/albumsApi';
 import type { IArtist } from '../../types/artist';
 import ArtistPicker from './ArtistPicker';
-import { FIELD_LIMITS, IMAGE_URL_WARN_AT } from '../../constants/fieldLimits';
+import { FIELD_LIMITS } from '../../constants/fieldLimits';
 import {
   idleFeedback,
   getErrorMessage,
@@ -14,7 +14,7 @@ import './forms.scss';
 const CreateAlbumForm = () => {
   const [title, setTitle] = useState('');
   const [releaseDate, setReleaseDate] = useState('');
-  const [coverImage, setCoverImage] = useState('');
+  const [coverImage, setCoverImage] = useState<File | null>(null);
   const [artist, setArtist] = useState<IArtist | null>(null);
   const [feedback, setFeedback] = useState<FormFeedback>(idleFeedback);
   const [createAlbum, { isLoading }] = useCreateAlbumMutation();
@@ -36,12 +36,12 @@ const CreateAlbumForm = () => {
         title: title.trim(),
         artistId: artist.id,
         releaseDate: releaseDate || undefined,
-        coverImage: coverImage.trim() || undefined,
+        coverImage: coverImage ?? undefined,
       }).unwrap();
 
       setTitle('');
       setReleaseDate('');
-      setCoverImage('');
+      setCoverImage(null);
       setArtist(null);
       setFeedback({
         kind: 'success',
@@ -86,20 +86,13 @@ const CreateAlbumForm = () => {
         <label>
           <span>Cover image</span>
           <input
-            value={coverImage}
-            onChange={(event) => setCoverImage(event.target.value)}
-            placeholder="Image URL or file name"
-            maxLength={FIELD_LIMITS.imageUrl}
+            type="file"
+            accept="image/*"
+            onChange={(event) => setCoverImage(event.target.files?.[0] ?? null)}
           />
         </label>
-        {coverImage.length >= IMAGE_URL_WARN_AT && (
-          <p className="field-warning">
-            This URL is very long ({coverImage.length}/{FIELD_LIMITS.imageUrl}).
-            Please shorten the source filename before uploading.
-          </p>
-        )}
         <button type="submit" disabled={isLoading}>
-          {isLoading ? 'Creating...' : 'Create album'}
+          {isLoading ? 'Uploading...' : 'Create album'}
         </button>
       </form>
       {feedback.kind !== 'idle' && (

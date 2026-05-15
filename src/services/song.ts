@@ -58,7 +58,7 @@ export class SongService {
 
       const audioUrl = await supabaseStorage.uploadSongAudio({
         fileBuffer: audioFile.buffer,
-        songTitle: songData.title,
+        entityName: songData.title,
         originalFileName: audioFile.originalname,
         mimeType: audioFile.mimetype,
       });

@@ -10,7 +10,10 @@ export class AlbumService {
   private albumRepository = AppDataSource.getRepository(Album);
   private artistRepository = AppDataSource.getRepository(Artist);
 
-  public async create(albumData: CreateAlbumDto): Promise<IAlbum> {
+  public async create(
+    albumData: CreateAlbumDto,
+    coverImageFile?: Express.Multer.File,
+  ): Promise<IAlbum> {
     try {
       const artist = await this.artistRepository.findOne({
         where: { id: albumData.artistId },
@@ -22,7 +25,22 @@ export class AlbumService {
         );
       }
 
-      const album = this.albumRepository.create({ ...albumData, artist });
+      // Only upload the cover image after all validations pass.
+      let coverImageUrl: string | undefined;
+      if (coverImageFile) {
+        coverImageUrl = await supabaseStorage.uploadAlbumCover({
+          fileBuffer: coverImageFile.buffer,
+          entityName: albumData.title,
+          originalFileName: coverImageFile.originalname,
+          mimeType: coverImageFile.mimetype,
+        });
+      }
+
+      const album = this.albumRepository.create({
+        ...albumData,
+        artist,
+        coverImage: coverImageUrl,
+      });
       const savedAlbum = await this.albumRepository.save(album);
 
       return this.getById(savedAlbum.id);
@@ -119,22 +137,20 @@ export class AlbumService {
         throw new NotFoundError(`Album with ID ${id} not found`);
       }
 
-      const audioFiles = (album.songs ?? [])
-        .map((song) => song.audioFile)
-        .filter((url): url is string => Boolean(url));
+      const storageUrls = [
+        ...(album.songs ?? []).map((song) => song.audioFile),
+        album.coverImage,
+      ].filter((url): url is string => Boolean(url));
 
       // DB cascade (Song.album onDelete CASCADE) removes the songs rows.
       await this.albumRepository.remove(album);
 
       const results = await Promise.allSettled(
-        audioFiles.map((url) => supabaseStorage.deleteByPublicUrl(url)),
+        storageUrls.map((url) => supabaseStorage.deleteByPublicUrl(url)),
       );
       results.forEach((r) => {
         if (r.status === 'rejected') {
-          console.error(
-            'Failed to delete song audio file from storage:',
-            r.reason,
-          );
+          console.error('Failed to delete file from storage:', r.reason);
         }
       });
     } catch (error) {

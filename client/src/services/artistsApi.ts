@@ -4,7 +4,7 @@ import type { IArtist } from '../types/artist';
 interface CreateArtistPayload {
   name: string;
   bio?: string;
-  profilePicture?: string;
+  profilePicture?: File;
 }
 
 export const artistsApi = api.injectEndpoints({
@@ -25,11 +25,17 @@ export const artistsApi = api.injectEndpoints({
       providesTags: ['Artist'],
     }),
     createArtist: build.mutation<IArtist, CreateArtistPayload>({
-      query: (body) => ({
-        url: '/artists',
-        method: 'POST',
-        body,
-      }),
+      query: ({ name, bio, profilePicture }) => {
+        const formData = new FormData();
+        formData.append('name', name);
+        if (bio) formData.append('bio', bio);
+        if (profilePicture) formData.append('profilePicture', profilePicture);
+        return {
+          url: '/artists',
+          method: 'POST',
+          body: formData,
+        };
+      },
       invalidatesTags: ['Artist'],
     }),
     deleteArtist: build.mutation<void, string>({

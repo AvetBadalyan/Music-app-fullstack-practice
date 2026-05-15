@@ -17,7 +17,11 @@ export class ArtistController {
   ): Promise<void> => {
     try {
       const artistData = req.validatedData as CreateArtistDto;
-      const newArtist: IArtist = await this.artistService.create(artistData);
+      const profilePictureFile = req.file;
+      const newArtist: IArtist = await this.artistService.create(
+        artistData,
+        profilePictureFile,
+      );
       res.status(201).json(newArtist);
     } catch (error) {
       next(error);

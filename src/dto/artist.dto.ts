@@ -10,11 +10,6 @@ export class CreateArtistDto {
   @IsOptional()
   @MaxLength(1000)
   bio?: string;
-
-  @IsString()
-  @IsOptional()
-  @MaxLength(500)
-  profilePicture?: string;
 }
 
 export class SearchArtistDto {

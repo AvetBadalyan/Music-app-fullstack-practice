@@ -9,12 +9,5 @@ export const FIELD_LIMITS = {
   albumTitle: 100,
   songTitle: 100,
   genreName: 50,
-  imageUrl: 500,
   searchQuery: 100,
 } as const;
-
-/**
- * Character count at which a soft warning is shown under image URL inputs,
- * advising the user to shorten the source filename before the hard limit hits.
- */
-export const IMAGE_URL_WARN_AT = 400;

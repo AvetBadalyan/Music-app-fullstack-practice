@@ -17,7 +17,11 @@ export class AlbumController {
   ): Promise<void> => {
     try {
       const albumData = req.validatedData as CreateAlbumDto;
-      const newAlbum: IAlbum = await this.albumService.create(albumData);
+      const coverImageFile = req.file;
+      const newAlbum: IAlbum = await this.albumService.create(
+        albumData,
+        coverImageFile,
+      );
       res.status(201).json(newAlbum);
     } catch (error) {
       next(error);
