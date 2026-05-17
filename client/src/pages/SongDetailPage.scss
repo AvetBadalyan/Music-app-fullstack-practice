@@ -1,0 +1,175 @@
+.song-detail-page {
+  padding: 0 0 var(--space-5);
+
+  .song-header {
+    display: flex;
+    gap: var(--space-5);
+    align-items: flex-end;
+    padding: 6.4rem var(--space-5) var(--space-5);
+    margin-bottom: var(--space-5);
+    transition: background 0.4s ease;
+
+    &.has-hero {
+      box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+    }
+
+    .cover-image {
+      width: 22rem;
+      height: 22rem;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-elevation);
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .placeholder {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #3a2f55, #1f1a30);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, 0.35);
+      }
+    }
+  }
+
+  .song-info {
+    min-width: 0;
+
+    .label {
+      font-size: var(--font-xs);
+      text-transform: uppercase;
+      color: var(--color-text);
+      opacity: 0.85;
+      font-weight: var(--weight-bold);
+      letter-spacing: 0.05em;
+    }
+
+    h1 {
+      font-size: var(--font-hero);
+      font-weight: var(--weight-bold);
+      color: var(--color-text);
+      margin: var(--space-1) 0 var(--space-2);
+    }
+
+    .artist a {
+      color: var(--color-text);
+      text-decoration: none;
+      font-weight: var(--weight-bold);
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .meta {
+      color: var(--color-text);
+      opacity: 0.75;
+      font-size: var(--font-sm);
+      margin-top: var(--space-1);
+
+      a {
+        color: inherit;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .genres {
+      display: flex;
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+      flex-wrap: wrap;
+    }
+
+    .genre-tag {
+      background: rgba(255, 255, 255, 0.14);
+      color: var(--color-text);
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-pill);
+      font-size: var(--font-xs);
+      text-decoration: none;
+      transition: background var(--transition);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.22);
+      }
+    }
+  }
+
+  .song-actions {
+    padding: 0 var(--space-5);
+  }
+
+  .play-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    background: var(--color-accent);
+    color: var(--color-text);
+    border: none;
+    padding: var(--space-3) var(--space-5);
+    border-radius: var(--radius-pill);
+    font-size: var(--font-md);
+    font-weight: var(--weight-bold);
+    cursor: pointer;
+    box-shadow: var(--shadow-glow);
+    transition:
+      background var(--transition),
+      transform var(--transition);
+
+    @media (hover: hover) {
+      &:hover {
+        background: var(--color-accent-hover);
+        transform: scale(1.02);
+      }
+    }
+  }
+
+  .delete-btn {
+    /* Use the global `.delete-btn` defaults from forms.scss and only
+       override the sizing so it visually matches the larger `.play-btn`. */
+    padding: var(--space-3) var(--space-5);
+    font-size: var(--font-md);
+    margin-left: var(--space-3);
+  }
+
+  .loading,
+  .error {
+    color: var(--color-text-muted);
+    padding: var(--space-5);
+  }
+}
+
+@media (max-width: 480px) {
+  .song-detail-page {
+    .song-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-4);
+      padding: var(--space-5) var(--space-4);
+
+      .cover-image {
+        width: 16rem;
+        height: 16rem;
+      }
+
+      .song-info h1 {
+        font-size: var(--font-xl);
+      }
+    }
+
+    .song-actions {
+      padding: 0 var(--space-4);
+    }
+  }
+}

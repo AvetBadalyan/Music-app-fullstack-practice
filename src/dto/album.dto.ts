@@ -17,11 +17,6 @@ export class CreateAlbumDto {
   @IsOptional()
   releaseDate?: string;
 
-  @IsString()
-  @IsOptional()
-  @MaxLength(50)
-  coverImage?: string;
-
   @IsUUID()
   @IsNotEmpty()
   artistId: string;

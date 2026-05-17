@@ -65,4 +65,23 @@ export class GenreService {
       throw new DatabaseError('Failed to retrieve genres');
     }
   }
+
+  public async delete(id: string): Promise<void> {
+    try {
+      const genre = await this.genreRepository.findOne({ where: { id } });
+
+      if (!genre) {
+        throw new NotFoundError(`Genre with ID ${id} not found`);
+      }
+
+      // Many-to-many join rows in genres_songs are removed automatically.
+      // Songs themselves are unaffected.
+      await this.genreRepository.remove(genre);
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+      throw new DatabaseError('Failed to delete genre');
+    }
+  }
 }

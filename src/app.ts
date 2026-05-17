@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import express from 'express';
+import cors from 'cors';
 import { AppDataSource } from './data-source';
 import { errorHandler } from './middlewares/errorhandler';
 import { songRouter } from './routes/song';
@@ -13,6 +14,7 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use(cors());
 app.use(express.json());
 
 AppDataSource.initialize()

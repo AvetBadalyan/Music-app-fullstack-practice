@@ -1,0 +1,26 @@
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--color-bg);
+
+  .layout-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    position: relative; // anchor for the off-canvas sidebar on mobile
+  }
+
+  .content {
+    flex: 1;
+    min-width: 0; // prevent grid/flex children from forcing overflow
+    overflow-y: auto;
+    padding-bottom: 12rem; // space for music player (taller on mobile)
+  }
+}
+
+@media (min-width: 1025px) {
+  .main-layout .content {
+    padding-bottom: 9.6rem; // standard player height + breathing room on desktop
+  }
+}

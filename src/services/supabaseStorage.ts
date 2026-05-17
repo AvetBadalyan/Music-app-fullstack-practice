@@ -1,60 +1,111 @@
-import { createClient, type SupabaseClient } from '@supabase/supabase-js'
-import { StorageError } from '../utils/errors'
-import { buildStoragePath } from '../utils/storagePath'
-import type { StorageConfig, UploadSongAudioInput } from '../types/supabase'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { StorageError } from '../utils/errors';
+import { requireEnv } from '../utils/env';
+import { buildStoragePath } from '../utils/storagePath';
+import type { StorageConfig, UploadFileInput } from '../types/supabase';
 
 class SupabaseStorage {
-    private readonly bucketName: string
-    private readonly client: SupabaseClient
+  private readonly buckets: StorageConfig['buckets'];
+  private readonly client: SupabaseClient;
 
-    constructor() {
-        const config: StorageConfig = {
-            projectUrl: process.env.SUPABASE_URL as string,
-            secretKey: process.env.SUPABASE_SECRET_KEY as string,
-            bucketName: process.env.SUPABASE_STORAGE_BUCKET as string
-        }
+  constructor() {
+    const config: StorageConfig = {
+      projectUrl: requireEnv('SUPABASE_URL'),
+      secretKey: requireEnv('SUPABASE_SECRET_KEY'),
+      buckets: {
+        songs: requireEnv('SUPABASE_SONGS_BUCKET'),
+        albumCovers: requireEnv('SUPABASE_ALBUM_COVERS_BUCKET'),
+        artistImages: requireEnv('SUPABASE_ARTIST_IMAGES_BUCKET'),
+      },
+    };
 
-        this.bucketName = config.bucketName
-        this.client = createClient(config.projectUrl, config.secretKey, {
-            auth: {
-                autoRefreshToken: false,
-                persistSession: false
-            }
-        })
+    this.buckets = config.buckets;
+    this.client = createClient(config.projectUrl, config.secretKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    });
+  }
+
+  /**
+   * Upload a file to the given bucket and return its public URL.
+   * Generic helper used by all bucket-specific upload methods below.
+   */
+  private async uploadToBucket(
+    bucketName: string,
+    { fileBuffer, entityName, originalFileName, mimeType }: UploadFileInput,
+  ): Promise<string> {
+    const storagePath = buildStoragePath(entityName, originalFileName);
+    const bucketStorage = this.client.storage.from(bucketName);
+
+    const { error } = await bucketStorage.upload(storagePath, fileBuffer, {
+      contentType: mimeType,
+      upsert: false,
+    });
+
+    if (error) {
+      throw new StorageError(`Failed to upload file: ${error.message}`);
     }
 
-    async uploadSongAudio({
-        fileBuffer,
-        songTitle,
-        originalFileName,
-        mimeType
-    }: UploadSongAudioInput): Promise<string> {
-        const storagePath = buildStoragePath(songTitle, originalFileName)
-        const bucketStorage = this.client.storage.from(this.bucketName)
+    const {
+      data: { publicUrl },
+    } = bucketStorage.getPublicUrl(storagePath);
 
-        const { error } = await bucketStorage.upload(storagePath, fileBuffer, {
-            contentType: mimeType,
-            upsert: false
-        })
-
-        if (error) {
-            throw new StorageError(
-                `Failed to upload audio file: ${error.message}`
-            )
-        }
-
-        const {
-            data: { publicUrl: audioUrl }
-        } = bucketStorage.getPublicUrl(storagePath)
-
-        if (!audioUrl) {
-            throw new StorageError(
-                'Failed to retrieve URL for uploaded audio file'
-            )
-        }
-
-        return audioUrl
+    if (!publicUrl) {
+      throw new StorageError('Failed to retrieve URL for uploaded file');
     }
+
+    return publicUrl;
+  }
+
+  uploadSongAudio(input: UploadFileInput): Promise<string> {
+    return this.uploadToBucket(this.buckets.songs, input);
+  }
+
+  uploadAlbumCover(input: UploadFileInput): Promise<string> {
+    return this.uploadToBucket(this.buckets.albumCovers, input);
+  }
+
+  uploadArtistImage(input: UploadFileInput): Promise<string> {
+    return this.uploadToBucket(this.buckets.artistImages, input);
+  }
+
+  /**
+   * Remove an object from storage by its public URL. Checks each known
+   * bucket marker so it works for songs, album covers, and artist images.
+   * Silently ignores URLs that don't belong to any of our buckets (e.g.
+   * external image URLs).
+   */
+  async deleteByPublicUrl(publicUrl: string): Promise<void> {
+    for (const bucketName of Object.values(this.buckets)) {
+      const bucketUrlPrefix = `/storage/v1/object/public/${bucketName}/`;
+      const prefixIndex = publicUrl.indexOf(bucketUrlPrefix);
+      if (prefixIndex === -1) continue;
+
+      const encodedPath = publicUrl.slice(prefixIndex + bucketUrlPrefix.length);
+      if (!encodedPath) return;
+
+      let storagePath: string;
+      try {
+        storagePath = decodeURIComponent(encodedPath);
+      } catch {
+        storagePath = encodedPath;
+      }
+
+      const { error } = await this.client.storage
+        .from(bucketName)
+        .remove([storagePath]);
+
+      if (error) {
+        throw new StorageError(
+          `Failed to delete storage object: ${error.message}`,
+        );
+      }
+      return;
+    }
+    // URL doesn't belong to any of our buckets — no-op.
+  }
 }
 
-export const supabaseStorage = new SupabaseStorage()
+export { SupabaseStorage };

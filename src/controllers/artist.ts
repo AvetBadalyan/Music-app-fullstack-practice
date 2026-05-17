@@ -17,7 +17,11 @@ export class ArtistController {
   ): Promise<void> => {
     try {
       const artistData = req.validatedData as CreateArtistDto;
-      const newArtist: IArtist = await this.artistService.create(artistData);
+      const profilePictureFile = req.file;
+      const newArtist: IArtist = await this.artistService.create(
+        artistData,
+        profilePictureFile,
+      );
       res.status(201).json(newArtist);
     } catch (error) {
       next(error);
@@ -46,6 +50,32 @@ export class ArtistController {
       const { name } = req.validatedData as SearchArtistDto;
       const artists: IArtist[] = await this.artistService.searchByName(name);
       res.json(artists);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getAll = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const artists: IArtist[] = await this.artistService.getAll();
+      res.status(200).json(artists);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public delete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      await this.artistService.delete(req.params.id);
+      res.status(204).send();
     } catch (error) {
       next(error);
     }

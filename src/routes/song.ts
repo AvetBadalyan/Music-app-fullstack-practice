@@ -8,7 +8,6 @@ import { validateAudioUpload } from '../middlewares/fileUpload';
 const router = Router();
 const songController = new SongController();
 
-
 router.post(
   '/',
   validateAudioUpload.single('audioFile'),
@@ -23,5 +22,6 @@ router.get(
   songController.searchByTitle,
 );
 router.get('/:id', validateId, songController.getById);
+router.delete('/:id', validateId, songController.delete);
 
 export { router as songRouter };

@@ -17,7 +17,11 @@ export class AlbumController {
   ): Promise<void> => {
     try {
       const albumData = req.validatedData as CreateAlbumDto;
-      const newAlbum: IAlbum = await this.albumService.create(albumData);
+      const coverImageFile = req.file;
+      const newAlbum: IAlbum = await this.albumService.create(
+        albumData,
+        coverImageFile,
+      );
       res.status(201).json(newAlbum);
     } catch (error) {
       next(error);
@@ -45,6 +49,19 @@ export class AlbumController {
     try {
       const albums: IAlbum[] = await this.albumService.getAll();
       res.status(200).json(albums);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public delete = async (
+    { params: { id } }: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      await this.albumService.delete(id);
+      res.status(204).send();
     } catch (error) {
       next(error);
     }

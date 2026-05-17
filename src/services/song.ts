@@ -5,7 +5,7 @@ import { Artist } from '../entities/Artist';
 import { Album } from '../entities/Album';
 import { Genre } from '../entities/Genre';
 import { NotFoundError, DatabaseError, CustomError } from '../utils/errors';
-import { supabaseStorage } from './supabaseStorage';
+import { SupabaseStorage } from './supabaseStorage';
 import type { ISong } from '../types/song';
 import type { CreateSongDto } from '../dto/song.dto';
 import type { Express } from 'express';
@@ -15,6 +15,7 @@ export class SongService {
   private artistRepository = AppDataSource.getRepository(Artist);
   private albumRepository = AppDataSource.getRepository(Album);
   private genreRepository = AppDataSource.getRepository(Genre);
+  private supabaseStorage = new SupabaseStorage();
 
   public async create(
     songData: CreateSongDto,
@@ -56,13 +57,12 @@ export class SongService {
 
       // Only upload the file after all validations pass.
 
-      const audioUrl = await supabaseStorage.uploadSongAudio({
+      const audioUrl = await this.supabaseStorage.uploadSongAudio({
         fileBuffer: audioFile.buffer,
-        songTitle: songData.title,
+        entityName: songData.title,
         originalFileName: audioFile.originalname,
         mimeType: audioFile.mimetype,
       });
-
 
       const songCreateData: Partial<Song> = {
         title: songData.title,
@@ -179,5 +179,35 @@ export class SongService {
     });
 
     return songs;
+  }
+
+  public async delete(id: string): Promise<void> {
+    try {
+      const song = await this.songRepository.findOne({ where: { id } });
+
+      if (!song) {
+        throw new NotFoundError(`Song with ID ${id} not found`);
+      }
+
+      const { audioFile } = song;
+      await this.songRepository.remove(song);
+
+      if (audioFile) {
+        try {
+          await this.supabaseStorage.deleteByPublicUrl(audioFile);
+        } catch (storageError) {
+          // Row is gone; orphaned file is non-fatal. Log and move on.
+          console.error(
+            'Failed to delete audio file from storage:',
+            storageError,
+          );
+        }
+      }
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+      throw new DatabaseError('Failed to delete song');
+    }
   }
 }

@@ -1,0 +1,74 @@
+import { useEffect, useRef, useState } from 'react';
+import { Search, X } from 'lucide-react';
+import { useDebouncedValue } from '../../app/useDebouncedValue';
+import { FIELD_LIMITS } from '../../constants/fieldLimits';
+import './SearchBar.scss';
+
+interface SearchBarProps {
+  placeholder: string;
+  value: string;
+  onChange: (value: string) => void;
+  /** Debounce delay in ms before notifying the parent. Defaults to 250. */
+  debounceMs?: number;
+  /** Max characters the user can type. Defaults to the backend search limit. */
+  maxLength?: number;
+}
+
+const SearchBar = ({
+  placeholder,
+  value,
+  onChange,
+  debounceMs = 250,
+  maxLength = FIELD_LIMITS.searchQuery,
+}: SearchBarProps) => {
+  const [local, setLocal] = useState(value);
+  const debounced = useDebouncedValue(local, debounceMs);
+  const lastNotifiedRef = useRef(value);
+
+  // Sync local state if the parent resets/overrides the value externally.
+  useEffect(() => {
+    if (value !== lastNotifiedRef.current) {
+      setLocal(value);
+      lastNotifiedRef.current = value;
+    }
+  }, [value]);
+
+  // Notify parent only when the debounced value actually changes.
+  useEffect(() => {
+    if (debounced !== lastNotifiedRef.current) {
+      lastNotifiedRef.current = debounced;
+      onChange(debounced);
+    }
+  }, [debounced, onChange]);
+
+  return (
+    <div className="search-bar">
+      <Search
+        size={16}
+        strokeWidth={2}
+        className="search-icon"
+        aria-hidden="true"
+      />
+      <input
+        type="text"
+        placeholder={placeholder}
+        value={local}
+        onChange={(event) => setLocal(event.target.value)}
+        aria-label={placeholder}
+        maxLength={maxLength}
+      />
+      {local && (
+        <button
+          type="button"
+          className="clear-btn"
+          onClick={() => setLocal('')}
+          aria-label="Clear search"
+        >
+          <X size={16} strokeWidth={2} aria-hidden="true" />
+        </button>
+      )}
+    </div>
+  );
+};
+
+export default SearchBar;

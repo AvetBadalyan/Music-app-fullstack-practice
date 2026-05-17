@@ -1,12 +1,17 @@
 export type StorageConfig = {
   projectUrl: string;
   secretKey: string;
-  bucketName: string;
+  buckets: {
+    songs: string;
+    albumCovers: string;
+    artistImages: string;
+  };
 };
 
-export type UploadSongAudioInput = {
+export type UploadFileInput = {
   fileBuffer: Buffer;
-  songTitle: string;
+  /** Display name of the entity owning the file (song title, album title, artist name). */
+  entityName: string;
   originalFileName: string;
   mimeType: string;
 };

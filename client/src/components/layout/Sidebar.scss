@@ -1,0 +1,79 @@
+.sidebar {
+  width: 22rem;
+  background: var(--color-bg);
+  padding: var(--space-4) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  border-right: 1px solid var(--color-border);
+  flex-shrink: 0;
+
+  a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    padding: var(--space-3) var(--space-5);
+    font-size: var(--font-md);
+    font-weight: var(--weight-bold);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    transition:
+      color var(--transition),
+      background var(--transition),
+      border-color var(--transition);
+
+    svg {
+      flex-shrink: 0;
+    }
+
+    &:hover {
+      color: var(--color-text);
+    }
+
+    &.active {
+      color: var(--color-text);
+      background: var(--color-surface);
+      border-right: 3px solid var(--color-accent);
+      box-shadow: inset 0 0 0 1px rgba(148, 102, 238, 0.06);
+    }
+  }
+}
+
+.sidebar-backdrop {
+  display: none;
+}
+
+/* Tablet & mobile: turn the sidebar into an off-canvas drawer */
+@media (max-width: 1024px) {
+  .sidebar {
+    position: fixed;
+    top: 6.4rem; // sit below the header
+    left: 0;
+    bottom: 0;
+    width: min(28rem, 80vw);
+    z-index: 90;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    box-shadow: var(--shadow-elevation);
+
+    &.is-open {
+      transform: translateX(0);
+    }
+  }
+
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 6.4rem 0 0 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 80;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+
+    &.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+}

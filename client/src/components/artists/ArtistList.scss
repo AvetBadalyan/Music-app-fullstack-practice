@@ -1,0 +1,70 @@
+.artist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+  gap: var(--space-5);
+
+  .artist-card {
+    background: var(--color-bg-elevated);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    text-decoration: none;
+    text-align: center;
+    transition: background var(--transition);
+
+    &:hover {
+      background: var(--color-surface-hover);
+    }
+
+    .artist-avatar {
+      width: 14rem;
+      height: 14rem;
+      border-radius: 50%;
+      overflow: hidden;
+      margin: 0 auto var(--space-3);
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .placeholder {
+        width: 100%;
+        height: 100%;
+        background: var(--color-surface-hover);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-text-muted);
+      }
+    }
+
+    .artist-name {
+      color: var(--color-text);
+      font-weight: var(--weight-bold);
+      font-size: var(--font-sm);
+    }
+
+    .artist-label {
+      color: var(--color-text-muted);
+      font-size: var(--font-xs);
+      margin-top: var(--space-1);
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .artist-grid {
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+    gap: var(--space-4);
+
+    .artist-card {
+      padding: var(--space-3);
+
+      .artist-avatar {
+        width: 11rem;
+        height: 11rem;
+      }
+    }
+  }
+}

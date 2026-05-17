@@ -6,6 +6,7 @@ import {
   IsUUID,
   IsArray,
 } from 'class-validator';
+import { ToArray } from '../utils/transforms';
 
 export class SearchSongDto {
   @IsString()
@@ -28,6 +29,7 @@ export class CreateSongDto {
   @IsOptional()
   albumId?: string;
 
+  @ToArray()
   @IsArray()
   @IsUUID('4', { each: true })
   @IsOptional()

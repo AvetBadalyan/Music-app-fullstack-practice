@@ -1,0 +1,224 @@
+:root {
+  /* Surfaces */
+  --color-bg: #0d0b11;
+  --color-bg-elevated: #15121c;
+  --color-surface: #1d1926;
+  --color-surface-hover: #272233;
+  --color-border: rgba(255, 255, 255, 0.08);
+
+  /* Text */
+  --color-text: #ffffff;
+  --color-text-muted: #b8b0c6;
+  --color-text-subtle: #81788f;
+
+  /* Brand */
+  --color-accent: #9466ee;
+  --color-accent-hover: #a87fff;
+  --color-accent-strong: #7847cf;
+  --color-accent-soft: rgba(148, 102, 238, 0.14);
+
+  /* Status */
+  --color-success: #10b981;
+  --color-danger: #ef4444;
+  --color-warning: #f59e0b;
+
+  /* Spacing — 1rem = 10px throughout */
+  --space-1: 0.4rem; /*  4px — micro (icon gaps, tight pairs) */
+  --space-2: 0.8rem; /*  8px — tight (inside chips/buttons) */
+  --space-3: 1.2rem; /* 12px — small (card padding) */
+  --space-4: 1.6rem; /* 16px — default (between elements) */
+  --space-5: 2.4rem; /* 24px — large (sections, grid gaps) */
+
+  /* Radius */
+  --radius-md: 0.8rem; /*  8px — default (cards, buttons, inputs, skeletons) */
+  --radius-lg: 1.6rem; /* 16px — hero / featured surfaces */
+  --radius-pill: 999px; /*       capsules, circles */
+
+  /* Typography scale (1rem = 10px) */
+  --font-xs: 1.2rem; /* 12px — captions, meta, badges */
+  --font-sm: 1.4rem; /* 14px — secondary UI text */
+  --font-md: 1.6rem; /* 16px — body, buttons */
+  --font-lg: 2.4rem; /* 24px — subheads, section titles */
+  --font-xl: 3.2rem; /* 32px — page titles (h1) */
+  --font-hero: 4.8rem; /* 48px — landing hero */
+
+  /* Font weights */
+  --weight-regular: 400; /* default body */
+  --weight-bold: 700; /* emphasis: titles, song names, active nav */
+
+  /* Shadows — one neutral, one accent. */
+  --shadow-elevation: 0 2px 8px rgba(0, 0, 0, 0.35); /* cards, covers, toasts, hero panels */
+  --shadow-glow: 0 8px 22px rgba(148, 102, 238, 0.36); /* primary buttons, equalizer */
+
+  /* Transition */
+  --transition: 0.2s ease;
+
+  /* Breakpoints — chosen by real device widths, not Bootstrap conventions.
+       ≤  480px  → phones (iPhone 14 = 430, Samsung A51 = 412) — single-column layout, smallest paddings
+       ≤ 1024px  → small tablets through iPad Pro portrait (iPad Air = 820, iPad Mini = 768) — sidebar drawer, stacked player
+       ≥ 1025px  → laptops & desktops — full sidebar, horizontal player
+  */
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 1rem = 10px so 2.4rem reads as 24px, 1.6rem as 16px, etc. */
+html {
+  font-size: 62.5%;
+}
+
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, sans-serif;
+  font-size: var(--font-md); /* 16px default body text */
+  line-height: 1.5;
+  background: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* Skeleton shimmer */
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface) 0%,
+    var(--color-surface-hover) 50%,
+    var(--color-surface) 100%
+  );
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  border-radius: var(--radius-md);
+  display: block;
+}
+
+/* Now-playing equalizer */
+@keyframes eq-bounce {
+  0%,
+  100% {
+    transform: scaleY(0.4);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.equalizer {
+  display: inline-flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+  width: 1.4rem;
+  height: 1.4rem;
+
+  span {
+    display: inline-block;
+    width: 3px;
+    height: 100%;
+    background: var(--color-accent);
+    transform-origin: bottom;
+    animation: eq-bounce 1s ease-in-out infinite;
+  }
+
+  span:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  span:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+
+  &.is-paused span {
+    animation-play-state: paused;
+    transform: scaleY(0.5);
+  }
+}
+
+/* Toastify theme overrides */
+.Toastify__toast {
+  background: var(--color-bg-elevated) !important;
+  color: var(--color-text) !important;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-elevation) !important;
+  font-family: inherit;
+}
+
+.Toastify__toast--success {
+  border-left: 3px solid var(--color-success);
+}
+.Toastify__toast--error {
+  border-left: 3px solid var(--color-danger);
+}
+.Toastify__toast--info {
+  border-left: 3px solid var(--color-accent);
+}
+.Toastify__toast--warning {
+  border-left: 3px solid var(--color-warning);
+}
+
+.Toastify__progress-bar {
+  background: var(--color-accent) !important;
+}
+
+/* Shared page-shell for list pages — padding, title, status text.
+   Pages with custom layouts (Home, *Detail, Create) keep their own scss. */
+.albums-page,
+.artists-page,
+.songs-page,
+.genres-page,
+.genre-detail-page {
+  padding: var(--space-5);
+
+  h1 {
+    font-size: var(--font-xl);
+    font-weight: var(--weight-bold);
+    color: var(--color-text);
+    margin-bottom: var(--space-5);
+  }
+
+  .loading,
+  .error,
+  .empty,
+  .hint {
+    color: var(--color-text-muted);
+  }
+}
+
+@media (max-width: 480px) {
+  .albums-page,
+  .artists-page,
+  .songs-page,
+  .genres-page,
+  .genre-detail-page {
+    padding: var(--space-4);
+
+    h1 {
+      font-size: var(--font-lg);
+      margin-bottom: var(--space-4);
+    }
+  }
+}
