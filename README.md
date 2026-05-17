@@ -46,7 +46,9 @@ DB_NAME=music_app
 DB_PORT=5432
 SUPABASE_URL=your_supabase_project_url
 SUPABASE_SECRET_KEY=your_supabase_secret_key
-SUPABASE_STORAGE_BUCKET=Songs
+SUPABASE_SONGS_BUCKET=songs
+SUPABASE_ALBUM_COVERS_BUCKET=album-covers
+SUPABASE_ARTIST_IMAGES_BUCKET=artist-images
 PORT=3000
 ```
 
@@ -78,23 +80,84 @@ If only the frontend is running, the page shell will open, but API data will not
 
 ## Stack
 
-- Backend: Express, TypeORM, PostgreSQL, Supabase Storage, TypeScript
-- Frontend: React, Vite, Redux Toolkit, RTK Query, React Router, Sass
+- Backend: Express, TypeORM, PostgreSQL, Supabase Storage, Multer, class-validator, music-metadata, TypeScript
+- Frontend: React 19, Vite, Redux Toolkit + RTK Query, React Router v7, Sass, react-toastify, lucide-react
+- Tooling: TypeScript end-to-end, ESLint, nodemon, ts-node
+
+## Features
+
+Backend:
+
+- REST API for songs, artists, albums, and genres with full CRUD where applicable (create, list, get by id, delete).
+- Request validation via class-validator DTOs and a generic `validateRequest` middleware.
+- UUID path-parameter validation middleware.
+- File uploads via Multer (memory storage):
+  - Songs: audio upload up to 500 MB, audio-only MIME filter.
+  - Artists / Albums: image upload up to 10 MB, image-only MIME filter.
+- Audio duration extracted automatically with `music-metadata` (the client never sends `duration`).
+- Media files uploaded to Supabase Storage; public URLs persisted in PostgreSQL.
+- Centralized error handler with typed error classes (validation, not-found, database, etc.).
+- Search endpoints for songs (by title) and artists (by name).
+- Seed script that loads sample genres, artists, albums and real mp3 + cover assets.
+
+Frontend:
+
+- Single-page app with 9 routes and a shared layout.
+- Global persistent audio player (Redux Toolkit slice + listener middleware) with play / pause / next / previous / progress.
+- RTK Query API slices per resource with automatic caching and tag-based invalidation.
+- Forms for creating songs, artists, albums and genres, including file pickers for audio and images.
+- Debounced search bar, skeleton loaders, empty states, confirm dialog for destructive actions.
+- Dominant-color extraction hook used to theme detail pages.
+- Toast notifications via `react-toastify`.
+- Sass modules for styling, fully responsive layout.
+
+## Frontend Pages
+
+| Route          | Page             | What it does                                                           |
+| -------------- | ---------------- | ---------------------------------------------------------------------- |
+| `/`            | HomePage         | Landing view with highlights and quick links.                          |
+| `/songs`       | SongsPage        | Browseable, searchable list of songs; create new song; play any track. |
+| `/songs/:id`   | SongDetailPage   | Single song view with artist, album, genres and inline playback.       |
+| `/artists`     | ArtistsPage      | Grid of artists with search and a create-artist form.                  |
+| `/artists/:id` | ArtistDetailPage | Artist profile, bio, their albums and songs.                           |
+| `/albums`      | AlbumsPage       | Grid of albums; create new album with cover image.                     |
+| `/albums/:id`  | AlbumDetailPage  | Album cover, tracklist and play-all behavior.                          |
+| `/genres`      | GenresPage       | List of genres with create-genre form.                                 |
+| `/genres/:id`  | GenreDetailPage  | All songs that belong to the selected genre.                           |
+| `*`            | NotFoundPage     | 404 fallback.                                                          |
 
 ## Requirements
 
 - Node.js 18 or newer
 - PostgreSQL
 - A `.env` file for backend configuration
-- A public Supabase Storage bucket named `Songs` for song uploads
+- Three public Supabase Storage buckets (one for songs, one for album covers, one for artist images)
 
 ## Project Structure
 
 ```text
 music-app/
-├── src/          # backend
-├── client/       # frontend
-├── package.json  # backend scripts
+├── src/                  # Express + TypeORM backend
+│   ├── app.ts            # app bootstrap (db init, routes, error handler)
+│   ├── data-source.ts    # TypeORM DataSource
+│   ├── controllers/      # route handlers (album, artist, genre, song)
+│   ├── routes/           # Express routers mounted under /api
+│   ├── services/         # business logic + Supabase Storage helper
+│   ├── entities/         # TypeORM entities (Album, Artist, Genre, Song)
+│   ├── dto/              # class-validator DTOs for request bodies
+│   ├── middlewares/      # error handler, id/request validation, file upload
+│   ├── seed/             # demo data + media assets used by `npm run seed`
+│   └── utils/            # env helpers, error classes, transforms
+├── client/               # React + Vite frontend
+│   └── src/
+│       ├── app/          # Redux store, hooks, custom hooks
+│       ├── components/   # albums, artists, songs, forms, layout, common
+│       ├── features/player/  # global audio player (Redux slice + listener)
+│       ├── pages/        # route-level views
+│       ├── services/     # RTK Query API slices
+│       ├── styles/       # global Sass
+│       └── types/        # shared TS types
+├── package.json          # backend scripts
 └── README.md
 ```
 
@@ -110,11 +173,17 @@ DB_NAME=music_app
 DB_PORT=5432
 SUPABASE_URL=your_supabase_project_url
 SUPABASE_SECRET_KEY=your_supabase_secret_key
-SUPABASE_STORAGE_BUCKET=Songs
+SUPABASE_SONGS_BUCKET=songs
+SUPABASE_ALBUM_COVERS_BUCKET=album-covers
+SUPABASE_ARTIST_IMAGES_BUCKET=artist-images
 PORT=3000
 ```
 
-Note: uploaded song audio is stored in Supabase Storage and the public URL is saved in the database.
+Notes:
+
+- All three Supabase buckets must exist in your project and be set to **public** (the app stores their public URLs in the database).
+- The bucket names above are examples — use whatever names you created in Supabase Storage, just keep the env variable names exactly as listed.
+- Uploaded media (audio, cover images, artist images) is stored in Supabase; the resulting public URL is what gets persisted in PostgreSQL.
 
 ## Install
 
@@ -256,31 +325,54 @@ http://localhost:3000
 
 Notes:
 
-- `GET /` is not implemented, so opening `http://localhost:3000/` in the browser returns `Cannot GET /`.
+- The backend only serves the API under `/api/*`. There is no `GET /` route, so opening `http://localhost:3000/` directly in the browser returns `Cannot GET /` — this is expected. The user-facing home page lives on the frontend at `http://localhost:5173/`.
 - Search endpoints use query parameters.
-- Artist, album, and genre creation use raw JSON bodies.
-- Song creation uses `multipart/form-data` because `audioFile` is required.
+- Genre creation uses raw JSON.
+- Artist, album and song creation use `multipart/form-data` because they accept file uploads (profile picture, cover image, audio file).
+- Every `:id` path parameter must be a valid UUID v4; the `validateId` middleware rejects malformed ids with a 400 error.
+- All responses are JSON; errors follow `{ "error": "...", "details": ... }` shape via the central error handler.
 
 ### API Route Groups
 
-- `GET/POST /api/songs`
-- `GET /api/songs/search`
-- `GET /api/songs/:id`
-- `POST /api/artists`
-- `GET /api/artists/search`
-- `GET /api/artists/:id`
-- `GET/POST /api/albums`
-- `GET /api/albums/:id`
-- `GET/POST /api/genres`
-- `GET /api/genres/:id`
+Songs:
+
+- `POST   /api/songs` — create (multipart)
+- `GET    /api/songs` — list all
+- `GET    /api/songs/search` — search by title
+- `GET    /api/songs/:id` — get by id
+- `DELETE /api/songs/:id` — delete (also removes audio from Supabase)
+
+Artists:
+
+- `POST   /api/artists` — create (multipart)
+- `GET    /api/artists` — list all
+- `GET    /api/artists/search` — search by name
+- `GET    /api/artists/:id` — get by id
+- `DELETE /api/artists/:id` — delete
+
+Albums:
+
+- `POST   /api/albums` — create (multipart)
+- `GET    /api/albums` — list all
+- `GET    /api/albums/:id` — get by id
+- `DELETE /api/albums/:id` — delete
+
+Genres:
+
+- `POST   /api/genres` — create (JSON)
+- `GET    /api/genres` — list all
+- `GET    /api/genres/:id` — get by id
+- `DELETE /api/genres/:id` — delete
 
 ## Postman Requests
 
 ### General Rules
 
-- For `GET /:id` routes, the `id` path parameter is required.
+- For `GET /:id` and `DELETE /:id` routes, the `id` path parameter must be a valid UUID v4.
 - For song creation, the request must be `multipart/form-data` because `audioFile` is required.
-- For artist, album, and genre creation, use raw JSON in Postman.
+- For artist creation, use `multipart/form-data` and attach `profilePicture` as a file (optional).
+- For album creation, use `multipart/form-data` and attach `coverImage` as a file (optional).
+- For genre creation, use raw JSON.
 - Search routes accept query parameters. Because the validation middleware merges query and body, query parameters are the cleanest option for `GET` requests.
 
 ### Artists
@@ -289,7 +381,7 @@ Notes:
 
 - Method: `POST`
 - URL: `http://localhost:3000/api/artists`
-- Body type: `raw` JSON
+- Body type: `form-data`
 
 Required fields:
 
@@ -298,17 +390,26 @@ Required fields:
 Optional fields:
 
 - `bio`: string, max 1000 characters
-- `profilePicture`: string, max 50 characters
+- `profilePicture`: file (image/\*, max 10 MB) — uploaded to Supabase Storage; the resulting public URL is stored in `profile_picture`.
 
-Example body:
+Postman form-data setup:
 
-```json
-{
-  "name": "Frank Sinatra",
-  "bio": "American singer and actor",
-  "profilePicture": "frank-sinatra.jpg"
-}
+- key `name` -> Text
+- key `bio` -> Text, optional
+- key `profilePicture` -> File, optional
+
+Example form-data values:
+
+```text
+name: Frank Sinatra
+bio: American singer and actor
+profilePicture: [select an image file in Postman]
 ```
+
+#### Get All Artists
+
+- Method: `GET`
+- URL: `http://localhost:3000/api/artists`
 
 #### Get Artist By Id
 
@@ -324,13 +425,18 @@ Required query params:
 
 - `name`: string, not empty, max 100 characters
 
+#### Delete Artist
+
+- Method: `DELETE`
+- URL: `http://localhost:3000/api/artists/:id`
+
 ### Albums
 
 #### Create Album
 
 - Method: `POST`
 - URL: `http://localhost:3000/api/albums`
-- Body type: `raw` JSON
+- Body type: `form-data`
 
 Required fields:
 
@@ -339,18 +445,23 @@ Required fields:
 
 Optional fields:
 
-- `releaseDate`: valid date string, for example `2024-01-15`
-- `coverImage`: string, max 50 characters
+- `releaseDate`: ISO date string, for example `2024-01-15`
+- `coverImage`: file (image/\*, max 10 MB) — uploaded to Supabase Storage; the resulting public URL is stored in `cover_image`.
 
-Example body:
+Postman form-data setup:
 
-```json
-{
-  "title": "My Album",
-  "artistId": "efb7647b-8450-4e27-b6d6-60c12e7f3560",
-  "releaseDate": "2024-01-15",
-  "coverImage": "cover.jpg"
-}
+- key `title` -> Text
+- key `artistId` -> Text
+- key `releaseDate` -> Text, optional
+- key `coverImage` -> File, optional
+
+Example form-data values:
+
+```text
+title: In The Wee Small Hours
+artistId: efb7647b-8450-4e27-b6d6-60c12e7f3560
+releaseDate: 1955-04-25
+coverImage: [select an image file in Postman]
 ```
 
 #### Get All Albums
@@ -361,6 +472,11 @@ Example body:
 #### Get Album By Id
 
 - Method: `GET`
+- URL: `http://localhost:3000/api/albums/:id`
+
+#### Delete Album
+
+- Method: `DELETE`
 - URL: `http://localhost:3000/api/albums/:id`
 
 ### Genres
@@ -391,6 +507,11 @@ Example body:
 #### Get Genre By Id
 
 - Method: `GET`
+- URL: `http://localhost:3000/api/genres/:id`
+
+#### Delete Genre
+
+- Method: `DELETE`
 - URL: `http://localhost:3000/api/genres/:id`
 
 ### Songs
@@ -457,6 +578,13 @@ Required query params:
 
 - `title`: string, not empty, max 100 characters
 
+#### Delete Song
+
+- Method: `DELETE`
+- URL: `http://localhost:3000/api/songs/:id`
+
+Deleting a song also removes its audio file from Supabase Storage.
+
 ## Quick Postman Test Order
 
 1. Create a genre with `POST /api/genres`
@@ -478,12 +606,12 @@ Required query params:
 
 #### Artist
 
-| Column          | Type    | Description            |
-| --------------- | ------- | ---------------------- |
-| id              | UUID    | Primary Key            |
-| name            | VARCHAR | Artist name            |
-| bio             | VARCHAR | Artist biography       |
-| profile_picture | VARCHAR | Profile picture path   |
+| Column          | Type    | Description          |
+| --------------- | ------- | -------------------- |
+| id              | UUID    | Primary Key          |
+| name            | VARCHAR | Artist name          |
+| bio             | VARCHAR | Artist biography     |
+| profile_picture | VARCHAR | Profile picture path |
 
 #### Album
 
@@ -520,6 +648,10 @@ Required query params:
 | songId  | UUID | Foreign Key (Song)  |
 | genreId | UUID | Foreign Key (Genre) |
 
-## Package License
+## About This Project
 
-The package metadata currently declares the license as `ISC`.
+This is a personal portfolio project demonstrating full-stack development skills: a typed REST API on Express + TypeORM + PostgreSQL with Supabase-backed media storage, paired with a modern React frontend using Redux Toolkit, RTK Query, and a custom global audio player.
+
+## License
+
+Released under the `ISC` license (see `package.json`).
