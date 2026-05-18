@@ -7,6 +7,89 @@ This repository contains a full-stack music app:
 
 In development, the frontend calls `/api/...` and Vite proxies those requests to the backend at `http://localhost:3000`.
 
+## Stack
+
+- Backend: Express, TypeORM, PostgreSQL, Supabase Storage, Multer, class-validator, music-metadata, TypeScript
+- Frontend: React 19, Vite, Redux Toolkit + RTK Query, React Router v7, Sass, react-toastify, lucide-react
+- Tooling: TypeScript end-to-end, ESLint, nodemon, ts-node
+
+## Features
+
+Backend:
+
+- REST API for songs, artists, albums, and genres with full CRUD where applicable (create, list, get by id, delete).
+- Request validation via class-validator DTOs and a generic `validateRequest` middleware.
+- UUID path-parameter validation middleware.
+- File uploads via Multer (memory storage):
+  - Songs: audio upload up to 500 MB, audio-only MIME filter.
+  - Artists / Albums: image upload up to 10 MB, image-only MIME filter.
+- Audio duration extracted automatically with `music-metadata` (the client never sends `duration`).
+- Media files uploaded to Supabase Storage; public URLs persisted in PostgreSQL.
+- Centralized error handler with typed error classes (validation, not-found, database, etc.).
+- Search endpoints for songs (by title) and artists (by name).
+- Seed script that loads sample genres, artists, albums and real mp3 + cover assets.
+
+Frontend:
+
+- Single-page app with 9 routes and a shared layout.
+- Global persistent audio player (Redux Toolkit slice + listener middleware) with play / pause / next / previous / progress.
+- RTK Query API slices per resource with automatic caching and tag-based invalidation.
+- Forms for creating songs, artists, albums and genres, including file pickers for audio and images.
+- Debounced search bar, skeleton loaders, empty states, confirm dialog for destructive actions.
+- Dominant-color extraction hook used to theme detail pages.
+- Toast notifications via `react-toastify`.
+- Sass modules for styling, fully responsive layout.
+
+## Frontend Pages
+
+| Route          | Page             | What it does                                                           |
+| -------------- | ---------------- | ---------------------------------------------------------------------- |
+| `/`            | HomePage         | Landing view with highlights and quick links.                          |
+| `/songs`       | SongsPage        | Browseable, searchable list of songs; create new song; play any track. |
+| `/songs/:id`   | SongDetailPage   | Single song view with artist, album, genres and inline playback.       |
+| `/artists`     | ArtistsPage      | Grid of artists with search and a create-artist form.                  |
+| `/artists/:id` | ArtistDetailPage | Artist profile, bio, their albums and songs.                           |
+| `/albums`      | AlbumsPage       | Grid of albums; create new album with cover image.                     |
+| `/albums/:id`  | AlbumDetailPage  | Album cover, tracklist and play-all behavior.                          |
+| `/genres`      | GenresPage       | List of genres with create-genre form.                                 |
+| `/genres/:id`  | GenreDetailPage  | All songs that belong to the selected genre.                           |
+| `*`            | NotFoundPage     | 404 fallback.                                                          |
+
+## Project Structure
+
+```text
+music-app/
+├── src/                  # Express + TypeORM backend
+│   ├── app.ts            # app bootstrap (db init, routes, error handler)
+│   ├── data-source.ts    # TypeORM DataSource
+│   ├── controllers/      # route handlers (album, artist, genre, song)
+│   ├── routes/           # Express routers mounted under /api
+│   ├── services/         # business logic + Supabase Storage helper
+│   ├── entities/         # TypeORM entities (Album, Artist, Genre, Song)
+│   ├── dto/              # class-validator DTOs for request bodies
+│   ├── middlewares/      # error handler, id/request validation, file upload
+│   ├── seed/             # demo data + media assets used by `npm run seed`
+│   └── utils/            # env helpers, error classes, transforms
+├── client/               # React + Vite frontend
+│   └── src/
+│       ├── app/          # Redux store, hooks, custom hooks
+│       ├── components/   # albums, artists, songs, forms, layout, common
+│       ├── features/player/  # global audio player (Redux slice + listener)
+│       ├── pages/        # route-level views
+│       ├── services/     # RTK Query API slices
+│       ├── styles/       # global Sass
+│       └── types/        # shared TS types
+├── package.json          # backend scripts
+└── README.md
+```
+
+## Requirements
+
+- Node.js 18 or newer
+- PostgreSQL
+- A `.env` file for backend configuration
+- Three public Supabase Storage buckets (one for songs, one for album covers, one for artist images)
+
 ## Quick Start From Zero
 
 If you just cloned the repo and want to run the app locally, use this order:
@@ -78,242 +161,81 @@ npm run seed
 
 If only the frontend is running, the page shell will open, but API data will not load because the backend is required.
 
-## Stack
-
-- Backend: Express, TypeORM, PostgreSQL, Supabase Storage, Multer, class-validator, music-metadata, TypeScript
-- Frontend: React 19, Vite, Redux Toolkit + RTK Query, React Router v7, Sass, react-toastify, lucide-react
-- Tooling: TypeScript end-to-end, ESLint, nodemon, ts-node
-
-## Features
-
-Backend:
-
-- REST API for songs, artists, albums, and genres with full CRUD where applicable (create, list, get by id, delete).
-- Request validation via class-validator DTOs and a generic `validateRequest` middleware.
-- UUID path-parameter validation middleware.
-- File uploads via Multer (memory storage):
-  - Songs: audio upload up to 500 MB, audio-only MIME filter.
-  - Artists / Albums: image upload up to 10 MB, image-only MIME filter.
-- Audio duration extracted automatically with `music-metadata` (the client never sends `duration`).
-- Media files uploaded to Supabase Storage; public URLs persisted in PostgreSQL.
-- Centralized error handler with typed error classes (validation, not-found, database, etc.).
-- Search endpoints for songs (by title) and artists (by name).
-- Seed script that loads sample genres, artists, albums and real mp3 + cover assets.
-
-Frontend:
-
-- Single-page app with 9 routes and a shared layout.
-- Global persistent audio player (Redux Toolkit slice + listener middleware) with play / pause / next / previous / progress.
-- RTK Query API slices per resource with automatic caching and tag-based invalidation.
-- Forms for creating songs, artists, albums and genres, including file pickers for audio and images.
-- Debounced search bar, skeleton loaders, empty states, confirm dialog for destructive actions.
-- Dominant-color extraction hook used to theme detail pages.
-- Toast notifications via `react-toastify`.
-- Sass modules for styling, fully responsive layout.
-
-## Frontend Pages
-
-| Route          | Page             | What it does                                                           |
-| -------------- | ---------------- | ---------------------------------------------------------------------- |
-| `/`            | HomePage         | Landing view with highlights and quick links.                          |
-| `/songs`       | SongsPage        | Browseable, searchable list of songs; create new song; play any track. |
-| `/songs/:id`   | SongDetailPage   | Single song view with artist, album, genres and inline playback.       |
-| `/artists`     | ArtistsPage      | Grid of artists with search and a create-artist form.                  |
-| `/artists/:id` | ArtistDetailPage | Artist profile, bio, their albums and songs.                           |
-| `/albums`      | AlbumsPage       | Grid of albums; create new album with cover image.                     |
-| `/albums/:id`  | AlbumDetailPage  | Album cover, tracklist and play-all behavior.                          |
-| `/genres`      | GenresPage       | List of genres with create-genre form.                                 |
-| `/genres/:id`  | GenreDetailPage  | All songs that belong to the selected genre.                           |
-| `*`            | NotFoundPage     | 404 fallback.                                                          |
-
-## Requirements
-
-- Node.js 18 or newer
-- PostgreSQL
-- A `.env` file for backend configuration
-- Three public Supabase Storage buckets (one for songs, one for album covers, one for artist images)
-
-## Project Structure
-
-```text
-music-app/
-├── src/                  # Express + TypeORM backend
-│   ├── app.ts            # app bootstrap (db init, routes, error handler)
-│   ├── data-source.ts    # TypeORM DataSource
-│   ├── controllers/      # route handlers (album, artist, genre, song)
-│   ├── routes/           # Express routers mounted under /api
-│   ├── services/         # business logic + Supabase Storage helper
-│   ├── entities/         # TypeORM entities (Album, Artist, Genre, Song)
-│   ├── dto/              # class-validator DTOs for request bodies
-│   ├── middlewares/      # error handler, id/request validation, file upload
-│   ├── seed/             # demo data + media assets used by `npm run seed`
-│   └── utils/            # env helpers, error classes, transforms
-├── client/               # React + Vite frontend
-│   └── src/
-│       ├── app/          # Redux store, hooks, custom hooks
-│       ├── components/   # albums, artists, songs, forms, layout, common
-│       ├── features/player/  # global audio player (Redux slice + listener)
-│       ├── pages/        # route-level views
-│       ├── services/     # RTK Query API slices
-│       ├── styles/       # global Sass
-│       └── types/        # shared TS types
-├── package.json          # backend scripts
-└── README.md
-```
-
 ## Backend Environment Variables
 
-Create a `.env` file in the project root:
+All backend config lives in a single `.env` file at the project root (see step 5 of the Quick Start for a ready-to-copy template). Variables:
 
-```env
-DB_HOST=localhost
-DB_USERNAME=postgres
-DB_PASSWORD=your_password
-DB_NAME=music_app
-DB_PORT=5432
-SUPABASE_URL=your_supabase_project_url
-SUPABASE_SECRET_KEY=your_supabase_secret_key
-SUPABASE_SONGS_BUCKET=songs
-SUPABASE_ALBUM_COVERS_BUCKET=album-covers
-SUPABASE_ARTIST_IMAGES_BUCKET=artist-images
-PORT=3000
-```
+| Variable                       | Required | Description                                                     |
+| ------------------------------ | -------- | --------------------------------------------------------------- |
+| `DB_HOST`                      | yes      | PostgreSQL host, e.g. `localhost`.                              |
+| `DB_PORT`                      | yes      | PostgreSQL port, usually `5432`.                                |
+| `DB_USERNAME`                  | yes      | PostgreSQL user.                                                |
+| `DB_PASSWORD`                  | yes      | PostgreSQL password.                                            |
+| `DB_NAME`                      | yes      | Database name (e.g. `music_app`).                               |
+| `SUPABASE_URL`                 | yes      | Your Supabase project URL.                                      |
+| `SUPABASE_SECRET_KEY`          | yes      | Supabase service-role / secret key (server-side only).          |
+| `SUPABASE_SONGS_BUCKET`        | yes      | Name of the public bucket used for audio uploads.               |
+| `SUPABASE_ALBUM_COVERS_BUCKET` | yes      | Name of the public bucket used for album cover images.          |
+| `SUPABASE_ARTIST_IMAGES_BUCKET`| yes      | Name of the public bucket used for artist profile images.       |
+| `PORT`                         | no       | Backend HTTP port (defaults to `3000`).                         |
 
 Notes:
 
-- All three Supabase buckets must exist in your project and be set to **public** (the app stores their public URLs in the database).
-- The bucket names above are examples — use whatever names you created in Supabase Storage, just keep the env variable names exactly as listed.
-- Uploaded media (audio, cover images, artist images) is stored in Supabase; the resulting public URL is what gets persisted in PostgreSQL.
-
-## Install
-
-These are the same commands from the quick start, kept here as a reference section.
-
-Install backend dependencies:
-
-```bash
-npm install
-```
-
-Install frontend dependencies:
-
-```bash
-npm --prefix client install
-```
+- All three Supabase buckets must exist and be **public** — the app stores their public URLs in the database.
+- Bucket names are up to you; only the env variable names must match exactly.
+- The `SUPABASE_SECRET_KEY` is sensitive: never commit it and never expose it to the frontend.
 
 ## Database Setup
 
-Create the PostgreSQL database:
+The database itself must exist before the backend starts (Quick Start step 4). On first launch, TypeORM connects to it and automatically creates the schema for all entities.
 
-```sql
-CREATE DATABASE music_app;
-```
-
-To create the schema without starting the full backend server, you can run:
+If you want to initialize the schema without booting the full HTTP server, run:
 
 ```bash
 npx ts-node src/index.ts
 ```
 
-Or you can simply start the backend once with `npm run dev`, which also initializes TypeORM and creates the schema.
-
-To seed demo data:
+To populate the database with sample genres, artists, albums, songs and song-genre relationships (and upload the bundled mp3/cover assets to Supabase), run:
 
 ```bash
 npm run seed
 ```
 
-This inserts sample genres, artists, albums, songs, and song-genre relationships.
-
 ## Run In Development
 
-Use two terminals.
+The Quick Start already covers the two-terminal flow (`npm run dev` for the backend, `npm run dev:client` for the frontend). A few extras worth knowing:
 
-Start the backend in one terminal:
-
-```bash
-npm run dev
-```
-
-Start the frontend in a second terminal:
-
-```bash
-npm run dev:client
-```
-
-You can also run the frontend directly inside `client/`:
-
-```bash
-cd client
-npm run dev
-```
-
-Default local URLs:
-
-- Frontend: `http://localhost:5173`
-- Backend: `http://localhost:3000`
-
-Important: if only the frontend is running, the app shell will open in the browser, but API data will fail to load because the backend is not running.
-
-Expected successful startup:
-
-- Backend terminal shows `Database connected successfully` and `Server running at http://localhost:3000`
-- Frontend terminal shows Vite ready on `http://localhost:5173`
+- You can run the frontend directly from inside `client/` with `npm run dev` instead of using `npm run dev:client` from the root.
+- Default URLs: frontend on `http://localhost:5173`, backend on `http://localhost:3000`.
+- The frontend talks to `/api/...`; Vite proxies those requests to the backend, so both processes must be running.
+- Expected successful startup:
+  - Backend terminal shows `Database connected successfully` and `Server running at http://localhost:3000`.
+  - Frontend terminal shows Vite ready on `http://localhost:5173`.
 
 ## Build And Production
 
-Build the backend:
+Production commands (see the Useful Scripts table for a one-line summary of each):
 
 ```bash
-npm run build
+npm run build          # compile backend TypeScript into dist/
+npm start              # run the compiled backend
+npm run build:client   # build the frontend into client/dist
+npm run preview:client # serve the built frontend locally for verification
 ```
-
-Run the compiled backend:
-
-```bash
-npm start
-```
-
-Build the frontend:
-
-```bash
-npm run build:client
-```
-
-Preview the frontend production build locally:
-
-```bash
-npm run preview:client
-```
-
-The frontend production output is generated in `client/dist`.
 
 ## Useful Scripts
 
-Root scripts:
+All scripts are defined in the root `package.json` and can be run from the project root:
 
-- `npm run dev` - start the backend dev server
-- `npm run dev:client` - start the frontend dev server from the project root
-- `npm run build` - build the backend TypeScript output into `dist`
-- `npm run build:client` - build the frontend for production
-- `npm run preview:client` - preview the frontend production build
-- `npm run seed` - seed demo data
-
-## What To Run Most Often
-
-For daily development:
-
-```bash
-npm run dev
-```
-
-and in another terminal:
-
-```bash
-npm run dev:client
-```
-
-Then open `http://localhost:5173`.
+| Script                  | What it does                                                        |
+| ----------------------- | ------------------------------------------------------------------- |
+| `npm run dev`           | Start the backend dev server (nodemon + ts-node).                   |
+| `npm run dev:client`    | Start the frontend dev server (Vite) without `cd`-ing into client/. |
+| `npm run build`         | Compile the backend to `dist/`.                                     |
+| `npm start`             | Run the compiled backend (`dist/app.js`).                           |
+| `npm run build:client`  | Build the frontend for production into `client/dist/`.              |
+| `npm run preview:client`| Preview the production frontend build locally.                      |
+| `npm run seed`          | Seed the database with demo data and upload sample media.           |
 
 ## Backend API
 
