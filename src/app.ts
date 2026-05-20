@@ -13,11 +13,26 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
-const clientUrl = process.env.CLIENT_URL;
+
+const parseClientOrigins = (clientUrl?: string): string[] | true => {
+  const origins = clientUrl
+    ?.split(',')
+    .map(origin => origin.trim())
+    .filter(Boolean)
+    .map(origin => {
+      try {
+        return new URL(origin).origin;
+      } catch {
+        return origin.replace(/\/+$/, '');
+      }
+    });
+
+  return origins?.length ? origins : true;
+};
 
 app.use(
   cors({
-    origin: clientUrl ? clientUrl.split(',').map(origin => origin.trim()) : true,
+    origin: parseClientOrigins(process.env.CLIENT_URL),
   }),
 );
 app.use(express.json());
