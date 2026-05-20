@@ -22,6 +22,10 @@ app.use(
 );
 app.use(express.json());
 
+app.get('/healthz', (_req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 AppDataSource.initialize()
   .then(() => {
     console.log('Database connected successfully');
