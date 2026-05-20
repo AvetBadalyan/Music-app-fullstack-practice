@@ -3,10 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { LockKeyhole } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useAppSelector } from '../app/hooks';
-import {
-  isSupabaseAuthConfigured,
-  supabase,
-} from '../services/supabaseClient';
+import { supabase } from '../services/supabaseClient';
 import './LoginPage.scss';
 
 const LoginPage = () => {
@@ -21,11 +18,6 @@ const LoginPage = () => {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    if (!supabase) {
-      toast.error('Supabase auth is not configured.');
-      return;
-    }
 
     setIsSubmitting(true);
 
@@ -54,13 +46,6 @@ const LoginPage = () => {
             <p>Create and delete access is restricted.</p>
           </div>
         </div>
-
-        {!isSupabaseAuthConfigured && (
-          <p className="auth-warning">
-            Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` to
-            enable login.
-          </p>
-        )}
 
         {email && !isAdmin && (
           <p className="auth-warning">
@@ -91,7 +76,7 @@ const LoginPage = () => {
           </label>
           <button
             type="submit"
-            disabled={isSubmitting || !isSupabaseAuthConfigured}
+            disabled={isSubmitting}
           >
             {isSubmitting ? 'Signing in...' : 'Sign in'}
           </button>

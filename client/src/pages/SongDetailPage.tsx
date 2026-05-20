@@ -26,8 +26,11 @@ const SongDetailPage = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const isAdmin = useAppSelector((state) => state.auth.isAdmin);
+  const songId = id ?? '';
   const [deleteSong, { isLoading: isDeleting }] = useDeleteSongMutation();
-  const { data: song, isLoading, error } = useGetSongByIdQuery(id!);
+  const { data: song, isLoading, error } = useGetSongByIdQuery(songId, {
+    skip: !id,
+  });
   const [confirmOpen, setConfirmOpen] = useState(false);
   const { data: album } = useGetAlbumByIdQuery(song?.album?.id ?? '', {
     skip: !song?.album?.id,

@@ -18,8 +18,11 @@ const AlbumDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isAdmin = useAppSelector((state) => state.auth.isAdmin);
+  const albumId = id ?? '';
   const [deleteAlbum, { isLoading: isDeleting }] = useDeleteAlbumMutation();
-  const { data: album, isLoading, error } = useGetAlbumByIdQuery(id!);
+  const { data: album, isLoading, error } = useGetAlbumByIdQuery(albumId, {
+    skip: !id,
+  });
   const [confirmOpen, setConfirmOpen] = useState(false);
   const dominant = useDominantColor(album?.coverImage);
 

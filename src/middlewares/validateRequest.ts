@@ -3,7 +3,7 @@ import { validate } from 'class-validator';
 import type { Request, Response, NextFunction } from 'express';
 import { ValidationError } from '../utils/errors';
 
-export function validateRequest<T extends Record<string, any>>(
+export function validateRequest<T extends object>(
   dto: new () => T,
 ) {
   return async (req: Request, res: Response, next: NextFunction) => {

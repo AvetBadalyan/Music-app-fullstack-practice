@@ -20,11 +20,6 @@ const AuthSessionProvider = ({ children }: AuthSessionProviderProps) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (!supabase) {
-      dispatch(clearAuthSession());
-      return;
-    }
-
     let mounted = true;
 
     supabase.auth

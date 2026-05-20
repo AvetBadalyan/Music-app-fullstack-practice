@@ -14,8 +14,11 @@ const GenreDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isAdmin = useAppSelector((state) => state.auth.isAdmin);
+  const genreId = id ?? '';
   const [deleteGenre, { isLoading: isDeleting }] = useDeleteGenreMutation();
-  const { data: genre, isLoading, error } = useGetGenreByIdQuery(id!);
+  const { data: genre, isLoading, error } = useGetGenreByIdQuery(genreId, {
+    skip: !id,
+  });
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   if (isLoading) return <p className="loading">Loading...</p>;

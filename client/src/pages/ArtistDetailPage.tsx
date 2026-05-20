@@ -19,8 +19,11 @@ const ArtistDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isAdmin = useAppSelector((state) => state.auth.isAdmin);
+  const artistId = id ?? '';
   const [deleteArtist, { isLoading: isDeleting }] = useDeleteArtistMutation();
-  const { data: artist, isLoading, error } = useGetArtistByIdQuery(id!);
+  const { data: artist, isLoading, error } = useGetArtistByIdQuery(artistId, {
+    skip: !id,
+  });
   const [confirmOpen, setConfirmOpen] = useState(false);
   const dominant = useDominantColor(artist?.profilePicture);
 
