@@ -42,5 +42,6 @@ AppDataSource.initialize()
   })
   .catch(error => {
     console.error(new DatabaseError('Failed to connect to the database'));
+    console.error(error);
     process.exit(1);
   });
