@@ -18,29 +18,50 @@ const seedDatabase = async () => {
     );
 
     console.log('Seeding Genres...');
-    await genreRepo.insert(genres);
-    const insertedGenres = await genreRepo.find();
+    const insertedGenres = await genreRepo.save(genres);
 
     console.log('Seeding Artists...');
-    await artistRepo.insert(artists);
-    const insertedArtists = await artistRepo.find();
+    const insertedArtists = await artistRepo.save(artists);
+
+    const findArtistByName = (artistName: string) => {
+      const artist = insertedArtists.find(artist => artist.name === artistName);
+      if (!artist) throw new Error(`Missing seeded artist: ${artistName}`);
+      return artist;
+    };
+
+    const findGenresByName = (genreNames: string[]) => {
+      const matchedGenres = insertedGenres.filter(genre =>
+        genreNames.includes(genre.name),
+      );
+
+      if (matchedGenres.length !== genreNames.length) {
+        throw new Error(`Missing seeded genres: ${genreNames.join(', ')}`);
+      }
+
+      return matchedGenres;
+    };
 
     console.log('Seeding Albums...');
     const albumsWithArtists = albums.map(album => ({
       ...album,
-      artist: insertedArtists.find(a => a.name === album.artist),
+      artist: findArtistByName(album.artist),
     }));
-    await albumRepo.insert(albumsWithArtists);
-    const insertedAlbums = await albumRepo.find();
+    const insertedAlbums = await albumRepo.save(albumsWithArtists);
+
+    const findAlbumByTitle = (albumTitle: string) => {
+      const album = insertedAlbums.find(album => album.title === albumTitle);
+      if (!album) throw new Error(`Missing seeded album: ${albumTitle}`);
+      return album;
+    };
 
     console.log('Seeding Songs...');
     const songsWithRelations = songs.map(song => ({
       ...song,
-      artist: insertedArtists.find(a => a.name === song.artist),
-      album: insertedAlbums.find(a => a.title === song.album),
-      genres: insertedGenres.filter(g => song.genres.includes(g.name)),
+      artist: findArtistByName(song.artist),
+      album: findAlbumByTitle(song.album),
+      genres: findGenresByName(song.genres),
     }));
-    await songRepo.insert(songsWithRelations);
+    await songRepo.save(songsWithRelations);
 
     console.log('Database seeded successfully!');
     process.exit(0);
