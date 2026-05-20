@@ -13,8 +13,13 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
+const clientUrl = process.env.CLIENT_URL;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: clientUrl ? clientUrl.split(',').map(origin => origin.trim()) : true,
+  }),
+);
 app.use(express.json());
 
 AppDataSource.initialize()
