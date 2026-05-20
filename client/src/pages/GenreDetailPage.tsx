@@ -6,12 +6,14 @@ import {
   useGetGenreByIdQuery,
   useDeleteGenreMutation,
 } from '../services/genresApi';
+import { useAppSelector } from '../app/hooks';
 import SongList from '../components/songs/SongList';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 
 const GenreDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const isAdmin = useAppSelector((state) => state.auth.isAdmin);
   const [deleteGenre, { isLoading: isDeleting }] = useDeleteGenreMutation();
   const { data: genre, isLoading, error } = useGetGenreByIdQuery(id!);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -35,31 +37,35 @@ const GenreDetailPage = () => {
     <div className="genre-detail-page">
       <div className="page-toolbar">
         <h1>{genre.name}</h1>
-        <button
-          type="button"
-          className="delete-btn"
-          onClick={() => setConfirmOpen(true)}
-          disabled={isDeleting}
-          title="Delete genre"
-          aria-label="Delete genre"
-        >
-          <Trash2 size={16} strokeWidth={2} aria-hidden="true" />
-          <span>{isDeleting ? 'Deleting…' : 'Delete'}</span>
-        </button>
+        {isAdmin && (
+          <button
+            type="button"
+            className="delete-btn"
+            onClick={() => setConfirmOpen(true)}
+            disabled={isDeleting}
+            title="Delete genre"
+            aria-label="Delete genre"
+          >
+            <Trash2 size={16} strokeWidth={2} aria-hidden="true" />
+            <span>{isDeleting ? 'Deleting…' : 'Delete'}</span>
+          </button>
+        )}
       </div>
       {genre.songs && genre.songs.length > 0 ? (
         <SongList songs={genre.songs} />
       ) : (
         <p className="empty">No songs in this genre yet.</p>
       )}
-      <ConfirmDialog
-        open={confirmOpen}
-        title="Delete genre?"
-        message={`"${genre.name}" will be removed. Songs will keep playing — only the genre tag is deleted.`}
-        isLoading={isDeleting}
-        onConfirm={handleConfirmDelete}
-        onCancel={() => setConfirmOpen(false)}
-      />
+      {isAdmin && (
+        <ConfirmDialog
+          open={confirmOpen}
+          title="Delete genre?"
+          message={`"${genre.name}" will be removed. Songs will keep playing — only the genre tag is deleted.`}
+          isLoading={isDeleting}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setConfirmOpen(false)}
+        />
+      )}
     </div>
   );
 };

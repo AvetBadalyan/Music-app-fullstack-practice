@@ -4,12 +4,14 @@ import { validateId } from '../middlewares/idValidator';
 import { validateRequest } from '../middlewares/validateRequest';
 import { validateImageUpload } from '../middlewares/fileUpload';
 import { CreateArtistDto, SearchArtistDto } from '../dto/artist.dto';
+import { requireAdmin } from '../middlewares/requireAdmin';
 
 const router = Router();
 const artistController = new ArtistController();
 
 router.post(
   '/',
+  requireAdmin,
   validateImageUpload.single('profilePicture'),
   validateRequest(CreateArtistDto),
   artistController.create,
@@ -21,6 +23,6 @@ router.get(
   artistController.searchByName,
 );
 router.get('/:id', validateId, artistController.getById);
-router.delete('/:id', validateId, artistController.delete);
+router.delete('/:id', requireAdmin, validateId, artistController.delete);
 
 export { router as artistRouter };

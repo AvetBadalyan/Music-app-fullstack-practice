@@ -6,6 +6,7 @@ import {
   useGetAlbumByIdQuery,
   useDeleteAlbumMutation,
 } from '../services/albumsApi';
+import { useAppSelector } from '../app/hooks';
 import { useDominantColor } from '../app/useDominantColor';
 import SongList from '../components/songs/SongList';
 import ConfirmDialog from '../components/common/ConfirmDialog';
@@ -16,6 +17,7 @@ const FALLBACK_COLOR = 'rgb(60, 40, 95)';
 const AlbumDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const isAdmin = useAppSelector((state) => state.auth.isAdmin);
   const [deleteAlbum, { isLoading: isDeleting }] = useDeleteAlbumMutation();
   const { data: album, isLoading, error } = useGetAlbumByIdQuery(id!);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -72,19 +74,21 @@ const AlbumDetailPage = () => {
               {new Date(album.releaseDate).getFullYear()}
             </p>
           )}
-          <div className="album-actions">
-            <button
-              type="button"
-              className="delete-btn"
-              onClick={() => setConfirmOpen(true)}
-              disabled={isDeleting}
-              title="Delete album"
-              aria-label="Delete album"
-            >
-              <Trash2 size={16} strokeWidth={2} aria-hidden="true" />
-              <span>{isDeleting ? 'Deleting…' : 'Delete'}</span>
-            </button>
-          </div>
+          {isAdmin && (
+            <div className="album-actions">
+              <button
+                type="button"
+                className="delete-btn"
+                onClick={() => setConfirmOpen(true)}
+                disabled={isDeleting}
+                title="Delete album"
+                aria-label="Delete album"
+              >
+                <Trash2 size={16} strokeWidth={2} aria-hidden="true" />
+                <span>{isDeleting ? 'Deleting…' : 'Delete'}</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -94,14 +98,16 @@ const AlbumDetailPage = () => {
           <SongList songs={album.songs} />
         </section>
       )}
-      <ConfirmDialog
-        open={confirmOpen}
-        title="Delete album?"
-        message={confirmMessage}
-        isLoading={isDeleting}
-        onConfirm={handleConfirmDelete}
-        onCancel={() => setConfirmOpen(false)}
-      />
+      {isAdmin && (
+        <ConfirmDialog
+          open={confirmOpen}
+          title="Delete album?"
+          message={confirmMessage}
+          isLoading={isDeleting}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setConfirmOpen(false)}
+        />
+      )}
     </div>
   );
 };

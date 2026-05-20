@@ -9,6 +9,7 @@ import AlbumsPage from './pages/AlbumsPage';
 import AlbumDetailPage from './pages/AlbumDetailPage';
 import GenresPage from './pages/GenresPage';
 import GenreDetailPage from './pages/GenreDetailPage';
+import LoginPage from './pages/LoginPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
         <Route path="/albums/:id" element={<AlbumDetailPage />} />
         <Route path="/genres" element={<GenresPage />} />
         <Route path="/genres/:id" element={<GenreDetailPage />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

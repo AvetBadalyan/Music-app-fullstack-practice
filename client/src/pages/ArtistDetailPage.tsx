@@ -6,6 +6,7 @@ import {
   useGetArtistByIdQuery,
   useDeleteArtistMutation,
 } from '../services/artistsApi';
+import { useAppSelector } from '../app/hooks';
 import { useDominantColor } from '../app/useDominantColor';
 import SongList from '../components/songs/SongList';
 import AlbumList from '../components/albums/AlbumList';
@@ -17,6 +18,7 @@ const FALLBACK_COLOR = 'rgb(60, 40, 95)';
 const ArtistDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const isAdmin = useAppSelector((state) => state.auth.isAdmin);
   const [deleteArtist, { isLoading: isDeleting }] = useDeleteArtistMutation();
   const { data: artist, isLoading, error } = useGetArtistByIdQuery(id!);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -66,31 +68,33 @@ const ArtistDetailPage = () => {
         <div className="artist-info">
           <h1>{artist.name}</h1>
           {artist.bio && <p className="bio">{artist.bio}</p>}
-          <div className="artist-actions">
-            <button
-              type="button"
-              className="toolbar-toggle"
-              onClick={() =>
-                navigate('/songs', {
-                  state: { createSong: true, artist },
-                })
-              }
-            >
-              <Plus size={16} strokeWidth={2.5} />
-              <span>Add song</span>
-            </button>
-            <button
-              type="button"
-              className="delete-btn"
-              onClick={() => setConfirmOpen(true)}
-              disabled={isDeleting}
-              title="Delete artist"
-              aria-label="Delete artist"
-            >
-              <Trash2 size={16} strokeWidth={2} aria-hidden="true" />
-              <span>{isDeleting ? 'Deleting…' : 'Delete'}</span>
-            </button>
-          </div>
+          {isAdmin && (
+            <div className="artist-actions">
+              <button
+                type="button"
+                className="toolbar-toggle"
+                onClick={() =>
+                  navigate('/songs', {
+                    state: { createSong: true, artist },
+                  })
+                }
+              >
+                <Plus size={16} strokeWidth={2.5} />
+                <span>Add song</span>
+              </button>
+              <button
+                type="button"
+                className="delete-btn"
+                onClick={() => setConfirmOpen(true)}
+                disabled={isDeleting}
+                title="Delete artist"
+                aria-label="Delete artist"
+              >
+                <Trash2 size={16} strokeWidth={2} aria-hidden="true" />
+                <span>{isDeleting ? 'Deleting…' : 'Delete'}</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -107,14 +111,16 @@ const ArtistDetailPage = () => {
           <SongList songs={artist.songs} />
         </section>
       )}
-      <ConfirmDialog
-        open={confirmOpen}
-        title="Delete artist?"
-        message={confirmMessage}
-        isLoading={isDeleting}
-        onConfirm={handleConfirmDelete}
-        onCancel={() => setConfirmOpen(false)}
-      />
+      {isAdmin && (
+        <ConfirmDialog
+          open={confirmOpen}
+          title="Delete artist?"
+          message={confirmMessage}
+          isLoading={isDeleting}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setConfirmOpen(false)}
+        />
+      )}
     </div>
   );
 };

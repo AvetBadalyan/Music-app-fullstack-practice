@@ -6,6 +6,7 @@ import SongList from '../components/songs/SongList';
 import SearchBar from '../components/common/SearchBar';
 import { SongListSkeleton } from '../components/common/Skeleton';
 import CreateSongForm from '../components/forms/CreateSongForm';
+import { useAppSelector } from '../app/hooks';
 import type { IArtist } from '../types/artist';
 
 interface SongsPageLocationState {
@@ -16,9 +17,12 @@ interface SongsPageLocationState {
 const SongsPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const isAdmin = useAppSelector((state) => state.auth.isAdmin);
   const incomingState = location.state as SongsPageLocationState | null;
   const [searchTerm, setSearchTerm] = useState('');
-  const [showForm, setShowForm] = useState(Boolean(incomingState?.createSong));
+  const [showForm, setShowForm] = useState(
+    Boolean(incomingState?.createSong && isAdmin),
+  );
   const [initialArtist, setInitialArtist] = useState<IArtist | null>(
     incomingState?.artist ?? null,
   );
@@ -31,6 +35,7 @@ const SongsPage = () => {
     // Run only when navigation delivers new state.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [incomingState]);
+
   const { data: allSongs, isLoading: allLoading } = useGetAllSongsQuery();
   const { data: searchResults, isLoading: searchLoading } = useSearchSongsQuery(
     searchTerm,
@@ -41,26 +46,29 @@ const SongsPage = () => {
 
   const songs = searchTerm ? searchResults : allSongs;
   const isLoading = searchTerm ? searchLoading : allLoading;
+  const canShowForm = isAdmin && showForm;
 
   return (
     <div className="songs-page">
       <div className="page-toolbar">
         <h1>Songs</h1>
-        <button
-          type="button"
-          className="toolbar-toggle"
-          onClick={() => {
-            setShowForm((prev) => {
-              if (prev) setInitialArtist(null);
-              return !prev;
-            });
-          }}
-        >
-          {showForm ? <X size={16} /> : <Plus size={16} />}
-          <span>{showForm ? 'Close' : 'New song'}</span>
-        </button>
+        {isAdmin && (
+          <button
+            type="button"
+            className="toolbar-toggle"
+            onClick={() => {
+              setShowForm((prev) => {
+                if (prev) setInitialArtist(null);
+                return !prev;
+              });
+            }}
+          >
+            {canShowForm ? <X size={16} /> : <Plus size={16} />}
+            <span>{canShowForm ? 'Close' : 'New song'}</span>
+          </button>
+        )}
       </div>
-      {showForm && <CreateSongForm initialArtist={initialArtist} />}
+      {canShowForm && <CreateSongForm initialArtist={initialArtist} />}
       <SearchBar
         placeholder="Search songs by title..."
         value={searchTerm}

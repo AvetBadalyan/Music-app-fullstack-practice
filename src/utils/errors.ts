@@ -27,6 +27,18 @@ export class ValidationError extends CustomError {
   }
 }
 
+export class AuthenticationError extends CustomError {
+  constructor(message: string) {
+    super('AuthenticationError', message, 401);
+  }
+}
+
+export class AuthorizationError extends CustomError {
+  constructor(message: string) {
+    super('AuthorizationError', message, 403);
+  }
+}
+
 export class NotFoundError extends CustomError {
   constructor(message: string) {
     super('NotFoundError', message, 404);

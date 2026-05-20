@@ -1,0 +1,111 @@
+.login-page {
+  display: grid;
+  min-height: calc(100dvh - 6.4rem);
+  padding: var(--space-5);
+  place-items: center;
+}
+
+.login-panel {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-elevation);
+  display: grid;
+  gap: var(--space-4);
+  max-width: 42rem;
+  padding: var(--space-5);
+  width: 100%;
+
+  .login-heading {
+    align-items: center;
+    display: flex;
+    gap: var(--space-3);
+
+    svg {
+      color: var(--color-accent);
+      flex: 0 0 auto;
+    }
+
+    h1 {
+      font-size: var(--font-lg);
+      margin: 0;
+    }
+
+    p {
+      color: var(--color-text-muted);
+      font-size: var(--font-sm);
+      margin-top: var(--space-1);
+    }
+  }
+
+  form {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  label {
+    display: grid;
+    gap: var(--space-2);
+
+    span {
+      font-size: var(--font-sm);
+      font-weight: var(--weight-bold);
+    }
+  }
+
+  input {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    font-size: var(--font-sm);
+    outline: none;
+    padding: var(--space-3) var(--space-4);
+
+    &:focus {
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px var(--color-accent-soft);
+    }
+  }
+
+  button {
+    background: var(--color-accent);
+    border: none;
+    border-radius: var(--radius-pill);
+    color: var(--color-text);
+    cursor: pointer;
+    font-size: var(--font-sm);
+    font-weight: var(--weight-bold);
+    justify-self: start;
+    padding: var(--space-3) var(--space-5);
+    transition: background var(--transition);
+
+    &:hover:not(:disabled) {
+      background: var(--color-accent-hover);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.65;
+    }
+  }
+
+  .auth-warning {
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: var(--radius-md);
+    color: #ffd89a;
+    font-size: var(--font-sm);
+    padding: var(--space-3) var(--space-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .login-page {
+    padding: var(--space-4);
+  }
+
+  .login-panel {
+    padding: var(--space-4);
+  }
+}

@@ -7,7 +7,7 @@ import {
   useDeleteSongMutation,
 } from '../services/songsApi';
 import { useGetAlbumByIdQuery } from '../services/albumsApi';
-import { useAppDispatch } from '../app/hooks';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { useDominantColor } from '../app/useDominantColor';
 import { playSong } from '../features/player/playerSlice';
 import ConfirmDialog from '../components/common/ConfirmDialog';
@@ -25,6 +25,7 @@ const SongDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const isAdmin = useAppSelector((state) => state.auth.isAdmin);
   const [deleteSong, { isLoading: isDeleting }] = useDeleteSongMutation();
   const { data: song, isLoading, error } = useGetSongByIdQuery(id!);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -110,26 +111,30 @@ const SongDetailPage = () => {
           />
           <span>Play</span>
         </button>
-        <button
-          type="button"
-          className="delete-btn"
-          onClick={() => setConfirmOpen(true)}
-          disabled={isDeleting}
-          title="Delete song"
-          aria-label="Delete song"
-        >
-          <Trash2 size={16} strokeWidth={2} aria-hidden="true" />
-          <span>{isDeleting ? 'Deleting…' : 'Delete'}</span>
-        </button>
+        {isAdmin && (
+          <button
+            type="button"
+            className="delete-btn"
+            onClick={() => setConfirmOpen(true)}
+            disabled={isDeleting}
+            title="Delete song"
+            aria-label="Delete song"
+          >
+            <Trash2 size={16} strokeWidth={2} aria-hidden="true" />
+            <span>{isDeleting ? 'Deleting…' : 'Delete'}</span>
+          </button>
+        )}
       </div>
-      <ConfirmDialog
-        open={confirmOpen}
-        title="Delete song?"
-        message={`"${song.title}" will be permanently removed. This cannot be undone.`}
-        isLoading={isDeleting}
-        onConfirm={handleConfirmDelete}
-        onCancel={() => setConfirmOpen(false)}
-      />
+      {isAdmin && (
+        <ConfirmDialog
+          open={confirmOpen}
+          title="Delete song?"
+          message={`"${song.title}" will be permanently removed. This cannot be undone.`}
+          isLoading={isDeleting}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setConfirmOpen(false)}
+        />
+      )}
     </div>
   );
 };

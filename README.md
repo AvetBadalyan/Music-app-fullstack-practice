@@ -9,8 +9,8 @@ In development, the frontend calls `/api/...` and Vite proxies those requests to
 
 ## Stack
 
-- Backend: Express, TypeORM, PostgreSQL, Supabase Storage, Multer, class-validator, music-metadata, TypeScript
-- Frontend: React 19, Vite, Redux Toolkit + RTK Query, React Router v7, Sass, react-toastify, lucide-react
+- Backend: Express, TypeORM, PostgreSQL, Supabase Auth, Supabase Storage, Multer, class-validator, music-metadata, TypeScript
+- Frontend: React 19, Vite, Supabase Auth client, Redux Toolkit + RTK Query, React Router v7, Sass, react-toastify, lucide-react
 - Tooling: TypeScript end-to-end, ESLint, nodemon, ts-node
 
 ## Features
@@ -25,15 +25,18 @@ Backend:
   - Artists / Albums: image upload up to 10 MB, image-only MIME filter.
 - Audio duration extracted automatically with `music-metadata` (the client never sends `duration`).
 - Media files uploaded to Supabase Storage; public URLs persisted in PostgreSQL.
+- Supabase JWT verification for admin-only create/delete operations.
 - Centralized error handler with typed error classes (validation, not-found, database, etc.).
 - Search endpoints for songs (by title) and artists (by name).
 - Seed script that loads sample genres, artists, albums and real mp3 + cover assets.
 
 Frontend:
 
-- Single-page app with 9 routes and a shared layout.
+- Single-page app with 10 routes and a shared layout.
+- Supabase Auth login for the configured admin user.
 - Global persistent audio player (Redux Toolkit slice + listener middleware) with play / pause / next / previous / progress.
 - RTK Query API slices per resource with automatic caching and tag-based invalidation.
+- Public browsing/playback for visitors, with create/delete UI shown only to the admin.
 - Forms for creating songs, artists, albums and genres, including file pickers for audio and images.
 - Debounced search bar, skeleton loaders, empty states, confirm dialog for destructive actions.
 - Dominant-color extraction hook used to theme detail pages.
@@ -53,6 +56,7 @@ Frontend:
 | `/albums/:id`  | AlbumDetailPage  | Album cover, tracklist and play-all behavior.                          |
 | `/genres`      | GenresPage       | List of genres with create-genre form.                                 |
 | `/genres/:id`  | GenreDetailPage  | All songs that belong to the selected genre.                           |
+| `/login`       | LoginPage        | Admin login using Supabase Auth.                                       |
 | `*`            | NotFoundPage     | 404 fallback.                                                          |
 
 ## Project Structure
@@ -74,6 +78,7 @@ music-app/
 │   └── src/
 │       ├── app/          # Redux store, hooks, custom hooks
 │       ├── components/   # albums, artists, songs, forms, layout, common
+│       ├── features/auth/    # Supabase Auth session state
 │       ├── features/player/  # global audio player (Redux slice + listener)
 │       ├── pages/        # route-level views
 │       ├── services/     # RTK Query API slices
@@ -88,7 +93,9 @@ music-app/
 - Node.js 18 or newer
 - PostgreSQL
 - A `.env` file for backend configuration
+- A `client/.env` file for frontend Supabase Auth configuration
 - Three public Supabase Storage buckets (one for songs, one for album covers, one for artist images)
+- One Supabase Auth user whose email matches `ADMIN_EMAIL`
 
 ## Quick Start From Zero
 
@@ -132,22 +139,33 @@ SUPABASE_SECRET_KEY=your_supabase_secret_key
 SUPABASE_SONGS_BUCKET=songs
 SUPABASE_ALBUM_COVERS_BUCKET=album-covers
 SUPABASE_ARTIST_IMAGES_BUCKET=artist-images
+ADMIN_EMAIL=your_admin_email@example.com
 PORT=3000
 ```
 
-6. Start the backend in terminal 1.
+6. Create `client/.env` for the React app.
+
+```env
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
+VITE_ADMIN_EMAIL=your_admin_email@example.com
+```
+
+7. In Supabase Auth, create a user with the same email as `ADMIN_EMAIL`.
+
+8. Start the backend in terminal 1.
 
 ```bash
 npm run dev
 ```
 
-7. Start the frontend in terminal 2.
+9. Start the frontend in terminal 2.
 
 ```bash
 npm run dev:client
 ```
 
-8. Open the app in the browser.
+10. Open the app in the browser.
 
 ```text
 http://localhost:5173
@@ -177,6 +195,7 @@ All backend config lives in a single `.env` file at the project root (see step 5
 | `SUPABASE_SONGS_BUCKET`        | yes      | Name of the public bucket used for audio uploads.               |
 | `SUPABASE_ALBUM_COVERS_BUCKET` | yes      | Name of the public bucket used for album cover images.          |
 | `SUPABASE_ARTIST_IMAGES_BUCKET`| yes      | Name of the public bucket used for artist profile images.       |
+| `ADMIN_EMAIL`                  | yes      | Email allowed to create/delete resources. Must match a Supabase Auth user. |
 | `PORT`                         | no       | Backend HTTP port (defaults to `3000`).                         |
 
 Notes:
@@ -184,6 +203,19 @@ Notes:
 - All three Supabase buckets must exist and be **public** — the app stores their public URLs in the database.
 - Bucket names are up to you; only the env variable names must match exactly.
 - The `SUPABASE_SECRET_KEY` is sensitive: never commit it and never expose it to the frontend.
+- The backend verifies Supabase Auth JWTs on protected routes and only allows the configured `ADMIN_EMAIL`.
+
+## Frontend Environment Variables
+
+The React app reads Supabase Auth config from `client/.env`:
+
+| Variable                 | Required | Description                                      |
+| ------------------------ | -------- | ------------------------------------------------ |
+| `VITE_SUPABASE_URL`      | yes      | Your Supabase project URL.                       |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | yes      | Supabase publishable key used by the browser. |
+| `VITE_ADMIN_EMAIL`       | yes      | Same admin email used by the backend. Controls UI visibility only. |
+
+The frontend value is not a security boundary; the backend `ADMIN_EMAIL` check is what protects writes.
 
 ## Database Setup
 
@@ -251,6 +283,7 @@ Notes:
 - Search endpoints use query parameters.
 - Genre creation uses raw JSON.
 - Artist, album and song creation use `multipart/form-data` because they accept file uploads (profile picture, cover image, audio file).
+- Create and delete routes require `Authorization: Bearer <supabase_access_token>` for the configured admin user.
 - Every `:id` path parameter must be a valid UUID v4; the `validateId` middleware rejects malformed ids with a 400 error.
 - All responses are JSON; errors follow `{ "error": "...", "details": ... }` shape via the central error handler.
 
@@ -258,44 +291,53 @@ Notes:
 
 Songs:
 
-- `POST   /api/songs` — create (multipart)
+- `POST   /api/songs` — create (multipart, admin only)
 - `GET    /api/songs` — list all
 - `GET    /api/songs/search` — search by title
 - `GET    /api/songs/:id` — get by id
-- `DELETE /api/songs/:id` — delete (also removes audio from Supabase)
+- `DELETE /api/songs/:id` — delete (admin only; also removes audio from Supabase)
 
 Artists:
 
-- `POST   /api/artists` — create (multipart)
+- `POST   /api/artists` — create (multipart, admin only)
 - `GET    /api/artists` — list all
 - `GET    /api/artists/search` — search by name
 - `GET    /api/artists/:id` — get by id
-- `DELETE /api/artists/:id` — delete
+- `DELETE /api/artists/:id` — delete (admin only)
 
 Albums:
 
-- `POST   /api/albums` — create (multipart)
+- `POST   /api/albums` — create (multipart, admin only)
 - `GET    /api/albums` — list all
 - `GET    /api/albums/:id` — get by id
-- `DELETE /api/albums/:id` — delete
+- `DELETE /api/albums/:id` — delete (admin only)
 
 Genres:
 
-- `POST   /api/genres` — create (JSON)
+- `POST   /api/genres` — create (JSON, admin only)
 - `GET    /api/genres` — list all
 - `GET    /api/genres/:id` — get by id
-- `DELETE /api/genres/:id` — delete
+- `DELETE /api/genres/:id` — delete (admin only)
 
 ## Postman Requests
 
 ### General Rules
 
 - For `GET /:id` and `DELETE /:id` routes, the `id` path parameter must be a valid UUID v4.
+- `POST` and `DELETE` requests require an admin Supabase access token in the `Authorization` header.
 - For song creation, the request must be `multipart/form-data` because `audioFile` is required.
 - For artist creation, use `multipart/form-data` and attach `profilePicture` as a file (optional).
 - For album creation, use `multipart/form-data` and attach `coverImage` as a file (optional).
 - For genre creation, use raw JSON.
 - Search routes accept query parameters. Because the validation middleware merges query and body, query parameters are the cleanest option for `GET` requests.
+
+Postman auth setup for create/delete requests:
+
+```text
+Authorization: Bearer <supabase_admin_access_token>
+```
+
+The browser obtains this token when the admin signs in on `/login`. For direct Postman testing, sign in with the same Supabase Auth admin user and copy its access token.
 
 ### Artists
 
