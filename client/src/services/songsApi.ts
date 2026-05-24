@@ -41,7 +41,7 @@ export const songsApi = api.injectEndpoints({
           body: formData,
         };
       },
-      invalidatesTags: ['Song'],
+      invalidatesTags: ['Song', 'Artist', 'Album', 'Genre'],
     }),
     deleteSong: build.mutation<void, string>({
       query: (id) => ({

@@ -31,7 +31,7 @@ export const albumsApi = api.injectEndpoints({
           body: formData,
         };
       },
-      invalidatesTags: ['Album'],
+      invalidatesTags: ['Album', 'Artist'],
     }),
     deleteAlbum: build.mutation<void, string>({
       query: (id) => ({

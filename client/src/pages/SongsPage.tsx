@@ -36,7 +36,12 @@ const SongsPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [incomingState]);
 
-  const { data: allSongs, isLoading: allLoading } = useGetAllSongsQuery();
+  const { data: allSongs, isLoading: allLoading } = useGetAllSongsQuery(
+    undefined,
+    {
+      refetchOnMountOrArgChange: true,
+    },
+  );
   const { data: searchResults, isLoading: searchLoading } = useSearchSongsQuery(
     searchTerm,
     {
