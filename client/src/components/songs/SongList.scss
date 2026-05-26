@@ -1,12 +1,25 @@
 .song-list {
+  --song-list-columns:
+    4rem minmax(0, 2.4fr) minmax(0, 1.4fr) minmax(0, 1fr)
+    5.6rem;
   display: flex;
   flex-direction: column;
 
+  &.song-list--no-genre {
+    --song-list-columns: 4rem minmax(0, 2.7fr) minmax(0, 1.5fr) 5.6rem;
+  }
+
+  &.song-list--no-album {
+    --song-list-columns: 4rem minmax(0, 2.9fr) minmax(0, 1.2fr) 5.6rem;
+  }
+
+  &.song-list--no-album-genre {
+    --song-list-columns: 4rem minmax(0, 1fr) 5.6rem;
+  }
+
   .song-row {
     display: grid;
-    grid-template-columns:
-      4rem minmax(0, 2.4fr) minmax(0, 1.4fr) minmax(0, 1fr)
-      5.6rem;
+    grid-template-columns: var(--song-list-columns);
     align-items: center;
     gap: var(--space-4);
     padding: var(--space-2) var(--space-3);

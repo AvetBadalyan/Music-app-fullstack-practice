@@ -28,7 +28,7 @@ const GenresPage = () => {
       </div>
       {isAdmin && showForm && <CreateGenreForm />}
       {isLoading ? (
-        <p className="loading">Loading...</p>
+        <div className="page-status page-status--loading">Loading genres...</div>
       ) : (
         <div className="genre-grid">
           {(genres ?? []).map((genre) => (

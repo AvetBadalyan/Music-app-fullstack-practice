@@ -31,10 +31,22 @@ export class GenreService {
           songs: {
             id: true,
             title: true,
+            duration: true,
+            artist: {
+              id: true,
+              name: true,
+            },
+            album: {
+              id: true,
+              title: true,
+            },
           },
         },
         relations: {
-          songs: true,
+          songs: {
+            artist: true,
+            album: true,
+          },
         },
       });
 

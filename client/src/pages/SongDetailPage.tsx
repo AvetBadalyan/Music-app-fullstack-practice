@@ -80,7 +80,10 @@ const SongDetailPage = () => {
           )}
           <p className="meta">
             {song.album && (
-              <Link to={`/albums/${song.album.id}`}>{song.album.title}</Link>
+              <>
+                <span>Album: </span>
+                <Link to={`/albums/${song.album.id}`}>{song.album.title}</Link>
+              </>
             )}
             {song.album && song.duration ? <span> · </span> : null}
             {song.duration && <span>{formatDuration(song.duration)}</span>}

@@ -21,8 +21,21 @@ const GenreDetailPage = () => {
   });
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  if (isLoading) return <p className="loading">Loading...</p>;
-  if (error || !genre) return <p className="error">Genre not found.</p>;
+  if (isLoading) {
+    return (
+      <div className="genre-detail-page">
+        <div className="page-status page-status--loading">Loading genre...</div>
+      </div>
+    );
+  }
+
+  if (error || !genre) {
+    return (
+      <div className="genre-detail-page">
+        <div className="page-status">Genre not found.</div>
+      </div>
+    );
+  }
 
   const handleConfirmDelete = async () => {
     const target = genre;
@@ -55,9 +68,9 @@ const GenreDetailPage = () => {
         )}
       </div>
       {genre.songs && genre.songs.length > 0 ? (
-        <SongList songs={genre.songs} />
+        <SongList songs={genre.songs} hiddenColumns={['genre']} />
       ) : (
-        <p className="empty">No songs in this genre yet.</p>
+        <div className="page-status">No songs in this genre yet.</div>
       )}
       {isAdmin && (
         <ConfirmDialog

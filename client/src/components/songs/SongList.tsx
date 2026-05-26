@@ -6,8 +6,11 @@ import EmptyState from '../common/EmptyState';
 import type { ISong } from '../../types/song';
 import './SongList.scss';
 
+type SongListColumn = 'album' | 'genre';
+
 interface SongListProps {
   songs: ISong[];
+  hiddenColumns?: SongListColumn[];
 }
 
 const formatDuration = (seconds?: number): string => {
@@ -17,9 +20,19 @@ const formatDuration = (seconds?: number): string => {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
-const SongList = ({ songs }: SongListProps) => {
+const SongList = ({ songs, hiddenColumns = [] }: SongListProps) => {
   const dispatch = useAppDispatch();
   const { currentSong, isPlaying } = useAppSelector((state) => state.player);
+
+  const isAlbumHidden = hiddenColumns.includes('album');
+  const isGenreHidden = hiddenColumns.includes('genre');
+  const listVariantClass = isAlbumHidden
+    ? isGenreHidden
+      ? ' song-list--no-album-genre'
+      : ' song-list--no-album'
+    : isGenreHidden
+      ? ' song-list--no-genre'
+      : '';
 
   if (songs.length === 0) {
     return (
@@ -33,12 +46,12 @@ const SongList = ({ songs }: SongListProps) => {
   }
 
   return (
-    <div className="song-list">
+    <div className={`song-list${listVariantClass}`}>
       <div className="song-row song-header" aria-hidden="true">
         <span className="index-play">#</span>
         <span className="title-col">Title</span>
-        <span className="album-col">Album</span>
-        <span className="genre-col">Genre</span>
+        {!isAlbumHidden && <span className="album-col">Album</span>}
+        {!isGenreHidden && <span className="genre-col">Genre</span>}
         <span className="duration">Time</span>
       </div>
       {songs.map((song, index) => {
@@ -87,20 +100,22 @@ const SongList = ({ songs }: SongListProps) => {
                 </Link>
               )}
             </div>
-            {song.album ? (
-              <Link to={`/albums/${song.album.id}`} className="album-col">
-                {song.album.title}
-              </Link>
-            ) : (
-              <span className="album-col empty-col">—</span>
-            )}
-            {song.genres && song.genres.length > 0 ? (
-              <Link to={`/genres/${song.genres[0].id}`} className="genre-col">
-                {song.genres[0].name}
-              </Link>
-            ) : (
-              <span className="genre-col empty-col">—</span>
-            )}
+            {!isAlbumHidden &&
+              (song.album ? (
+                <Link to={`/albums/${song.album.id}`} className="album-col">
+                  {song.album.title}
+                </Link>
+              ) : (
+                <span className="album-col empty-col">—</span>
+              ))}
+            {!isGenreHidden &&
+              (song.genres && song.genres.length > 0 ? (
+                <Link to={`/genres/${song.genres[0].id}`} className="genre-col">
+                  {song.genres[0].name}
+                </Link>
+              ) : (
+                <span className="genre-col empty-col">—</span>
+              ))}
             <span className="duration">{formatDuration(song.duration)}</span>
           </div>
         );

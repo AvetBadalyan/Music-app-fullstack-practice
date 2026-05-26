@@ -98,7 +98,7 @@ const AlbumDetailPage = () => {
       {album.songs && album.songs.length > 0 && (
         <section className="tracklist">
           <h2>Tracklist</h2>
-          <SongList songs={album.songs} />
+          <SongList songs={album.songs} hiddenColumns={['album']} />
         </section>
       )}
       {isAdmin && (
