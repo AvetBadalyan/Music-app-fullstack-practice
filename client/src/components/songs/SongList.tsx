@@ -6,11 +6,10 @@ import EmptyState from '../common/EmptyState';
 import type { ISong } from '../../types/song';
 import './SongList.scss';
 
-type SongListColumn = 'album' | 'genre';
-
 interface SongListProps {
   songs: ISong[];
-  hiddenColumns?: SongListColumn[];
+  hideAlbumColumn?: boolean;
+  hideGenreColumn?: boolean;
 }
 
 const formatDuration = (seconds?: number): string => {
@@ -20,19 +19,13 @@ const formatDuration = (seconds?: number): string => {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
-const SongList = ({ songs, hiddenColumns = [] }: SongListProps) => {
+const SongList = ({
+  songs,
+  hideAlbumColumn = false,
+  hideGenreColumn = false,
+}: SongListProps) => {
   const dispatch = useAppDispatch();
   const { currentSong, isPlaying } = useAppSelector((state) => state.player);
-
-  const isAlbumHidden = hiddenColumns.includes('album');
-  const isGenreHidden = hiddenColumns.includes('genre');
-  const listVariantClass = isAlbumHidden
-    ? isGenreHidden
-      ? ' song-list--no-album-genre'
-      : ' song-list--no-album'
-    : isGenreHidden
-      ? ' song-list--no-genre'
-      : '';
 
   if (songs.length === 0) {
     return (
@@ -45,13 +38,15 @@ const SongList = ({ songs, hiddenColumns = [] }: SongListProps) => {
     );
   }
 
+  const className = `song-list${hideAlbumColumn ? ' song-list--hide-album' : ''}${hideGenreColumn ? ' song-list--hide-genre' : ''}`;
+
   return (
-    <div className={`song-list${listVariantClass}`}>
+    <div className={className}>
       <div className="song-row song-header" aria-hidden="true">
         <span className="index-play">#</span>
         <span className="title-col">Title</span>
-        {!isAlbumHidden && <span className="album-col">Album</span>}
-        {!isGenreHidden && <span className="genre-col">Genre</span>}
+        {!hideAlbumColumn && <span className="album-col">Album</span>}
+        {!hideGenreColumn && <span className="genre-col">Genre</span>}
         <span className="duration">Time</span>
       </div>
       {songs.map((song, index) => {
@@ -100,7 +95,7 @@ const SongList = ({ songs, hiddenColumns = [] }: SongListProps) => {
                 </Link>
               )}
             </div>
-            {!isAlbumHidden &&
+            {!hideAlbumColumn &&
               (song.album ? (
                 <Link to={`/albums/${song.album.id}`} className="album-col">
                   {song.album.title}
@@ -108,7 +103,7 @@ const SongList = ({ songs, hiddenColumns = [] }: SongListProps) => {
               ) : (
                 <span className="album-col empty-col">—</span>
               ))}
-            {!isGenreHidden &&
+            {!hideGenreColumn &&
               (song.genres && song.genres.length > 0 ? (
                 <Link to={`/genres/${song.genres[0].id}`} className="genre-col">
                   {song.genres[0].name}

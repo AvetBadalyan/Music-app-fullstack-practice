@@ -16,7 +16,11 @@ const GenreDetailPage = () => {
   const isAdmin = useAppSelector((state) => state.auth.isAdmin);
   const genreId = id ?? '';
   const [deleteGenre, { isLoading: isDeleting }] = useDeleteGenreMutation();
-  const { data: genre, isLoading, error } = useGetGenreByIdQuery(genreId, {
+  const {
+    data: genre,
+    isLoading,
+    error,
+  } = useGetGenreByIdQuery(genreId, {
     skip: !id,
   });
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -68,7 +72,7 @@ const GenreDetailPage = () => {
         )}
       </div>
       {genre.songs && genre.songs.length > 0 ? (
-        <SongList songs={genre.songs} hiddenColumns={['genre']} />
+        <SongList songs={genre.songs} hideGenreColumn />
       ) : (
         <div className="page-status">No songs in this genre yet.</div>
       )}

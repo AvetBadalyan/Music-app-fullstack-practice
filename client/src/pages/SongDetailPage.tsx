@@ -28,7 +28,11 @@ const SongDetailPage = () => {
   const isAdmin = useAppSelector((state) => state.auth.isAdmin);
   const songId = id ?? '';
   const [deleteSong, { isLoading: isDeleting }] = useDeleteSongMutation();
-  const { data: song, isLoading, error } = useGetSongByIdQuery(songId, {
+  const {
+    data: song,
+    isLoading,
+    error,
+  } = useGetSongByIdQuery(songId, {
     skip: !id,
   });
   const [confirmOpen, setConfirmOpen] = useState(false);

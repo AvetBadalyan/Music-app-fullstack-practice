@@ -7,6 +7,52 @@ This repository contains a full-stack music app:
 
 In development, the frontend calls `/api/...` and Vite proxies those requests to the backend at `http://localhost:3000`.
 
+## Live Demo
+
+https://music-app-fullstack-practice.vercel.app/
+
+## Screenshots
+
+### Home
+
+![Home](screenshots/Screenshot%202026-05-26%20185343.png)
+
+### Albums
+
+![Albums](screenshots/Screenshot%202026-05-26%20185524.png)
+
+### Artists
+
+![Artists](screenshots/Screenshot%202026-05-26%20185423.png)
+
+### Artist detail
+
+![Artist detail](screenshots/Screenshot%202026-05-26%20185512.png)
+
+### Create song
+
+![Create song](screenshots/Screenshot%202026-05-26%20185413.png)
+
+### Song detail
+
+![Song detail](screenshots/Screenshot%202026-05-26%20185442.png)
+
+### Genres
+
+![Genres](screenshots/Screenshot%202026-05-26%20192027.png)
+
+### Genre detail
+
+![Genre detail](screenshots/Screenshot%202026-05-26%20204422.png)
+
+### Album detail
+
+![Album detail](screenshots/Screenshot%202026-05-26%20185541.png)
+
+### Album tracklist
+
+![Album tracklist](screenshots/Screenshot%202026-05-26%20185533.png)
+
 ## Stack
 
 - Backend: Express, TypeORM, PostgreSQL, Supabase Auth, Supabase Storage, Multer, class-validator, music-metadata, TypeScript
@@ -151,6 +197,12 @@ VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
 VITE_ADMIN_EMAIL=your_admin_email@example.com
 ```
 
+If you want the local frontend to call a deployed backend (instead of using the Vite `/api` proxy), also set:
+
+```env
+VITE_API_URL=https://music-app-api-sa3n.onrender.com
+```
+
 7. In Supabase Auth, create a user with the same email as `ADMIN_EMAIL`.
 
 8. Start the backend in terminal 1.
@@ -214,6 +266,7 @@ The React app reads Supabase Auth config from `client/.env`:
 | `VITE_SUPABASE_URL`      | yes      | Your Supabase project URL.                       |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | yes      | Supabase publishable key used by the browser. |
 | `VITE_ADMIN_EMAIL`       | yes      | Same admin email used by the backend. Controls UI visibility only. |
+| `VITE_API_URL`           | no       | Backend base URL (do not include `/api`). Example: `https://music-app-api-sa3n.onrender.com`. Leave unset in local dev to use the Vite `/api` proxy. |
 
 The frontend value is not a security boundary; the backend `ADMIN_EMAIL` check is what protects writes.
 
@@ -232,6 +285,39 @@ To populate the database with sample genres, artists, albums, songs and song-gen
 ```bash
 npm run seed
 ```
+
+## Seeding Supabase (Remote DB)
+
+This project can run on different databases (local Postgres vs Supabase Postgres).
+
+- By default, `npm run seed` seeds your **local** database (the one configured by `DB_HOST`, `DB_NAME`, etc.).
+- If you temporarily set `DATABASE_URL`, the seed script will seed **that** database instead (for example: your Supabase database).
+
+⚠️ Warning: the seed script **deletes existing data** (it truncates the tables). Only run it on an empty database or when you intentionally want to reset demo data.
+
+### Seed Supabase from your local machine
+
+1. Get your Supabase Postgres connection string (use the **Pooler** URI from Supabase “Connect”).
+2. Run the seed while pointing `DATABASE_URL` at Supabase.
+
+If you are using Git Bash / macOS / Linux (hides the password while typing):
+
+```bash
+git pull
+
+printf "Paste DATABASE_URL: "
+read -s DATABASE_URL
+printf "\n"
+
+export DATABASE_URL
+NODE_ENV=production npm run seed
+
+unset DATABASE_URL
+```
+
+Why `NODE_ENV=production`? The backend enables SSL when `NODE_ENV=production`, which Supabase Postgres expects.
+
+After this finishes, your deployed app (Render/Vercel/Amplify) will immediately show the seeded data because it reads from the same Supabase database.
 
 ## Run In Development
 
