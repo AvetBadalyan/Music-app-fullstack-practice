@@ -319,6 +319,12 @@ Why `NODE_ENV=production`? The backend enables SSL when `NODE_ENV=production`, w
 
 After this finishes, your deployed app (Render/Vercel/Amplify) will immediately show the seeded data because it reads from the same Supabase database.
 
+Notes:
+
+- Redeploying the backend (Render/AWS/etc.) does **not** wipe your data. Your rows live in Supabase Postgres.
+- The seed script **does** wipe data because it starts with `TRUNCATE ... CASCADE`.
+- If you are seeding a brand-new database with no tables yet, create the schema first (migrations are best practice; alternatively, temporarily enable TypeORM `synchronize` once to bootstrap tables).
+
 ## Run In Development
 
 The Quick Start already covers the two-terminal flow (`npm run dev` for the backend, `npm run dev:client` for the frontend). A few extras worth knowing:
