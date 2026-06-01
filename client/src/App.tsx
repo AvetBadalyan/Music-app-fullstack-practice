@@ -16,30 +16,23 @@ const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 function App() {
   return (
-    <Routes>
-      <Route element={<MainLayout />}>
-        <Route
-          path="/*"
-          element={
-            <Suspense>
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/songs" element={<SongsPage />} />
-                <Route path="/songs/:id" element={<SongDetailPage />} />
-                <Route path="/artists" element={<ArtistsPage />} />
-                <Route path="/artists/:id" element={<ArtistDetailPage />} />
-                <Route path="/albums" element={<AlbumsPage />} />
-                <Route path="/albums/:id" element={<AlbumDetailPage />} />
-                <Route path="/genres" element={<GenresPage />} />
-                <Route path="/genres/:id" element={<GenreDetailPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="*" element={<NotFoundPage />} />
-              </Routes>
-            </Suspense>
-          }
-        />
-      </Route>
-    </Routes>
+    <Suspense>
+      <Routes>
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/songs" element={<SongsPage />} />
+          <Route path="/songs/:id" element={<SongDetailPage />} />
+          <Route path="/artists" element={<ArtistsPage />} />
+          <Route path="/artists/:id" element={<ArtistDetailPage />} />
+          <Route path="/albums" element={<AlbumsPage />} />
+          <Route path="/albums/:id" element={<AlbumDetailPage />} />
+          <Route path="/genres" element={<GenresPage />} />
+          <Route path="/genres/:id" element={<GenreDetailPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
+      </Routes>
+    </Suspense>
   );
 }
 

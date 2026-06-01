@@ -17,7 +17,7 @@ const FALLBACK_COLOR = 'rgb(60, 40, 95)';
 
 const formatDuration = (seconds: number): string => {
   const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
+  const secs = Math.floor(seconds % 60);
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 

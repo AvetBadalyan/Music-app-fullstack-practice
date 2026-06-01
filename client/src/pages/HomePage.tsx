@@ -33,11 +33,7 @@ const HomePage = () => {
           {songsLoading ? (
             <SongListSkeleton rows={8} />
           ) : (
-            <SongList
-              songs={recentSongs}
-              hideAlbumColumn
-              hideGenreColumn
-            />
+            <SongList songs={recentSongs} />
           )}
         </section>
       </section>

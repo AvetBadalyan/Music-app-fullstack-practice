@@ -104,19 +104,24 @@
   }
 
   &__dot {
+    position: relative;
+    width: 2rem;
     height: 0.6rem;
     border-radius: var(--radius-pill);
     border: none;
     background: rgba(255, 255, 255, 0.3);
     cursor: pointer;
     padding: 0;
-    transition:
-      width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-      background 0.35s ease;
-    width: 0.6rem;
+    transition: background 0.3s ease;
+
+    // Invisible tap-target expansion — does not affect visual shape
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -1rem -0.4rem;
+    }
 
     &--active {
-      width: 2.2rem;
       background: var(--color-accent);
       box-shadow: 0 0 8px rgba(148, 102, 238, 0.6);
     }
@@ -129,20 +134,29 @@
   }
 
   // ── Responsive ───────────────────────────────────────────────
-  // Phone: compact, arrows hidden, dots centered
-  @media (max-width: 480px) {
-    &__viewport {
-      border-radius: var(--radius-md);
-    }
+  // Phone: arrows hidden, dots centered
+  // These are the mobile (base) defaults; desktop enhances via min-width
+  &__arrow {
+    display: none;
+  }
+
+  &__dots {
+    right: 50%;
+    transform: translateX(50%);
+    bottom: var(--space-3);
+  }
+
+  @media (min-width: 481px) {
+    aspect-ratio: 21 / 9;
 
     &__arrow {
-      display: none;
+      display: flex;
     }
 
     &__dots {
-      right: 50%;
-      transform: translateX(50%);
-      bottom: var(--space-3);
+      right: var(--space-5);
+      transform: none;
+      bottom: var(--space-4);
     }
   }
 }

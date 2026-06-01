@@ -51,9 +51,9 @@
   /* Transition */
   --transition: 0.2s ease;
 
-  /* Breakpoints — chosen by real device widths, not Bootstrap conventions.
-       ≤  480px  → phones (iPhone 14 = 430, Samsung A51 = 412) — single-column layout, smallest paddings
-       ≤ 1024px  → small tablets through iPad Pro portrait (iPad Air = 820, iPad Mini = 768) — sidebar drawer, stacked player
+  /* Breakpoints — mobile-first, chosen by real device widths.
+       base      → phones (≤ 480px) — single-column layout, smallest paddings
+       ≥ 481px   → tablets & desktops — wider grids, larger type, more padding
        ≥ 1025px  → laptops & desktops — full sidebar, horizontal player
   */
 }
@@ -197,13 +197,13 @@ button {
 .album-detail-page,
 .artist-detail-page,
 .song-detail-page {
-  padding: var(--space-5);
+  padding: var(--space-4);
 
   h1 {
-    font-size: var(--font-xl);
+    font-size: var(--font-lg);
     font-weight: var(--weight-bold);
     color: var(--color-text);
-    margin-bottom: var(--space-5);
+    margin-bottom: var(--space-4);
   }
 
   .loading,
@@ -235,7 +235,7 @@ button {
   }
 }
 
-@media (max-width: 480px) {
+@media (min-width: 481px) {
   .albums-page,
   .artists-page,
   .songs-page,
@@ -244,11 +244,11 @@ button {
   .album-detail-page,
   .artist-detail-page,
   .song-detail-page {
-    padding: var(--space-4);
+    padding: var(--space-5);
 
     h1 {
-      font-size: var(--font-lg);
-      margin-bottom: var(--space-4);
+      font-size: var(--font-xl);
+      margin-bottom: var(--space-5);
     }
   }
 }

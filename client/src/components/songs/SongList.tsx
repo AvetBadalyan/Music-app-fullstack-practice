@@ -15,7 +15,7 @@ interface SongListProps {
 const formatDuration = (seconds?: number): string => {
   if (!seconds) return '--:--';
   const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
+  const secs = Math.floor(seconds % 60);
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
@@ -32,8 +32,6 @@ const SongList = ({
       <EmptyState
         title="No songs yet"
         description="Your library is quiet. Add a track to get the music going."
-        actionLabel="Add a song"
-        actionTo="/songs"
       />
     );
   }
@@ -67,6 +65,7 @@ const SongList = ({
             className={`song-row${isActive ? ' is-active' : ''}`}
           >
             <button
+              type="button"
               className="index-play"
               onClick={handleClick}
               title={

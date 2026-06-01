@@ -1,99 +1,231 @@
 # Music App
 
-This repository contains a full-stack music app:
+A full-stack music library application with a global audio player, admin content management, and a fully responsive dark UI.
 
-- `src/` contains the Express + TypeORM backend.
-- `client/` contains the React + Vite frontend.
+**Live demo:** https://music-app-fullstack-practice.vercel.app/
 
-In development, the frontend calls `/api/...` and Vite proxies those requests to the backend at `http://localhost:3000`.
-
-## Live Demo
-
-https://music-app-fullstack-practice.vercel.app/
+---
 
 ## Screenshots
 
-### Home
+### Home — hero slider + recent songs
 
-![Home](screenshots/Screenshot%202026-05-26%20185343.png)
+![Home](screenshots/Screenshot%202026-06-01%20220257.png)
 
 ### Albums
 
-![Albums](screenshots/Screenshot%202026-05-26%20185524.png)
+![Albums](screenshots/Screenshot%202026-06-01%20224827.png)
 
 ### Artists
 
-![Artists](screenshots/Screenshot%202026-05-26%20185423.png)
+![Artists](screenshots/Screenshot%202026-06-01%20224845.png)
 
-### Artist detail
+### Songs
 
-![Artist detail](screenshots/Screenshot%202026-05-26%20185512.png)
-
-### Create song
-
-![Create song](screenshots/Screenshot%202026-05-26%20185413.png)
-
-### Song detail
-
-![Song detail](screenshots/Screenshot%202026-05-26%20185442.png)
+![Songs](screenshots/Screenshot%202026-06-01%20212618.png)
 
 ### Genres
 
-![Genres](screenshots/Screenshot%202026-05-26%20192027.png)
+![Genres](screenshots/Screenshot%202026-06-01%20212627.png)
 
-### Genre detail
+### Artist detail — dominant-color hero, discography, tracklist
 
-![Genre detail](screenshots/Screenshot%202026-05-26%20204422.png)
+![Artist detail](screenshots/Screenshot%202026-06-01%20212637.png)
 
-### Album detail
+### Admin view — create-song form + song list
 
-![Album detail](screenshots/Screenshot%202026-05-26%20185541.png)
+![Admin create song](screenshots/Screenshot%202026-06-01%20212802.png)
 
-### Album tracklist
+### Mobile — home page
 
-![Album tracklist](screenshots/Screenshot%202026-05-26%20185533.png)
+![Mobile home](screenshots/Screenshot%202026-06-01%20212705.png)
+
+### Mobile — navigation drawer
+
+![Mobile navigation](screenshots/Screenshot%202026-06-01%20212712.png)
+
+### Player — desktop (progress bar, shuffle, repeat, volume)
+
+![Player desktop](screenshots/Screenshot%202026-06-01%20234128.png)
+
+### Player — mobile (stacked layout)
+
+![Player mobile](screenshots/Screenshot%202026-06-01%20234203.png)
+
+### Confirm dialog — delete with cascade warning
+
+![Confirm dialog](screenshots/Screenshot%202026-06-01%20234309.png)
+
+---
 
 ## Stack
 
-- Backend: Express, TypeORM, PostgreSQL, Supabase Auth, Supabase Storage, Multer, class-validator, music-metadata, TypeScript
-- Frontend: React 19, Vite, Supabase Auth client, Redux Toolkit + RTK Query, React Router v7, Sass, react-toastify, lucide-react
-- Tooling: TypeScript end-to-end, ESLint, nodemon, ts-node
+| Layer | Technologies |
+|---|---|
+| **Backend** | Node.js, Express, TypeORM, PostgreSQL, Supabase Auth, Supabase Storage, Multer, music-metadata, class-validator, TypeScript |
+| **Frontend** | React 19, Vite, Redux Toolkit + RTK Query, React Router v7, Supabase Auth client, Sass, react-toastify, lucide-react, TypeScript |
+| **Tooling** | ESLint, nodemon, ts-node |
+
+---
 
 ## Features
 
-Backend:
-
-- REST API for songs, artists, albums, and genres with full CRUD where applicable (create, list, get by id, delete).
-- Request validation via class-validator DTOs and a generic `validateRequest` middleware.
+### Backend
+- REST API for songs, artists, albums, and genres (list, get by id, create, delete).
+- Request validation via class-validator DTOs and a `validateRequest` middleware.
 - UUID path-parameter validation middleware.
-- File uploads via Multer (memory storage):
-  - Songs: audio upload up to 500 MB, audio-only MIME filter.
-  - Artists / Albums: image upload up to 10 MB, image-only MIME filter.
-- Audio duration extracted automatically with `music-metadata` (the client never sends `duration`).
+- File uploads via Multer (memory storage) with MIME filtering:
+  - Songs: audio only, up to 500 MB.
+  - Artists / Albums: images only, up to 10 MB.
+- Audio duration extracted automatically with `music-metadata` — never sent by the client.
 - Media files uploaded to Supabase Storage; public URLs persisted in PostgreSQL.
-- Supabase JWT verification for admin-only create/delete operations.
-- Centralized error handler with typed error classes (validation, not-found, database, etc.).
-- Search endpoints for songs (by title) and artists (by name).
-- Seed script that loads sample genres, artists, albums and real mp3 + cover assets.
+- Supabase JWT verification for all write/delete routes (`requireAdmin` middleware).
+- Centralized typed error handler (`ValidationError`, `NotFoundError`, `DatabaseError`, etc.).
+- Debounced search endpoints for songs (by title) and artists (by name).
+- Seed script with sample genres, artists, albums, real mp3 files and cover art.
 
-Frontend:
-
-- Single-page app with 10 routes and a shared layout.
-- Supabase Auth login for the configured admin user.
-- Global persistent audio player (Redux Toolkit slice + listener middleware) with play / pause / next / previous / progress.
-- RTK Query API slices per resource with automatic caching and tag-based invalidation.
-- Public browsing/playback for visitors, with create/delete UI shown only to the admin.
-- Forms for creating songs, artists, albums and genres, including file pickers for audio and images.
-- Debounced search bar, skeleton loaders, empty states, confirm dialog for destructive actions.
-- Dominant-color extraction hook used to theme detail pages.
+### Frontend
+- Single-page app with 11 routes and a shared persistent layout.
+- Supabase Auth login — admin-only create/delete, public browsing/playback for visitors.
+- Hero slider on the home page with auto-advance, pause-on-hover, keyboard-accessible dot/arrow controls.
+- Global persistent audio player (Redux Toolkit slice + listener middleware):
+  - Play / pause / skip / previous, shuffle, and three repeat modes (off / all / one).
+  - Keyboard shortcuts: Space, Arrow keys, M (mute), N (next), P (previous), S (shuffle), R (repeat).
+  - Seeking and volume control with accessible range inputs.
+  - Player auto-closes when the playing song, album, or artist is deleted.
+- RTK Query API slices per resource with automatic caching and tag-based cache invalidation.
+- Dominant-color extraction hook — samples album/artist cover art via `<canvas>` to theme detail page heroes.
+- Debounced search bar, skeleton loaders, empty states, confirm dialog for destructive actions (focus-trapped, accessible).
+- Forms for creating songs, artists, albums, and genres including file pickers.
 - Toast notifications via `react-toastify`.
-- Sass modules for styling, fully responsive layout.
+- Fully responsive layout — mobile off-canvas sidebar, tablet/desktop static sidebar.
+- Sass with CSS custom properties for all design tokens (colors, spacing, typography, shadows).
+
+---
+
+## Prerequisites
+
+- **Node.js** ≥ 18
+- **PostgreSQL** (local instance or a cloud service)
+- **Supabase project** (for Auth and Storage — free tier works)
+
+---
+
+## Local development
+
+### 1. Clone and install dependencies
+
+```bash
+git clone https://github.com/your-username/music-app.git
+cd music-app
+
+# Backend
+npm install
+
+# Frontend
+cd client && npm install && cd ..
+```
+
+### 2. Configure environment variables
+
+**Backend** — copy `.env.example` to `.env` and fill in your values:
+
+```bash
+cp .env.example .env
+```
+
+Key variables:
+
+| Variable | Description |
+|---|---|
+| `DATABASE_URL` | Full PostgreSQL connection URL (or use individual `DB_*` vars) |
+| `SUPABASE_URL` | Your Supabase project URL |
+| `SUPABASE_SECRET_KEY` | Supabase **service-role** key (kept server-side only) |
+| `SUPABASE_SONGS_BUCKET` | Supabase Storage bucket name for audio files |
+| `SUPABASE_ALBUM_COVERS_BUCKET` | Supabase Storage bucket name for album covers |
+| `SUPABASE_ARTIST_IMAGES_BUCKET` | Supabase Storage bucket name for artist images |
+| `ADMIN_EMAIL` | Email address that receives admin write access |
+| `CLIENT_URL` | Frontend origin for CORS, e.g. `http://localhost:5173` |
+
+**Frontend** — copy `client/.env.example` to `client/.env`:
+
+```bash
+cp client/.env.example client/.env
+```
+
+Key variables:
+
+| Variable | Description |
+|---|---|
+| `VITE_SUPABASE_URL` | Your Supabase project URL |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Supabase **anon / publishable** key |
+| `VITE_ADMIN_EMAIL` | Same email as `ADMIN_EMAIL` — controls UI visibility |
+
+### 3. Run the app
+
+Open two terminals:
+
+```bash
+# Terminal 1 — backend (http://localhost:3000)
+npm run dev
+
+# Terminal 2 — frontend (http://localhost:5173)
+npm run dev:client
+```
+
+The Vite dev server proxies all `/api/*` requests to the backend automatically.
+
+### 4. (Optional) Seed sample data
+
+```bash
+npm run seed
+```
+
+This loads genres, artists, albums, and real mp3 tracks into your database and uploads the media files to Supabase Storage.
+
+---
+
+## Project structure
+
+```
+music-app/
+├── src/                    # Express + TypeORM backend
+│   ├── controllers/        # Route handlers
+│   ├── services/           # Business logic
+│   ├── entities/           # TypeORM entity classes
+│   ├── dto/                # class-validator DTOs
+│   ├── middlewares/        # auth, validation, error handler, file upload
+│   ├── routes/             # Express routers
+│   └── seed/               # Seed script + assets
+└── client/                 # React + Vite frontend
+    └── src/
+        ├── app/            # Redux store, hooks, env, utilities
+        ├── components/     # Shared UI (layout, player, forms, common)
+        ├── features/       # Auth slice, player slice + listener
+        ├── pages/          # Route-level page components
+        ├── services/       # RTK Query API slices
+        ├── styles/         # Global CSS tokens and resets
+        └── types/          # Shared TypeScript interfaces
+```
+
+---
+
+## Deployment notes
+
+- **`DB_SYNCHRONIZE`** must be `false` in production. Use TypeORM migrations instead:
+  ```bash
+  npx typeorm-ts-node-commonjs migration:generate src/migrations/Init -d src/data-source.ts
+  npx typeorm-ts-node-commonjs migration:run -d src/data-source.ts
+  ```
+- **CORS:** `CLIENT_URL` must match the deployed frontend origin exactly (no trailing slash).
+- **Vite proxy** is dev-only. In production deploy the frontend separately and set `VITE_API_URL` to the backend URL.
+
 
 ## Frontend Pages
 
 | Route          | Page             | What it does                                                           |
 | -------------- | ---------------- | ---------------------------------------------------------------------- |
-| `/`            | HomePage         | Landing view with highlights and quick links.                          |
+| `/`            | HomePage         | Landing view with featured hero slider, recent songs, and album highlights.                          |
 | `/songs`       | SongsPage        | Browseable, searchable list of songs; create new song; play any track. |
 | `/songs/:id`   | SongDetailPage   | Single song view with artist, album, genres and inline playback.       |
 | `/artists`     | ArtistsPage      | Grid of artists with search and a create-artist form.                  |

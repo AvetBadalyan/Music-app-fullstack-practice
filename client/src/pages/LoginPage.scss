@@ -1,7 +1,7 @@
 .login-page {
   display: grid;
   min-height: calc(100dvh - 6.4rem);
-  padding: var(--space-5);
+  padding: var(--space-4);
   place-items: center;
 }
 
@@ -13,7 +13,7 @@
   display: grid;
   gap: var(--space-4);
   max-width: 42rem;
-  padding: var(--space-5);
+  padding: var(--space-4);
   width: 100%;
 
   .login-heading {
@@ -100,12 +100,12 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (min-width: 481px) {
   .login-page {
-    padding: var(--space-4);
+    padding: var(--space-5);
   }
 
   .login-panel {
-    padding: var(--space-4);
+    padding: var(--space-5);
   }
 }

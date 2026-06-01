@@ -46,7 +46,7 @@ const ArtistsPage = () => {
         onChange={setSearchTerm}
       />
       {isLoading ? (
-        <p className="loading">Loading...</p>
+        <div className="page-status page-status--loading">Loading artists...</div>
       ) : (
         <ArtistList artists={artists ?? []} />
       )}

@@ -6,7 +6,7 @@
   border-radius: var(--radius-pill);
   padding: var(--space-2) var(--space-3) var(--space-2) var(--space-4);
   margin-bottom: var(--space-5);
-  max-width: 40rem;
+  max-width: 100%;
   transition:
     border-color var(--transition),
     box-shadow var(--transition);
@@ -27,7 +27,7 @@
     outline: none;
     color: var(--color-text);
     font-size: var(--font-sm);
-    line-height: 1.6rem;
+    line-height: 1;
     height: 1.6rem;
     width: 100%;
     padding: 0;
@@ -58,5 +58,11 @@
       color: var(--color-text);
       background: var(--color-surface-hover);
     }
+  }
+}
+
+@media (min-width: 481px) {
+  .search-bar {
+    max-width: 40rem;
   }
 }

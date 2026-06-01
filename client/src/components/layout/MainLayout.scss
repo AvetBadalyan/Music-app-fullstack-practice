@@ -15,12 +15,12 @@
     flex: 1;
     min-width: 0; // prevent grid/flex children from forcing overflow
     overflow-y: auto;
-    padding-bottom: 12rem; // space for music player (taller on mobile)
+    padding-bottom: 12rem; // space for music player (stacked on mobile)
   }
 }
 
 @media (min-width: 1025px) {
   .main-layout .content {
-    padding-bottom: 9.6rem; // standard player height + breathing room on desktop
+    padding-bottom: 9.6rem; // horizontal player height on desktop
   }
 }

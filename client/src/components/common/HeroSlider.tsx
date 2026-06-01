@@ -1,23 +1,23 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import './HeroSlider.scss';
 
 const SLIDES = [
   {
     src: '/singers/music_slide_1_1920x1080.jpg',
-    alt: 'Slide 1',
+    alt: '',
   },
   {
     src: '/singers/music_slide_2_1920x1080.jpg',
-    alt: 'Slide 2',
+    alt: '',
   },
   {
     src: '/singers/music_slide_3_1920x1080.jpg',
-    alt: 'Slide 3',
+    alt: '',
   },
   {
     src: '/singers/music_slide_4_1920x1080.jpg',
-    alt: 'Slide 4',
+    alt: '',
   },
 ];
 
@@ -26,15 +26,6 @@ const AUTO_ADVANCE_MS = 5000;
 const HeroSlider = () => {
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
-  const pausedRef = useRef(paused);
-
-  useEffect(() => {
-    pausedRef.current = paused;
-  }, [paused]);
-
-  const goTo = useCallback((index: number) => {
-    setCurrent(index);
-  }, []);
 
   const prev = useCallback(() => {
     setCurrent((c) => (c - 1 + SLIDES.length) % SLIDES.length);
@@ -47,9 +38,7 @@ const HeroSlider = () => {
   useEffect(() => {
     if (paused) return;
     const id = setInterval(() => {
-      if (!pausedRef.current) {
-        setCurrent((c) => (c + 1) % SLIDES.length);
-      }
+      setCurrent((c) => (c + 1) % SLIDES.length);
     }, AUTO_ADVANCE_MS);
     return () => clearInterval(id);
   }, [paused]);
@@ -107,7 +96,7 @@ const HeroSlider = () => {
             aria-selected={i === current}
             aria-label={`Go to slide ${i + 1}`}
             className={`hero-slider__dot${i === current ? ' hero-slider__dot--active' : ''}`}
-            onClick={() => goTo(i)}
+            onClick={() => setCurrent(i)}
           />
         ))}
       </div>

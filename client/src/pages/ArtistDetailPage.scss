@@ -3,9 +3,10 @@
 
   .artist-header {
     display: flex;
-    gap: var(--space-5);
-    align-items: center;
-    padding: 6.4rem var(--space-5) var(--space-5);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+    padding: var(--space-5) var(--space-4);
     margin-bottom: var(--space-5);
     transition: background 0.4s ease;
 
@@ -14,8 +15,8 @@
     }
 
     .profile-picture {
-      width: 20rem;
-      height: 20rem;
+      width: 14rem;
+      height: 14rem;
       border-radius: 50%;
       object-fit: cover;
       box-shadow: var(--shadow-elevation);
@@ -24,7 +25,7 @@
 
     .artist-info {
       h1 {
-        font-size: var(--font-hero);
+        font-size: var(--font-xl);
         font-weight: var(--weight-bold);
         color: var(--color-text);
         margin-bottom: var(--space-2);
@@ -56,7 +57,7 @@
   }
 
   .artist-section {
-    padding: 0 var(--space-5);
+    padding: 0 var(--space-4);
     margin-bottom: var(--space-5);
 
     h2 {
@@ -69,26 +70,26 @@
 
 }
 
-@media (max-width: 480px) {
+@media (min-width: 481px) {
   .artist-detail-page {
     .artist-header {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: var(--space-4);
-      padding: var(--space-5) var(--space-4);
+      flex-direction: row;
+      align-items: center;
+      gap: var(--space-5);
+      padding: 6.4rem var(--space-5) var(--space-5);
 
       .profile-picture {
-        width: 14rem;
-        height: 14rem;
+        width: 20rem;
+        height: 20rem;
       }
 
       .artist-info h1 {
-        font-size: var(--font-xl);
+        font-size: var(--font-hero);
       }
     }
 
     .artist-section {
-      padding: 0 var(--space-4);
+      padding: 0 var(--space-5);
     }
   }
 }
