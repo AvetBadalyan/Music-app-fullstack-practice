@@ -14,7 +14,6 @@
   /* Brand */
   --color-accent: #9466ee;
   --color-accent-hover: #a87fff;
-  --color-accent-strong: #7847cf;
   --color-accent-soft: rgba(148, 102, 238, 0.14);
 
   /* Status */
@@ -30,9 +29,8 @@
   --space-5: 2.4rem; /* 24px — large (sections, grid gaps) */
 
   /* Radius */
-  --radius-md: 0.8rem; /*  8px — default (cards, buttons, inputs, skeletons) */
-  --radius-lg: 1.6rem; /* 16px — hero / featured surfaces */
-  --radius-pill: 999px; /*       capsules, circles */
+  --radius-md: 0.8rem;  /* 8px — cards, buttons, inputs, skeletons */
+  --radius-pill: 999px; /* capsules, circles */
 
   /* Typography scale (1rem = 10px) */
   --font-xs: 1.2rem; /* 12px — captions, meta, badges */
@@ -44,7 +42,7 @@
 
   /* Font weights */
   --weight-regular: 400; /* default body */
-  --weight-bold: 700; /* emphasis: titles, song names, active nav */
+  --weight-bold: 700;   /* titles, song names, active nav */
 
   /* Shadows — one neutral, one accent. */
   --shadow-elevation: 0 2px 8px rgba(0, 0, 0, 0.35); /* cards, covers, toasts, hero panels */
@@ -190,13 +188,15 @@ button {
   background: var(--color-accent) !important;
 }
 
-/* Shared page-shell for list pages — padding, title, status text.
-   Pages with custom layouts (Home, *Detail, Create) keep their own scss. */
+/* Shared page-shell for list pages — padding, title, status text. */
 .albums-page,
 .artists-page,
 .songs-page,
 .genres-page,
-.genre-detail-page {
+.genre-detail-page,
+.album-detail-page,
+.artist-detail-page,
+.song-detail-page {
   padding: var(--space-5);
 
   h1 {
@@ -240,7 +240,10 @@ button {
   .artists-page,
   .songs-page,
   .genres-page,
-  .genre-detail-page {
+  .genre-detail-page,
+  .album-detail-page,
+  .artist-detail-page,
+  .song-detail-page {
     padding: var(--space-4);
 
     h1 {

@@ -27,8 +27,18 @@ const ArtistDetailPage = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const dominant = useDominantColor(artist?.profilePicture);
 
-  if (isLoading) return <p className="loading">Loading...</p>;
-  if (error || !artist) return <p className="error">Artist not found.</p>;
+  if (isLoading)
+    return (
+      <div className="artist-detail-page">
+        <div className="page-status page-status--loading">Loading artist...</div>
+      </div>
+    );
+  if (error || !artist)
+    return (
+      <div className="artist-detail-page">
+        <div className="page-status">Artist not found.</div>
+      </div>
+    );
 
   const songCount = artist.songs?.length ?? 0;
   const albumCount = artist.albums?.length ?? 0;

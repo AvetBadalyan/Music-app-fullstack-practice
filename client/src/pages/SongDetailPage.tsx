@@ -42,8 +42,18 @@ const SongDetailPage = () => {
   const coverImage = album?.coverImage;
   const dominant = useDominantColor(coverImage);
 
-  if (isLoading) return <p className="loading">Loading...</p>;
-  if (error || !song) return <p className="error">Song not found.</p>;
+  if (isLoading)
+    return (
+      <div className="song-detail-page">
+        <div className="page-status page-status--loading">Loading song...</div>
+      </div>
+    );
+  if (error || !song)
+    return (
+      <div className="song-detail-page">
+        <div className="page-status">Song not found.</div>
+      </div>
+    );
 
   const handleConfirmDelete = async () => {
     const target = song;

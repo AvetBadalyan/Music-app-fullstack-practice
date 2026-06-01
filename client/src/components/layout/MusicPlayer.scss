@@ -28,7 +28,7 @@
     color: var(--color-text-muted);
     cursor: pointer;
     padding: var(--space-1);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-md);
     transition: color var(--transition), background var(--transition);
 
     &:hover {

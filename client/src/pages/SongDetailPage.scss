@@ -108,6 +108,10 @@
 
   .song-actions {
     padding: 0 var(--space-5);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
   }
 
   .play-btn {
@@ -136,18 +140,11 @@
   }
 
   .delete-btn {
-    /* Use the global `.delete-btn` defaults from forms.scss and only
-       override the sizing so it visually matches the larger `.play-btn`. */
+    /* Override sizing to match the larger .play-btn; gap on .song-actions handles spacing. */
     padding: var(--space-3) var(--space-5);
     font-size: var(--font-md);
-    margin-left: var(--space-3);
   }
 
-  .loading,
-  .error {
-    color: var(--color-text-muted);
-    padding: var(--space-5);
-  }
 }
 
 @media (max-width: 480px) {
@@ -170,6 +167,7 @@
 
     .song-actions {
       padding: 0 var(--space-4);
+      gap: var(--space-2);
     }
   }
 }

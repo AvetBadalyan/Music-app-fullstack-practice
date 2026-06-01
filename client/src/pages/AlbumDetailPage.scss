@@ -75,11 +75,6 @@
     }
   }
 
-  .loading,
-  .error {
-    color: var(--color-text-muted);
-    padding: var(--space-5);
-  }
 }
 
 @media (max-width: 480px) {

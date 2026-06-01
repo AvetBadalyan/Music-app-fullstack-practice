@@ -26,8 +26,18 @@ const AlbumDetailPage = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const dominant = useDominantColor(album?.coverImage);
 
-  if (isLoading) return <p className="loading">Loading...</p>;
-  if (error || !album) return <p className="error">Album not found.</p>;
+  if (isLoading)
+    return (
+      <div className="album-detail-page">
+        <div className="page-status page-status--loading">Loading album...</div>
+      </div>
+    );
+  if (error || !album)
+    return (
+      <div className="album-detail-page">
+        <div className="page-status">Album not found.</div>
+      </div>
+    );
 
   const songCount = album.songs?.length ?? 0;
   const confirmMessage =
