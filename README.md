@@ -11,23 +11,27 @@ A full-stack music library application with a global audio player, admin content
 
 ### Home — hero slider + recent songs
 
-![Home](screenshots/Screenshot%202026-06-01%20220257.png)
+![Home](screenshots/Screenshot%202026-06-01%20224827.png)
 
 ### Albums
 
-![Albums](screenshots/Screenshot%202026-06-01%20224827.png)
+![Albums](screenshots/Screenshot%202026-06-01%20212647.png)
 
 ### Artists
 
-![Artists](screenshots/Screenshot%202026-06-01%20224845.png)
+![Artists](screenshots/Screenshot%202026-06-01%20212618.png)
 
 ### Songs
 
-![Songs](screenshots/Screenshot%202026-06-01%20212618.png)
+![Songs](screenshots/Screenshot%202026-06-01%20220257.png)
+
+### Song detail — dominant-color hero, play button
+
+![Song detail](screenshots/Screenshot%202026-06-01%20212627.png)
 
 ### Genres
 
-![Genres](screenshots/Screenshot%202026-06-01%20212627.png)
+![Genres](screenshots/Screenshot%202026-06-01%20212653.png)
 
 ### Artist detail — dominant-color hero, discography, tracklist
 
