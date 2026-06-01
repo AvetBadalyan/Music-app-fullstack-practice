@@ -37,6 +37,14 @@ A full-stack music library application with a global audio player, admin content
 
 ![Artist detail](screenshots/Screenshot%202026-06-01%20212637.png)
 
+### Album detail — dominant-color hero, tracklist
+
+![Album detail](screenshots/Screenshot%202026-06-02%20004739.png)
+
+### Genre detail — filtered song list
+
+![Genre detail](screenshots/Screenshot%202026-06-02%20004716.png)
+
 ### Admin view — create-song form + song list
 
 ![Admin create song](screenshots/Screenshot%202026-06-01%20212802.png)
