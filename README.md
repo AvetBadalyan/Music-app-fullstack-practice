@@ -118,7 +118,7 @@ A full-stack music library application with a global audio player, admin content
 
 ## Prerequisites
 
-- **Node.js** ≥ 18
+- **Node.js** ^20.19 or ≥22.12 (required by Vite 8)
 - **PostgreSQL** (local instance or a cloud service)
 - **Supabase project** (for Auth and Storage — free tier works)
 
@@ -281,7 +281,7 @@ music-app/
 
 ## Requirements
 
-- Node.js 18 or newer
+- Node.js ^20.19 or ≥22.12 (required by Vite 8)
 - PostgreSQL
 - A `.env` file for backend configuration
 - A `client/.env` file for frontend Supabase Auth configuration
