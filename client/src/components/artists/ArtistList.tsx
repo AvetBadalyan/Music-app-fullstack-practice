@@ -31,7 +31,12 @@ const ArtistList = ({ artists }: ArtistListProps) => {
         >
           <div className="artist-avatar">
             {artist.profilePicture ? (
-              <img src={artist.profilePicture} alt={artist.name} />
+              <img
+                src={artist.profilePicture}
+                alt={artist.name}
+                loading="lazy"
+                decoding="async"
+              />
             ) : (
               <div className="placeholder" aria-hidden="true">
                 <Mic2 size={32} strokeWidth={1.5} />

@@ -75,6 +75,10 @@ const ArtistDetailPage = () => {
           <img
             className="profile-picture"
             src={artist.profilePicture}
+            // Above the fold and the page's LCP element.
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
             alt={artist.name}
           />
         )}

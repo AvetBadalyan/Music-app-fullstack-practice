@@ -62,7 +62,15 @@ const HeroSlider = () => {
               className="hero-slider__slide"
               aria-hidden={i !== current}
             >
-              <img src={slide.src} alt={slide.alt} draggable={false} />
+              <img
+                src={slide.src}
+                alt={slide.alt}
+                draggable={false}
+                loading="eager"
+                // First slide is the LCP element, so it loads at high priority.
+                fetchPriority={i === 0 ? 'high' : 'low'}
+                decoding="async"
+              />
             </div>
           ))}
         </div>

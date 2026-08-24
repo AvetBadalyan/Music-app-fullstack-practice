@@ -51,6 +51,9 @@
   /* Transition */
   --transition: 0.2s ease;
 
+  /* Header height */
+  --header-height: 6.4rem;
+
   /* Breakpoints — mobile-first, chosen by real device widths.
        base      → phones (≤ 480px) — single-column layout, smallest paddings
        ≥ 481px   → tablets & desktops — wider grids, larger type, more padding
@@ -69,6 +72,7 @@
 /* 1rem = 10px so 2.4rem reads as 24px, 1.6rem as 16px, etc. */
 html {
   font-size: 62.5%;
+  scrollbar-gutter: stable; // avoid a horizontal shift when the scrollbar appears
 }
 
 body {

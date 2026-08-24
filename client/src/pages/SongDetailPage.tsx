@@ -77,7 +77,14 @@ const SongDetailPage = () => {
       <div className="song-header has-hero" style={heroStyle}>
         <div className="cover-image">
           {coverImage ? (
-            <img src={coverImage} alt={song.album?.title ?? song.title} />
+            <img
+              src={coverImage}
+              // Above the fold and the page's LCP element.
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              alt={song.album?.title ?? song.title}
+            />
           ) : (
             <div className="placeholder" aria-hidden="true">
               <Music size={48} strokeWidth={1.5} />

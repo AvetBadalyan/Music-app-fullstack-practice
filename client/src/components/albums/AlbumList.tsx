@@ -27,7 +27,12 @@ const AlbumList = ({ albums }: AlbumListProps) => {
         <Link key={album.id} to={`/albums/${album.id}`} className="album-card">
           <div className="album-cover">
             {album.coverImage ? (
-              <img src={album.coverImage} alt={album.title} />
+              <img
+                src={album.coverImage}
+                alt={album.title}
+                loading="lazy"
+                decoding="async"
+              />
             ) : (
               <div className="placeholder" aria-hidden="true">
                 <Music size={32} strokeWidth={1.5} />

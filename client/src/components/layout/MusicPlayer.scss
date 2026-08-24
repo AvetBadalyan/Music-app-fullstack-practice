@@ -10,7 +10,9 @@
   grid-template-columns: 1fr;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
+  // Extra bottom padding for the iOS home-bar / Android gesture area.
+  padding: var(--space-3) var(--space-4)
+    calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
   z-index: 100;
 
   .close-btn {

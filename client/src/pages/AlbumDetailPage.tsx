@@ -69,6 +69,10 @@ const AlbumDetailPage = () => {
           <img
             className="cover-image"
             src={album.coverImage}
+            // Above the fold and the page's LCP element.
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
             alt={album.title}
           />
         )}

@@ -1,6 +1,8 @@
 .login-page {
   display: grid;
-  min-height: calc(100dvh - 6.4rem);
+  /* vh first as the fallback for browsers without dvh support. */
+  min-height: calc(100vh - var(--header-height));
+  min-height: calc(100dvh - var(--header-height));
   padding: var(--space-4);
   place-items: center;
 }
