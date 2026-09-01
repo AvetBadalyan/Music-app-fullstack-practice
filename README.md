@@ -118,7 +118,7 @@ A full-stack music library application with a global audio player, admin content
 
 ## Prerequisites
 
-- **Node.js** ^20.19 or ≥22.12 (required by Vite 8)
+- **Node.js** ≥22.12 (Vite 8's minimum; Node 20 is end-of-life and no longer offered as a Vercel runtime)
 - **PostgreSQL** (local instance or a cloud service)
 - **Supabase project** (for Auth and Storage — free tier works)
 
@@ -282,7 +282,7 @@ music-app/
 
 ## Requirements
 
-- Node.js ^20.19 or ≥22.12 (required by Vite 8)
+- Node.js ≥22.12 (Vite 8's minimum; Node 20 is end-of-life and no longer offered as a Vercel runtime)
 - PostgreSQL
 - A `.env` file for backend configuration
 - A `client/.env` file for frontend Supabase Auth configuration

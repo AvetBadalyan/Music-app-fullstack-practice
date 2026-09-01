@@ -13,7 +13,7 @@
     "preview:client": "npm --prefix client run preview"
   },
   "engines": {
-    "node": "^20.19.0 || >=22.12.0"
+    "node": ">=22.12.0"
   },
   "keywords": [],
   "author": "Avet",
