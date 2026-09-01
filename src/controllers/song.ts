@@ -1,5 +1,4 @@
 import type { Request, Response, NextFunction } from 'express';
-import * as mm from 'music-metadata';
 import { SongService } from '../services/song';
 import type { ISong } from '../types/song';
 import type { SearchSongDto, CreateSongDto } from '../dto/song.dto';
@@ -28,10 +27,10 @@ export class SongController {
       let durationFromFile: number | undefined;
 
       try {
-        const metadata = await mm.parseBuffer(
-          audioFile.buffer,
-          audioFile.mimetype,
-        );
+        // music-metadata is ESM-only; a dynamic import is the only way a
+        // CommonJS module (this project) can load it.
+        const { parseBuffer } = await import('music-metadata');
+        const metadata = await parseBuffer(audioFile.buffer, audioFile.mimetype);
         const duration = metadata?.format?.duration;
 
         if (!duration || duration < 1) {
