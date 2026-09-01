@@ -7,13 +7,18 @@ export class Artist {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ length: 100 })
+  @Column({ type: 'varchar', length: 100 })
   name!: string;
 
-  @Column({ length: 1000, nullable: true })
+  @Column({ type: 'varchar', length: 1000, nullable: true })
   bio!: string;
 
-  @Column({ length: 500, nullable: true, name: 'profile_picture' })
+  @Column({
+    type: 'varchar',
+    length: 500,
+    nullable: true,
+    name: 'profile_picture',
+  })
   profilePicture!: string;
 
   @OneToMany(() => Album, album => album.artist, {

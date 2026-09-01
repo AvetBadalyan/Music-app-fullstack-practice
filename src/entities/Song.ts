@@ -15,13 +15,13 @@ export class Song {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ length: 100 })
+  @Column({ type: 'varchar', length: 100 })
   title!: string;
 
   @Column({ type: 'int' })
   duration!: number;
 
-  @Column({ length: 255, nullable: true, name: 'audio_file' })
+  @Column({ type: 'varchar', length: 255, nullable: true, name: 'audio_file' })
   audioFile!: string;
 
   @ManyToOne(() => Album, album => album.songs, {

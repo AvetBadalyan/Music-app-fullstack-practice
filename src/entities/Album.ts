@@ -13,13 +13,13 @@ export class Album {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ length: 100 })
+  @Column({ type: 'varchar', length: 100 })
   title!: string;
 
   @Column({ type: 'date', nullable: true, name: 'release_date' })
   releaseDate!: string;
 
-  @Column({ length: 500, nullable: true, name: 'cover_image' })
+  @Column({ type: 'varchar', length: 500, nullable: true, name: 'cover_image' })
   coverImage!: string;
 
   @ManyToOne(() => Artist, artist => artist.albums, {
