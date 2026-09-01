@@ -233,7 +233,8 @@ music-app/
 - **CORS:** `CLIENT_URL` must match the deployed frontend origin exactly (no trailing slash).
 - **Vite proxy** is dev-only. In production deploy the frontend separately and set `VITE_API_URL` to the backend URL.
 - **Backend hosting:** the API runs on Vercel as a single serverless function (`api/index.ts`, routed via `vercel.json`). Set `DATABASE_URL`, `CLIENT_URL`, `DB_SYNCHRONIZE=false` and the `SUPABASE_*` / `ADMIN_EMAIL` variables in the Vercel project's environment settings — none of these are read from a committed config file. (`NODE_ENV=production` is set by Vercel itself, which is what enables SSL to Postgres.)
-- **`buildCommand: ""` in `vercel.json`** is deliberate: Vercel compiles `api/index.ts` and everything it imports on its own, so the local `tsc` build is redundant there. Leaving it enabled makes the deploy fail looking for a static output directory this API doesn't have. `npm run build` / `npm start` remain for running the compiled server locally.
+- **The serverless entry (`api/index.js`) is plain JavaScript and loads `dist/`, not `src/`.** Vercel compiles TypeScript with esbuild, which does not implement `emitDecoratorMetadata`; the TypeORM entities infer column types from it (`@Column() title!: string`), so an esbuild-compiled entity throws `ColumnTypeUndefinedError` as soon as the class is defined. `vercel.json` therefore runs `npm run build` (tsc, which does emit the metadata) and the entry requires the compiled output.
+- **`outputDirectory: "public"`** is an empty placeholder. Once a build command runs, Vercel expects a static output directory; this API has no static assets, and pointing the setting at the repo root instead would publish the source.
 
 
 ## Frontend Pages
