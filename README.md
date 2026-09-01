@@ -232,6 +232,7 @@ music-app/
   ```
 - **CORS:** `CLIENT_URL` must match the deployed frontend origin exactly (no trailing slash).
 - **Vite proxy** is dev-only. In production deploy the frontend separately and set `VITE_API_URL` to the backend URL.
+- **Backend hosting:** the API runs on Vercel as a single serverless function (`api/index.ts`, routed via `vercel.json`). Set `DATABASE_URL`, `CLIENT_URL`, `DB_SYNCHRONIZE=false`, `NODE_ENV=production` and the `SUPABASE_*` / `ADMIN_EMAIL` variables in the Vercel project's environment settings — none of these are read from a committed config file.
 
 
 ## Frontend Pages
@@ -345,7 +346,7 @@ VITE_ADMIN_EMAIL=your_admin_email@example.com
 If you want the local frontend to call a deployed backend (instead of using the Vite `/api` proxy), also set:
 
 ```env
-VITE_API_URL=https://music-app-api-sa3n.onrender.com
+VITE_API_URL=https://your-api.vercel.app
 ```
 
 7. In Supabase Auth, create a user with the same email as `ADMIN_EMAIL`.
@@ -411,19 +412,13 @@ The React app reads Supabase Auth config from `client/.env`:
 | `VITE_SUPABASE_URL`      | yes      | Your Supabase project URL.                       |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | yes      | Supabase publishable key used by the browser. |
 | `VITE_ADMIN_EMAIL`       | yes      | Same admin email used by the backend. Controls UI visibility only. |
-| `VITE_API_URL`           | no       | Backend base URL (do not include `/api`). Example: `https://music-app-api-sa3n.onrender.com`. Leave unset in local dev to use the Vite `/api` proxy. |
+| `VITE_API_URL`           | no       | Backend base URL (do not include `/api`). Example: `https://your-api.vercel.app`. Leave unset in local dev to use the Vite `/api` proxy. |
 
 The frontend value is not a security boundary; the backend `ADMIN_EMAIL` check is what protects writes.
 
 ## Database Setup
 
 The database itself must exist before the backend starts (Quick Start step 4). On first launch, TypeORM connects to it and automatically creates the schema for all entities.
-
-If you want to initialize the schema without booting the full HTTP server, run:
-
-```bash
-npx ts-node src/index.ts
-```
 
 To populate the database with sample genres, artists, albums, songs and song-genre relationships (and upload the bundled mp3/cover assets to Supabase), run:
 
@@ -462,11 +457,11 @@ unset DATABASE_URL
 
 Why `NODE_ENV=production`? The backend enables SSL when `NODE_ENV=production`, which Supabase Postgres expects.
 
-After this finishes, your deployed app (Render/Vercel/Amplify) will immediately show the seeded data because it reads from the same Supabase database.
+After this finishes, your deployed app (Vercel/Amplify) will immediately show the seeded data because it reads from the same Supabase database.
 
 Notes:
 
-- Redeploying the backend (Render/AWS/etc.) does **not** wipe your data. Your rows live in Supabase Postgres.
+- Redeploying the backend (Vercel/etc.) does **not** wipe your data. Your rows live in Supabase Postgres.
 - The seed script **does** wipe data because it starts with `TRUNCATE ... CASCADE`.
 - If you are seeding a brand-new database with no tables yet, create the schema first (migrations are best practice; alternatively, temporarily enable TypeORM `synchronize` once to bootstrap tables).
 

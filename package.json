@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/app.ts",
+    "dev": "nodemon src/server.ts",
     "dev:client": "npm --prefix client run dev",
-    "start": "node dist/app.js",
+    "start": "node dist/server.js",
     "typeorm": "typeorm-ts-node-commonjs",
     "seed": "ts-node src/seed/seed.ts",
     "build": "tsc",
