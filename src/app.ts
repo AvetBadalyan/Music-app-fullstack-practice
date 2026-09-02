@@ -36,6 +36,22 @@ app.use(
 );
 app.use(express.json());
 
+// Service descriptor. Sits above the database middleware with /healthz, so
+// both still answer when the database is unreachable.
+app.get('/', (_req, res) => {
+  res.status(200).json({
+    name: 'MusicAvet API',
+    status: 'ok',
+    endpoints: [
+      '/healthz',
+      '/api/songs',
+      '/api/artists',
+      '/api/albums',
+      '/api/genres',
+    ],
+  });
+});
+
 app.get('/healthz', (_req, res) => {
   res.status(200).json({ status: 'ok' });
 });
