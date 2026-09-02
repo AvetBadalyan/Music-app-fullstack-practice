@@ -1,7 +1,11 @@
 # dependencies
 /node_modules
 node_modules
+
+# env files - real values never get committed, only the .example templates
 .env
+.env.*
+!.env.example
 
 # production
 /build

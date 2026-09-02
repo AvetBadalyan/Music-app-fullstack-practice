@@ -1,8 +1,8 @@
-# Music App
+# MusicAvet
 
 A full-stack music library application with a global audio player, admin content management, and a fully responsive dark UI.
 
-**Live demo (Vercel):** https://music-app-fullstack-practice.vercel.app/
+**Live demo (Vercel):** https://musicavet.vercel.app/
 **Live demo (AWS Amplify):** https://main.d3kojl89wftd85.amplifyapp.com/
 
 ---

@@ -38,7 +38,7 @@ const Header = ({ menuOpen, onMenuToggle }: HeaderProps) => {
       </button>
       <Link to="/" className="logo">
         <Music2 size={22} strokeWidth={2.25} />
-        <span>Music App</span>
+        <span>MusicAvet</span>
       </Link>
       <div className="auth-actions">
         {email ? (
