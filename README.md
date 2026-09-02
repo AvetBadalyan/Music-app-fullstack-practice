@@ -129,8 +129,8 @@ A full-stack music library application with a global audio player, admin content
 ### 1. Clone and install dependencies
 
 ```bash
-git clone https://github.com/your-username/music-app.git
-cd music-app
+git clone https://github.com/AvetBadalyan/Music-app-fullstack-practice.git
+cd Music-app-fullstack-practice
 
 # Backend
 npm install
@@ -158,7 +158,7 @@ Key variables:
 | `SUPABASE_ALBUM_COVERS_BUCKET` | Supabase Storage bucket name for album covers |
 | `SUPABASE_ARTIST_IMAGES_BUCKET` | Supabase Storage bucket name for artist images |
 | `ADMIN_EMAIL` | Email address that receives admin write access |
-| `CLIENT_URL` | Frontend origin for CORS, e.g. `http://localhost:5173` |
+| `CLIENT_URL` | Allowed frontend origin(s) for CORS, e.g. `http://localhost:5173`. Comma-separated for multiple deployed frontends. |
 
 **Frontend** — copy `client/.env.example` to `client/.env`:
 
@@ -230,8 +230,10 @@ music-app/
   npx typeorm-ts-node-commonjs migration:generate src/migrations/Init -d src/data-source.ts
   npx typeorm-ts-node-commonjs migration:run -d src/data-source.ts
   ```
-- **CORS:** `CLIENT_URL` must match the deployed frontend origin exactly (no trailing slash).
+- **CORS:** `CLIENT_URL` must match the deployed frontend origin(s) exactly (no trailing slash). Comma-separated for more than one — e.g. a Vercel deployment and an AWS Amplify deployment of the same frontend.
 - **Vite proxy** is dev-only. In production deploy the frontend separately and set `VITE_API_URL` to the backend URL.
+- **`VITE_*` variables are baked in at build time**, not read at runtime. Changing one in the host's dashboard (Vercel, Amplify) does nothing until the site is rebuilt — editing the value alone is not enough.
+- **Local `.env` vs. `.env.production`:** `.env` / `client/.env` hold local-dev values (`localhost`, dev DB) and are never uploaded anywhere. `.env.production` / `client/.env.production` hold the real deployed values and exist only to be imported into the host's dashboard (Vercel's "Import .env", Amplify's env var editor) — they are git-ignored and should never be merged into the local `.env` files.
 - **Backend hosting:** the API runs on Vercel as a single serverless function (`api/index.ts`, routed via `vercel.json`). Set `DATABASE_URL`, `CLIENT_URL`, `DB_SYNCHRONIZE=false` and the `SUPABASE_*` / `ADMIN_EMAIL` variables in the Vercel project's environment settings — none of these are read from a committed config file. (`NODE_ENV=production` is set by Vercel itself, which is what enables SSL to Postgres.)
 - **Entity columns declare their `type` explicitly** (`@Column({ type: 'varchar', length: 100 })`). Vercel compiles TypeScript with esbuild, which does not implement `emitDecoratorMetadata`, so TypeORM cannot infer a column type from the TypeScript type there and throws `ColumnTypeUndefinedError` while defining the class. Declaring the type keeps the entities portable across compilers; the resulting schema is identical to what was previously inferred.
 - **`buildCommand: ""`** skips the local `tsc` build on Vercel, which compiles the function from `src/` itself. `npm run build` / `npm start` remain for running the compiled server locally.
