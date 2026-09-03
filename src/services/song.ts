@@ -57,9 +57,11 @@ export class SongService {
 
       // Only upload the file after all validations pass.
 
+      // Grouped by artist rather than by song title: a per-title folder would
+      // just repeat the file name, while this keeps an artist's tracks together.
       const audioUrl = await this.supabaseStorage.uploadSongAudio({
         fileBuffer: audioFile.buffer,
-        entityName: songData.title,
+        entityName: artist.name,
         originalFileName: audioFile.originalname,
         mimeType: audioFile.mimetype,
       });

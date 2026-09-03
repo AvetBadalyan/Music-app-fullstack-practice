@@ -34,14 +34,20 @@ class SupabaseStorage {
    */
   private async uploadToBucket(
     bucketName: string,
-    { fileBuffer, entityName, originalFileName, mimeType }: UploadFileInput,
+    {
+      fileBuffer,
+      entityName,
+      originalFileName,
+      mimeType,
+      upsert = false,
+    }: UploadFileInput,
   ): Promise<string> {
     const storagePath = buildStoragePath(entityName, originalFileName);
     const bucketStorage = this.client.storage.from(bucketName);
 
     const { error } = await bucketStorage.upload(storagePath, fileBuffer, {
       contentType: mimeType,
-      upsert: false,
+      upsert,
     });
 
     if (error) {
