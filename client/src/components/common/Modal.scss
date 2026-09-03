@@ -1,0 +1,94 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  /* html reserves a scrollbar gutter (scrollbar-gutter: stable), which shrinks
+     the containing block of fixed elements. vw units include that gutter, so
+     this keeps the backdrop reaching the window edge and the panel centred on
+     the true centre instead of sitting ~15px to the left. */
+  width: 100vw;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  animation: modal-fade 0.18s ease-out;
+}
+
+.modal-panel {
+  position: relative;
+  width: 100%;
+  max-width: 42rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-elevation);
+  padding: var(--space-5);
+  color: var(--color-text);
+  animation: modal-pop 0.18s ease-out;
+
+  // The panel takes programmatic focus on open (tabIndex -1); the dialog
+  // surface itself is the visible cue, so no ring is needed.
+  &:focus {
+    outline: none;
+  }
+
+  &__close {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.8rem;
+    height: 2.8rem;
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    transition:
+      color var(--transition),
+      background var(--transition);
+
+    &:hover {
+      color: var(--color-text);
+      background: rgba(255, 255, 255, 0.06);
+    }
+  }
+
+  &__title {
+    font-size: var(--font-lg);
+    font-weight: var(--weight-bold);
+    margin: 0 0 var(--space-4);
+  }
+}
+
+@keyframes modal-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-panel {
+    padding: var(--space-4);
+  }
+}

@@ -5,6 +5,8 @@ import {
 } from '../../services/artistsApi';
 import { FIELD_LIMITS } from '../../constants/fieldLimits';
 import type { IArtist } from '../../types/artist';
+import Modal from '../common/Modal';
+import CreateArtistForm from './CreateArtistForm';
 
 interface ArtistPickerProps {
   label: string;
@@ -23,6 +25,7 @@ const ArtistPicker = ({
 }: ArtistPickerProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isFocused, setIsFocused] = useState(false);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
   const blurTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const trimmedSearch = searchTerm.trim();
@@ -53,6 +56,11 @@ const ArtistPicker = ({
     onSelect(artist);
     setSearchTerm('');
     setIsFocused(false);
+  };
+
+  const handleCreated = (artist: IArtist) => {
+    setIsCreateOpen(false);
+    handleSelect(artist);
   };
 
   return (
@@ -105,8 +113,24 @@ const ArtistPicker = ({
           ) : (
             <p>No artists found.</p>
           )}
+          <button
+            type="button"
+            className="picker-option picker-option--create"
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={() => setIsCreateOpen(true)}
+          >
+            + Create new artist
+          </button>
         </div>
       )}
+
+      <Modal
+        open={isCreateOpen}
+        title="Create new artist"
+        onClose={() => setIsCreateOpen(false)}
+      >
+        <CreateArtistForm onCreated={handleCreated} />
+      </Modal>
     </div>
   );
 };

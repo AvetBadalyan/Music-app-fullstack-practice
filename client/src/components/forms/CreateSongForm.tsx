@@ -4,7 +4,12 @@ import { useGetAllAlbumsQuery } from '../../services/albumsApi';
 import { useGetAllGenresQuery } from '../../services/genresApi';
 import { useCreateSongMutation } from '../../services/songsApi';
 import type { IArtist } from '../../types/artist';
+import type { IAlbum } from '../../types/album';
+import type { IGenre } from '../../types/genre';
 import ArtistPicker from './ArtistPicker';
+import CreateAlbumForm from './CreateAlbumForm';
+import CreateGenreForm from './CreateGenreForm';
+import Modal from '../common/Modal';
 import { FIELD_LIMITS } from '../../constants/fieldLimits';
 import {
   idleFeedback,
@@ -24,6 +29,8 @@ const CreateSongForm = ({ initialArtist = null }: CreateSongFormProps) => {
   const [genreIds, setGenreIds] = useState<string[]>([]);
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [feedback, setFeedback] = useState<FormFeedback>(idleFeedback);
+  const [isCreateAlbumOpen, setIsCreateAlbumOpen] = useState(false);
+  const [isCreateGenreOpen, setIsCreateGenreOpen] = useState(false);
 
   const [createSong, { isLoading }] = useCreateSongMutation();
   const { data: genres } = useGetAllGenresQuery();
@@ -46,6 +53,19 @@ const CreateSongForm = ({ initialArtist = null }: CreateSongFormProps) => {
         ? current.filter((id) => id !== genreId)
         : [...current, genreId],
     );
+  };
+
+  const handleAlbumCreated = (album: IAlbum) => {
+    setIsCreateAlbumOpen(false);
+    // The visitor may have swapped the artist inside the modal - follow it, or
+    // the new album falls outside filteredAlbums and the select goes blank.
+    if (album.artist) setArtist(album.artist);
+    setAlbumId(album.id);
+  };
+
+  const handleGenreCreated = (genre: IGenre) => {
+    setIsCreateGenreOpen(false);
+    setGenreIds((current) => [...current, genre.id]);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -115,18 +135,29 @@ const CreateSongForm = ({ initialArtist = null }: CreateSongFormProps) => {
         />
         <label>
           <span>Album (optional)</span>
-          <select
-            value={albumId}
-            onChange={(event) => setAlbumId(event.target.value)}
-          >
-            <option value="">No album</option>
-            {filteredAlbums.map((album) => (
-              <option key={album.id} value={album.id}>
-                {album.title}
-                {album.artist?.name ? ` - ${album.artist.name}` : ''}
-              </option>
-            ))}
-          </select>
+          <div className="field-with-action">
+            <select
+              value={albumId}
+              onChange={(event) => setAlbumId(event.target.value)}
+            >
+              <option value="">No album</option>
+              {filteredAlbums.map((album) => (
+                <option key={album.id} value={album.id}>
+                  {album.title}
+                  {album.artist?.name ? ` - ${album.artist.name}` : ''}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              className="field-action"
+              onClick={() => setIsCreateAlbumOpen(true)}
+              disabled={!artist}
+              title={artist ? undefined : 'Select an artist first'}
+            >
+              + New album
+            </button>
+          </div>
         </label>
         <div className="genre-selector">
           <span>Genres (optional)</span>
@@ -141,6 +172,13 @@ const CreateSongForm = ({ initialArtist = null }: CreateSongFormProps) => {
                 <span>{genre.name}</span>
               </label>
             ))}
+            <button
+              type="button"
+              className="checkbox-pill checkbox-pill--create"
+              onClick={() => setIsCreateGenreOpen(true)}
+            >
+              + New genre
+            </button>
           </div>
         </div>
         <label>
@@ -166,6 +204,22 @@ const CreateSongForm = ({ initialArtist = null }: CreateSongFormProps) => {
           )}
         </div>
       )}
+
+      <Modal
+        open={isCreateAlbumOpen}
+        title="Create new album"
+        onClose={() => setIsCreateAlbumOpen(false)}
+      >
+        <CreateAlbumForm initialArtist={artist} onCreated={handleAlbumCreated} />
+      </Modal>
+
+      <Modal
+        open={isCreateGenreOpen}
+        title="Create new genre"
+        onClose={() => setIsCreateGenreOpen(false)}
+      >
+        <CreateGenreForm onCreated={handleGenreCreated} />
+      </Modal>
     </section>
   );
 };

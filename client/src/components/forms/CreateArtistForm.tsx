@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCreateArtistMutation } from '../../services/artistsApi';
 import { FIELD_LIMITS } from '../../constants/fieldLimits';
+import type { IArtist } from '../../types/artist';
 import {
   idleFeedback,
   getErrorMessage,
@@ -9,7 +10,15 @@ import {
 } from './formHelpers';
 import './forms.scss';
 
-const CreateArtistForm = () => {
+interface CreateArtistFormProps {
+  /** Called with the new artist after a successful create. Used by callers
+   * that embed this form inline (e.g. ArtistPicker's "create new" modal) and
+   * need to react immediately, instead of the visitor following the success
+   * link to the artist's page. */
+  onCreated?: (artist: IArtist) => void;
+}
+
+const CreateArtistForm = ({ onCreated }: CreateArtistFormProps) => {
   const [name, setName] = useState('');
   const [bio, setBio] = useState('');
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
@@ -36,6 +45,7 @@ const CreateArtistForm = () => {
         linkPath: `/artists/${created.id}`,
         linkLabel: 'Open artist',
       });
+      onCreated?.(created);
     } catch (error) {
       setFeedback({ kind: 'error', message: getErrorMessage(error) });
     }

@@ -1,6 +1,11 @@
 .confirm-dialog-overlay {
   position: fixed;
   inset: 0;
+  /* html reserves a scrollbar gutter (scrollbar-gutter: stable), which shrinks
+     the containing block of fixed elements. vw units include that gutter, so
+     this keeps the backdrop reaching the window edge and the panel centred on
+     the true centre instead of sitting ~15px to the left. */
+  width: 100vw;
   z-index: 1000;
   display: flex;
   align-items: center;

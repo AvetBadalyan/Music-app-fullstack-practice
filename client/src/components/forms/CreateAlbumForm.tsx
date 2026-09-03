@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCreateAlbumMutation } from '../../services/albumsApi';
 import type { IArtist } from '../../types/artist';
+import type { IAlbum } from '../../types/album';
 import ArtistPicker from './ArtistPicker';
 import { FIELD_LIMITS } from '../../constants/fieldLimits';
 import {
@@ -11,11 +12,22 @@ import {
 } from './formHelpers';
 import './forms.scss';
 
-const CreateAlbumForm = () => {
+interface CreateAlbumFormProps {
+  initialArtist?: IArtist | null;
+  /** Called with the new album after a successful create - used by callers
+   * that embed this form inline (e.g. CreateSongForm's "create new album"
+   * modal) and need to react immediately. */
+  onCreated?: (album: IAlbum) => void;
+}
+
+const CreateAlbumForm = ({
+  initialArtist = null,
+  onCreated,
+}: CreateAlbumFormProps) => {
   const [title, setTitle] = useState('');
   const [releaseDate, setReleaseDate] = useState('');
   const [coverImage, setCoverImage] = useState<File | null>(null);
-  const [artist, setArtist] = useState<IArtist | null>(null);
+  const [artist, setArtist] = useState<IArtist | null>(initialArtist);
   const [feedback, setFeedback] = useState<FormFeedback>(idleFeedback);
   const [createAlbum, { isLoading }] = useCreateAlbumMutation();
 
@@ -49,6 +61,7 @@ const CreateAlbumForm = () => {
         linkPath: `/albums/${created.id}`,
         linkLabel: 'Open album',
       });
+      onCreated?.(created);
     } catch (error) {
       setFeedback({ kind: 'error', message: getErrorMessage(error) });
     }

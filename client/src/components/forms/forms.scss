@@ -7,6 +7,17 @@
   margin-bottom: var(--space-5);
   max-width: 56rem; /* ~560px — keeps inputs at a comfortable reading width */
 
+  /* Inside a modal the panel already supplies the card surface, so drop this
+     form's own chrome. The doubled padding and the bottom margin were also
+     what pushed content past the panel's max-height and showed a scrollbar. */
+  .modal-panel & {
+    background: none;
+    border: none;
+    margin: 0;
+    max-width: none;
+    padding: 0;
+  }
+
   form {
     display: grid;
     gap: var(--space-3);
@@ -179,6 +190,15 @@
     }
   }
 
+  .picker-option--create {
+    color: var(--color-accent);
+    font-weight: var(--weight-bold);
+
+    &:hover {
+      background: var(--color-accent-soft);
+    }
+  }
+
   .checkbox-grid {
     display: flex;
     flex-wrap: wrap;
@@ -211,6 +231,51 @@
       color: var(--color-text);
       font-weight: var(--weight-regular);
       font-size: var(--font-sm);
+    }
+  }
+
+  .checkbox-pill--create {
+    background: none;
+    border-style: dashed;
+    color: var(--color-accent);
+    font-size: var(--font-sm);
+    font-weight: var(--weight-bold);
+
+    &:hover {
+      background: var(--color-accent-soft);
+    }
+  }
+
+  .field-with-action {
+    align-items: center;
+    display: flex;
+    gap: var(--space-2);
+
+    select {
+      flex: 1;
+    }
+  }
+
+  .field-action {
+    background: none;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-accent);
+    cursor: pointer;
+    flex: 0 0 auto;
+    font-size: var(--font-sm);
+    font-weight: var(--weight-bold);
+    padding: var(--space-3);
+    white-space: nowrap;
+
+    &:hover:not(:disabled) {
+      background: var(--color-accent-soft);
+    }
+
+    &:disabled {
+      color: var(--color-text-muted);
+      cursor: not-allowed;
+      opacity: 0.6;
     }
   }
 
