@@ -1,168 +1,82 @@
-.confirm-dialog-overlay {
-  position: fixed;
-  inset: 0;
-  /* html reserves a scrollbar gutter (scrollbar-gutter: stable), which shrinks
-     the containing block of fixed elements. vw units include that gutter, so
-     this keeps the backdrop reaching the window edge and the panel centred on
-     the true centre instead of sitting ~15px to the left. */
-  width: 100vw;
-  z-index: 1000;
-  display: flex;
+/* The overlay/panel/close-button shell, keyframes, and responsive padding
+   live in Modal.scss - ConfirmDialog composes Modal and only styles its own
+   content (icon, message, action buttons). */
+
+.confirm-dialog__icon {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-4);
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  animation: confirm-dialog-fade 0.18s ease-out;
+  width: 4.4rem;
+  height: 4.4rem;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--color-danger);
+  margin-bottom: var(--space-3);
 }
 
-.confirm-dialog {
-  position: relative;
-  width: 100%;
-  max-width: 42rem;
-  background: var(--color-bg-elevated);
+.confirm-dialog__message {
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  margin: 0 0 var(--space-5);
+  white-space: pre-line;
+}
+
+.confirm-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+.confirm-dialog__cancel,
+.confirm-dialog__confirm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-bold);
+  cursor: pointer;
+  border: none;
+  transition:
+    background var(--transition),
+    color var(--transition),
+    border-color var(--transition);
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.confirm-dialog__cancel {
+  background: transparent;
+  color: var(--color-text-muted);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-elevation);
-  padding: var(--space-5);
-  color: var(--color-text);
-  animation: confirm-dialog-pop 0.18s ease-out;
 
-  &__close {
-    position: absolute;
-    top: var(--space-2);
-    right: var(--space-2);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.8rem;
-    height: 2.8rem;
-    background: none;
-    border: none;
-    color: var(--color-text-muted);
-    cursor: pointer;
-    border-radius: var(--radius-md);
-    transition:
-      color var(--transition),
-      background var(--transition);
-
-    &:hover:not(:disabled) {
-      color: var(--color-text);
-      background: rgba(255, 255, 255, 0.06);
-    }
-
-    &:disabled {
-      cursor: not-allowed;
-      opacity: 0.5;
-    }
-  }
-
-  &__icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 4.4rem;
-    height: 4.4rem;
-    border-radius: 50%;
-    background: rgba(239, 68, 68, 0.12);
-    color: var(--color-danger);
-    margin-bottom: var(--space-3);
-  }
-
-  &__title {
-    font-size: var(--font-lg);
-    font-weight: var(--weight-bold);
-    margin: 0 0 var(--space-2);
-  }
-
-  &__message {
-    font-size: var(--font-sm);
-    color: var(--color-text-muted);
-    line-height: 1.5;
-    margin: 0 0 var(--space-5);
-    white-space: pre-line;
-  }
-
-  &__actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: var(--space-3);
-  }
-
-  &__cancel,
-  &__confirm {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--space-2) var(--space-5);
-    border-radius: var(--radius-pill);
-    font-size: var(--font-sm);
-    font-weight: var(--weight-bold);
-    cursor: pointer;
-    border: none;
-    transition:
-      background var(--transition),
-      color var(--transition),
-      border-color var(--transition);
-
-    &:disabled {
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
-  }
-
-  &__cancel {
-    background: transparent;
-    color: var(--color-text-muted);
-    border: 1px solid var(--color-border);
-
-    &:hover:not(:disabled) {
-      color: var(--color-text);
-      background: rgba(255, 255, 255, 0.04);
-    }
-  }
-
-  &__confirm {
-    background: var(--color-danger);
+  &:hover:not(:disabled) {
     color: var(--color-text);
-
-    &:hover:not(:disabled) {
-      background: #dc2626;
-    }
+    background: rgba(255, 255, 255, 0.04);
   }
 }
 
-@keyframes confirm-dialog-fade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
+.confirm-dialog__confirm {
+  background: var(--color-danger);
+  color: var(--color-text);
 
-@keyframes confirm-dialog-pop {
-  from {
-    opacity: 0;
-    transform: translateY(8px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+  &:hover:not(:disabled) {
+    background: #dc2626;
   }
 }
 
 @media (max-width: 480px) {
-  .confirm-dialog {
-    padding: var(--space-4);
+  .confirm-dialog__actions {
+    flex-direction: column-reverse;
 
-    &__actions {
-      flex-direction: column-reverse;
-
-      .confirm-dialog__cancel,
-      .confirm-dialog__confirm {
-        width: 100%;
-      }
+    .confirm-dialog__cancel,
+    .confirm-dialog__confirm {
+      width: 100%;
     }
   }
 }

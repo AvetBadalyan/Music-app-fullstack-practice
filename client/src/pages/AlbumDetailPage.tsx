@@ -45,12 +45,15 @@ const AlbumDetailPage = () => {
     (songCount ? `\n\nThis will also delete ${songCount} song(s).` : '') +
     `\n\nThis cannot be undone.`;
 
+  // Wait for the server before closing the dialog and navigating: the delete
+  // is not undoable, so the confirm button holds its "Working..." state until
+  // it succeeds. On failure the dialog stays open so the action can be retried.
   const handleConfirmDelete = async () => {
     const target = album;
-    setConfirmOpen(false);
-    navigate('/albums');
     try {
       await deleteAlbum(target.id).unwrap();
+      setConfirmOpen(false);
+      navigate('/albums');
       toast.success(`Deleted "${target.title}"`);
     } catch {
       toast.error(`Failed to delete "${target.title}"`);

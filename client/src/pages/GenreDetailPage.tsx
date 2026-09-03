@@ -41,12 +41,15 @@ const GenreDetailPage = () => {
     );
   }
 
+  // Wait for the server before closing the dialog and navigating: the delete
+  // is not undoable, so the confirm button holds its "Working..." state until
+  // it succeeds. On failure the dialog stays open so the action can be retried.
   const handleConfirmDelete = async () => {
     const target = genre;
-    setConfirmOpen(false);
-    navigate('/genres');
     try {
       await deleteGenre(target.id).unwrap();
+      setConfirmOpen(false);
+      navigate('/genres');
       toast.success(`Deleted "${target.name}"`);
     } catch {
       toast.error(`Failed to delete "${target.name}"`);

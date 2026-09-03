@@ -150,7 +150,7 @@ const CreateSongForm = ({ initialArtist = null }: CreateSongFormProps) => {
             </select>
             <button
               type="button"
-              className="field-action"
+              className="field-action create-affordance"
               onClick={() => setIsCreateAlbumOpen(true)}
               disabled={!artist}
               title={artist ? undefined : 'Select an artist first'}
@@ -174,7 +174,7 @@ const CreateSongForm = ({ initialArtist = null }: CreateSongFormProps) => {
             ))}
             <button
               type="button"
-              className="checkbox-pill checkbox-pill--create"
+              className="checkbox-pill checkbox-pill--create create-affordance"
               onClick={() => setIsCreateGenreOpen(true)}
             >
               + New genre

@@ -115,7 +115,7 @@ const ArtistPicker = ({
           )}
           <button
             type="button"
-            className="picker-option picker-option--create"
+            className="picker-option create-affordance"
             onMouseDown={(event) => event.preventDefault()}
             onClick={() => setIsCreateOpen(true)}
           >
