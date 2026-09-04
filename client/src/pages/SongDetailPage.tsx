@@ -1,83 +1,59 @@
-import { useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Play, Music, Trash2 } from 'lucide-react';
-import { toast } from 'react-toastify';
+import { useParams, Link } from 'react-router-dom';
+import { Play, Music } from 'lucide-react';
 import {
   useGetSongByIdQuery,
   useDeleteSongMutation,
 } from '../services/songsApi';
 import { useGetAlbumByIdQuery } from '../services/albumsApi';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
-import { useDominantColor } from '../app/useDominantColor';
+import { useHeroGradient } from '../hooks/useHeroGradient';
+import { useDeleteWithConfirm } from '../hooks/useDeleteWithConfirm';
 import { playSong } from '../features/player/playerSlice';
+import { formatDuration } from '../utils/formatDuration';
 import ConfirmDialog from '../components/common/ConfirmDialog';
+import DeleteButton from '../components/common/DeleteButton';
+import PageStatus from '../components/common/PageStatus';
 import './SongDetailPage.scss';
 
-const FALLBACK_COLOR = 'rgb(60, 40, 95)';
-
-const formatDuration = (seconds: number): string => {
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins}:${secs.toString().padStart(2, '0')}`;
-};
-
 const SongDetailPage = () => {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  const { id = '' } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
   const isAdmin = useAppSelector((state) => state.auth.isAdmin);
-  const songId = id ?? '';
-  const [deleteSong, { isLoading: isDeleting }] = useDeleteSongMutation();
+
   const {
     data: song,
     isLoading,
     error,
-  } = useGetSongByIdQuery(songId, {
-    skip: !id,
-  });
-  const [confirmOpen, setConfirmOpen] = useState(false);
+  } = useGetSongByIdQuery(id, { skip: !id });
+  const [deleteSong, { isLoading: isDeleting }] = useDeleteSongMutation();
+  const { isConfirmOpen, openConfirm, closeConfirm, confirmDelete } =
+    useDeleteWithConfirm({ deleteEntity: deleteSong, redirectTo: '/songs' });
+
   const { data: album } = useGetAlbumByIdQuery(song?.album?.id ?? '', {
     skip: !song?.album?.id,
   });
   const coverImage = album?.coverImage;
-  const dominant = useDominantColor(coverImage);
+  const heroStyle = useHeroGradient(coverImage);
 
-  if (isLoading)
+  if (isLoading) {
     return (
       <div className="song-detail-page">
-        <div className="page-status page-status--loading">Loading song...</div>
+        <PageStatus isLoading>Loading song...</PageStatus>
       </div>
     );
-  if (error || !song)
+  }
+
+  if (error || !song) {
     return (
       <div className="song-detail-page">
-        <div className="page-status">Song not found.</div>
+        <PageStatus>Song not found.</PageStatus>
       </div>
     );
-
-  // Wait for the server before closing the dialog and navigating: the delete
-  // is not undoable, so the confirm button holds its "Working..." state until
-  // it succeeds. On failure the dialog stays open so the action can be retried.
-  const handleConfirmDelete = async () => {
-    const target = song;
-    try {
-      await deleteSong(target.id).unwrap();
-      setConfirmOpen(false);
-      navigate('/songs');
-      toast.success(`Deleted "${target.title}"`);
-    } catch {
-      toast.error(`Failed to delete "${target.title}"`);
-    }
-  };
-
-  const heroColor = dominant ?? FALLBACK_COLOR;
-  const heroStyle = {
-    background: `linear-gradient(180deg, ${heroColor} 0%, var(--color-bg) 100%)`,
-  };
+  }
 
   return (
     <div className="song-detail-page">
-      <div className="song-header has-hero" style={heroStyle}>
+      <div className="detail-hero" style={heroStyle}>
         <div className="cover-image">
           {coverImage ? (
             <img
@@ -94,7 +70,7 @@ const SongDetailPage = () => {
             </div>
           )}
         </div>
-        <div className="song-info">
+        <div className="detail-hero__info">
           <p className="label">Song</p>
           <h1>{song.title}</h1>
           {song.artist && (
@@ -142,27 +118,21 @@ const SongDetailPage = () => {
           <span>Play</span>
         </button>
         {isAdmin && (
-          <button
-            type="button"
-            className="delete-btn"
-            onClick={() => setConfirmOpen(true)}
-            disabled={isDeleting}
-            title="Delete song"
-            aria-label="Delete song"
-          >
-            <Trash2 size={16} strokeWidth={2} aria-hidden="true" />
-            <span>{isDeleting ? 'Deleting…' : 'Delete'}</span>
-          </button>
+          <DeleteButton
+            label="Delete song"
+            isDeleting={isDeleting}
+            onClick={openConfirm}
+          />
         )}
       </div>
       {isAdmin && (
         <ConfirmDialog
-          open={confirmOpen}
+          open={isConfirmOpen}
           title="Delete song?"
           message={`"${song.title}" will be permanently removed. This cannot be undone.`}
           isLoading={isDeleting}
-          onConfirm={handleConfirmDelete}
-          onCancel={() => setConfirmOpen(false)}
+          onConfirm={() => confirmDelete(song.id, song.title)}
+          onCancel={closeConfirm}
         />
       )}
     </div>

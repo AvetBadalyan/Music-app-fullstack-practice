@@ -198,32 +198,6 @@ This loads genres, artists, albums, and real mp3 tracks into your database and u
 
 ---
 
-## Project structure
-
-```
-music-app/
-├── src/                    # Express + TypeORM backend
-│   ├── controllers/        # Route handlers
-│   ├── services/           # Business logic
-│   ├── entities/           # TypeORM entity classes
-│   ├── dto/                # class-validator DTOs
-│   ├── middlewares/        # auth, validation, error handler, file upload
-│   ├── routes/             # Express routers
-│   └── seed/               # Seed script + assets
-└── client/                 # React + Vite frontend
-    └── src/
-        ├── app/            # Redux store, hooks, env, utilities
-        ├── components/     # Shared UI (layout, player, forms, common)
-        ├── features/       # Auth slice, player slice + listener
-        ├── pages/          # Route-level page components
-        ├── services/       # RTK Query API slices
-        ├── styles/         # Global CSS tokens and resets
-        └── types/          # Shared TypeScript interfaces
-```
-
----
-
-## Deployment notes
 
 - **`DB_SYNCHRONIZE`** must be `false` in production. Use TypeORM migrations instead:
   ```bash
@@ -272,14 +246,17 @@ music-app/
 │   └── utils/            # env helpers, error classes, transforms
 ├── client/               # React + Vite frontend
 │   └── src/
-│       ├── app/          # Redux store, hooks, custom hooks
+│       ├── app/          # Redux store, typed hooks, env, RTK Query middleware
 │       ├── components/   # albums, artists, songs, forms, layout, common
 │       ├── features/auth/    # Supabase Auth session state
 │       ├── features/player/  # global audio player (Redux slice + listener)
+│       ├── hooks/        # reusable hooks (debounce, hero gradient, delete flow)
 │       ├── pages/        # route-level views
 │       ├── services/     # RTK Query API slices
-│       ├── styles/       # global Sass
-│       └── types/        # shared TS types
+│       ├── constants/    # field limits, mirroring the backend DTOs
+│       ├── styles/       # design tokens, shared page + detail-hero layout
+│       ├── types/        # API response shapes
+│       └── utils/        # pure formatting helpers
 ├── package.json          # backend scripts
 └── README.md
 ```
@@ -429,6 +406,26 @@ To populate the database with sample genres, artists, albums, songs and song-gen
 ```bash
 npm run seed
 ```
+
+### Option: run PostgreSQL in Docker
+
+If you would rather not install PostgreSQL locally, start a throwaway instance
+with Docker. This matches the default `.env` values (user `postgres`, database
+`music_app`, port `5432`) — set `DB_PASSWORD` to whatever you pass below.
+
+```bash
+docker run --name music_app_pg \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=your_password \
+  -e POSTGRES_DB=music_app \
+  -p 5432:5432 \
+  -d postgres:16
+```
+
+The container satisfies the "database must exist" requirement above; TypeORM
+then creates the schema on first launch. Stop and remove it with
+`docker rm -f music_app_pg` when you are done (data does not persist unless you
+add a volume, which is fine for local demos).
 
 ## Seeding Supabase (Remote DB)
 

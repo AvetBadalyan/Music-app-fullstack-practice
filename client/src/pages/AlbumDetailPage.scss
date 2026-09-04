@@ -1,103 +1,18 @@
+/* Shared hero and section layout lives in styles/detailPage.scss. */
 .album-detail-page {
-  /* Hero spans the full content width; pull it out of the page padding. */
-  padding: 0 0 var(--space-5);
-
-  .album-header {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-4);
-    padding: var(--space-5) var(--space-4);
-    margin-bottom: var(--space-5);
-    transition: background 0.4s ease;
-
-    &.has-hero {
-      box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.25);
-    }
-
-    .cover-image {
-      width: 16rem;
-      height: 16rem;
-      border-radius: var(--radius-md);
-      object-fit: cover;
-      box-shadow: var(--shadow-elevation);
-      flex-shrink: 0;
-    }
-
-    .album-info {
-      .label {
-        font-size: var(--font-xs);
-        text-transform: uppercase;
-        color: var(--color-text);
-        opacity: 0.85;
-        font-weight: var(--weight-bold);
-        letter-spacing: 0.05em;
-      }
-
-      h1 {
-        font-size: var(--font-xl);
-        font-weight: var(--weight-bold);
-        color: var(--color-text);
-        margin: var(--space-1) 0 var(--space-2);
-      }
-
-      .artist a {
-        color: var(--color-text);
-        text-decoration: none;
-        font-weight: var(--weight-bold);
-
-        &:hover {
-          text-decoration: underline;
-        }
-      }
-
-      .release-date {
-        color: var(--color-text);
-        opacity: 0.75;
-        font-size: var(--font-sm);
-        margin-top: var(--space-1);
-      }
-
-      .album-actions {
-        margin-top: var(--space-3);
-        display: flex;
-        gap: var(--space-3);
-      }
-    }
+  .cover-image {
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-elevation);
+    flex-shrink: 0;
+    height: 16rem;
+    object-fit: cover;
+    width: 16rem;
   }
-
-  .tracklist {
-    padding: 0 var(--space-4);
-    h2 {
-      font-size: var(--font-lg);
-      font-weight: var(--weight-bold);
-      color: var(--color-text);
-      margin-bottom: var(--space-3);
-    }
-  }
-
 }
 
 @media (min-width: 481px) {
-  .album-detail-page {
-    .album-header {
-      flex-direction: row;
-      align-items: flex-end;
-      gap: var(--space-5);
-      padding: 6.4rem var(--space-5) var(--space-5);
-
-      .cover-image {
-        width: 22rem;
-        height: 22rem;
-      }
-
-      .album-info h1 {
-        font-size: var(--font-hero);
-      }
-    }
-
-    .tracklist {
-      padding: 0 var(--space-5);
-    }
+  .album-detail-page .cover-image {
+    height: 22rem;
+    width: 22rem;
   }
 }

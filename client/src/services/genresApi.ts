@@ -1,5 +1,5 @@
 import { api } from './api';
-import type { IGenre } from '../types/genre';
+import type { IGenre } from '../types/api';
 
 export const genresApi = api.injectEndpoints({
   endpoints: (build) => ({

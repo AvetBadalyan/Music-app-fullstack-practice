@@ -1,45 +1,35 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Search, X } from 'lucide-react';
-import { useDebouncedValue } from '../../app/useDebouncedValue';
+import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 import { FIELD_LIMITS } from '../../constants/fieldLimits';
 import './SearchBar.scss';
 
 interface SearchBarProps {
   placeholder: string;
   value: string;
+  /** Called with the debounced term, not on every keystroke. */
   onChange: (value: string) => void;
-  /** Debounce delay in ms before notifying the parent. Defaults to 250. */
-  debounceMs?: number;
-  /** Max characters the user can type. Defaults to the backend search limit. */
+  /** Max characters, capped to what the API accepts. */
   maxLength?: number;
 }
 
+/**
+ * Search input that owns what the visitor is typing and reports it to the page
+ * only once they pause, so a page can drive a query straight off `onChange`
+ * without firing a request per keystroke.
+ */
 const SearchBar = ({
   placeholder,
   value,
   onChange,
-  debounceMs = 250,
   maxLength = FIELD_LIMITS.searchQuery,
 }: SearchBarProps) => {
-  const [local, setLocal] = useState(value);
-  const debounced = useDebouncedValue(local, debounceMs);
-  const lastNotifiedRef = useRef(value);
+  const [term, setTerm] = useState(value);
+  const debouncedTerm = useDebouncedValue(term);
 
-  // Sync local state if the parent resets/overrides the value externally.
   useEffect(() => {
-    if (value !== lastNotifiedRef.current) {
-      setLocal(value);
-      lastNotifiedRef.current = value;
-    }
-  }, [value]);
-
-  // Notify parent only when the debounced value actually changes.
-  useEffect(() => {
-    if (debounced !== lastNotifiedRef.current) {
-      lastNotifiedRef.current = debounced;
-      onChange(debounced);
-    }
-  }, [debounced, onChange]);
+    onChange(debouncedTerm);
+  }, [debouncedTerm, onChange]);
 
   return (
     <div className="search-bar">
@@ -52,16 +42,16 @@ const SearchBar = ({
       <input
         type="text"
         placeholder={placeholder}
-        value={local}
-        onChange={(event) => setLocal(event.target.value)}
+        value={term}
+        onChange={(event) => setTerm(event.target.value)}
         aria-label={placeholder}
         maxLength={maxLength}
       />
-      {local && (
+      {term && (
         <button
           type="button"
           className="clear-btn"
-          onClick={() => setLocal('')}
+          onClick={() => setTerm('')}
           aria-label="Clear search"
         >
           <X size={16} strokeWidth={2} aria-hidden="true" />

@@ -1,0 +1,111 @@
+/* The layout the song, album and artist pages share: a full-width hero tinted
+   with the artwork's dominant colour (see useHeroGradient), then the sections
+   below it. Each page's own stylesheet adds only what differs - the shape and
+   size of its artwork. */
+
+.song-detail-page,
+.album-detail-page,
+.artist-detail-page {
+  /* The hero spans the full content width and sits flush under the header, so
+     these pages carry no padding of their own; the sections below add the
+     horizontal part back. */
+  padding: 0 0 var(--space-5);
+}
+
+.detail-hero {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+  padding: var(--space-5) var(--space-4);
+  /* Separates the tinted hero from the page background below it. */
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+  /* Eases the colour in once sampling finishes, instead of a hard swap. */
+  transition: background 0.4s ease;
+
+  &__info {
+    min-width: 0;
+
+    /* "Song" / "Album" above the title. */
+    .label {
+      color: var(--color-text);
+      font-size: var(--font-xs);
+      font-weight: var(--weight-bold);
+      letter-spacing: 0.05em;
+      opacity: 0.85;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      color: var(--color-text);
+      font-size: var(--font-xl);
+      font-weight: var(--weight-bold);
+      margin: var(--space-1) 0 var(--space-2);
+    }
+
+    .artist a {
+      color: var(--color-text);
+      font-weight: var(--weight-bold);
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    /* Release year, album link, duration. */
+    .meta {
+      color: var(--color-text);
+      font-size: var(--font-sm);
+      margin-top: var(--space-1);
+      opacity: 0.75;
+
+      a {
+        color: inherit;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  &__actions {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+  }
+}
+
+.detail-section {
+  margin-bottom: var(--space-5);
+  padding-inline: var(--space-4);
+
+  h2 {
+    color: var(--color-text);
+    font-size: var(--font-lg);
+    font-weight: var(--weight-bold);
+    margin-bottom: var(--space-4);
+  }
+}
+
+@media (min-width: 481px) {
+  .detail-hero {
+    align-items: flex-end;
+    flex-direction: row;
+    gap: var(--space-5);
+    padding: 6.4rem var(--space-5) var(--space-5);
+
+    &__info h1 {
+      font-size: var(--font-hero);
+    }
+  }
+
+  .detail-section {
+    padding-inline: var(--space-5);
+  }
+}

@@ -1,0 +1,13 @@
+# Normalize line endings: store everything as LF in the repo, so a checkout on
+# Windows doesn't rewrite every file to CRLF and produce noise-only diffs.
+* text=auto eol=lf
+
+# Binary assets git should never touch.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.avif binary
+*.svg binary
+*.mp3 binary
+*.ico binary

@@ -1,5 +1,5 @@
 import { api } from './api';
-import type { IArtist } from '../types/artist';
+import type { IArtist } from '../types/api';
 
 interface CreateArtistPayload {
   name: string;

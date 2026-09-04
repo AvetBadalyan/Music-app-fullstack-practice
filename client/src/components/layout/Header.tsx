@@ -14,9 +14,10 @@ const Header = ({ menuOpen, onMenuToggle }: HeaderProps) => {
   const { email, isAdmin } = useAppSelector((state) => state.auth);
 
   const handleSignOut = async () => {
-    if (!supabase) return;
-
     const { error } = await supabase.auth.signOut();
+
+    // The session is cleared by the auth listener in AuthSessionProvider, so
+    // there is nothing to do here but report the outcome.
     if (error) {
       toast.error(error.message);
       return;
@@ -54,7 +55,6 @@ const Header = ({ menuOpen, onMenuToggle }: HeaderProps) => {
               type="button"
               className="auth-button"
               onClick={handleSignOut}
-              aria-label="Sign out"
             >
               <LogOut size={15} strokeWidth={2.25} aria-hidden="true" />
               <span>Sign out</span>

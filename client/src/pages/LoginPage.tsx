@@ -13,15 +13,18 @@ const LoginPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  // Nothing to do here once signed in - `initialized` waits for the stored
+  // session to be restored, so a reload doesn't flash the form first.
   if (initialized && isAdmin) {
     return <Navigate to="/" replace />;
   }
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     setIsSubmitting(true);
 
+    // Supabase issues the token; AuthSessionProvider picks the new session up
+    // and puts it in the store, which is what redirects away from this page.
     const { error } = await supabase.auth.signInWithPassword({
       email: emailInput.trim(),
       password,
@@ -78,7 +81,7 @@ const LoginPage = () => {
               <button
                 type="button"
                 className="password-toggle"
-                onClick={() => setShowPassword((current) => !current)}
+                onClick={() => setShowPassword((shown) => !shown)}
                 title={showPassword ? 'Hide password' : 'Show password'}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
                 aria-pressed={showPassword}
@@ -91,10 +94,7 @@ const LoginPage = () => {
               </button>
             </div>
           </label>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-          >
+          <button type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Signing in...' : 'Sign in'}
           </button>
         </form>

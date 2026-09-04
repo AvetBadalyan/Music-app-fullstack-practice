@@ -26,25 +26,13 @@ import {
   cycleRepeat,
   closePlayer,
 } from '../../features/player/playerSlice';
+import { formatDuration } from '../../utils/formatDuration';
 import './MusicPlayer.scss';
 
 type TimelineState = {
   songId: string;
   currentTime: number;
   duration: number;
-};
-
-const formatTime = (timeInSeconds: number) => {
-  if (!Number.isFinite(timeInSeconds) || timeInSeconds < 0) {
-    return '0:00';
-  }
-
-  const minutes = Math.floor(timeInSeconds / 60);
-  const seconds = Math.floor(timeInSeconds % 60)
-    .toString()
-    .padStart(2, '0');
-
-  return `${minutes}:${seconds}`;
 };
 
 const isTypingTarget = (target: EventTarget | null) => {
@@ -77,16 +65,24 @@ const MusicPlayer = () => {
   } = useAppSelector((state) => state.player);
   const dispatch = useAppDispatch();
 
-  // Play/pause sync
+  // Play/pause sync. A song with no audio file, or one the browser can't
+  // load, can't actually play - fall back to paused rather than leaving the
+  // UI stuck showing "Pause".
   useEffect(() => {
     if (!audioRef.current) return;
 
-    if (isPlaying && currentSong?.audioFile) {
-      void audioRef.current.play().catch(() => {});
-    } else {
+    if (!isPlaying) {
       audioRef.current.pause();
+      return;
     }
-  }, [isPlaying, currentSong?.audioFile]);
+
+    if (!currentSong?.audioFile) {
+      dispatch(pause());
+      return;
+    }
+
+    void audioRef.current.play().catch(() => dispatch(pause()));
+  }, [isPlaying, currentSong?.audioFile, dispatch]);
 
   // Volume / mute sync
   useEffect(() => {
@@ -260,7 +256,7 @@ const MusicPlayer = () => {
         key={currentSong.id}
         ref={audioRef}
         preload="metadata"
-        src={currentSong.audioFile}
+        src={currentSong.audioFile ?? undefined}
         onLoadedMetadata={syncTimeline}
         onDurationChange={syncTimeline}
         onTimeUpdate={syncTimeline}
@@ -385,7 +381,7 @@ const MusicPlayer = () => {
         </div>
 
         <div className="progress-row">
-          <span className="time">{formatTime(activeTimeline.currentTime)}</span>
+          <span className="time">{formatDuration(activeTimeline.currentTime)}</span>
           <input
             className="range progress-bar"
             type="range"
@@ -398,7 +394,7 @@ const MusicPlayer = () => {
             disabled={progressMax === 0}
             style={{ ['--progress' as string]: `${progressPct}%` }}
           />
-          <span className="time">{formatTime(activeTimeline.duration)}</span>
+          <span className="time">{formatDuration(activeTimeline.duration)}</span>
         </div>
       </div>
 

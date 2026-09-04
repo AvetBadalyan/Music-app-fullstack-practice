@@ -1,34 +1,30 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, X } from 'lucide-react';
 import { useGetAllGenresQuery } from '../services/genresApi';
-import CreateGenreForm from '../components/forms/CreateGenreForm';
 import { useAppSelector } from '../app/hooks';
+import PageToolbar from '../components/common/PageToolbar';
+import { TileGridSkeleton } from '../components/common/Skeleton';
+import CreateGenreForm from '../components/forms/CreateGenreForm';
 import './GenresPage.scss';
 
 const GenresPage = () => {
-  const [showForm, setShowForm] = useState(false);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
   const isAdmin = useAppSelector((state) => state.auth.isAdmin);
   const { data: genres, isLoading } = useGetAllGenresQuery();
 
   return (
-    <div className="genres-page">
-      <div className="page-toolbar">
-        <h1>Genres</h1>
-        {isAdmin && (
-          <button
-            type="button"
-            className="toolbar-toggle"
-            onClick={() => setShowForm((prev) => !prev)}
-          >
-            {showForm ? <X size={16} /> : <Plus size={16} />}
-            <span>{showForm ? 'Close' : 'New genre'}</span>
-          </button>
-        )}
-      </div>
-      {isAdmin && showForm && <CreateGenreForm />}
+    <div className="page genres-page">
+      <PageToolbar
+        title="Genres"
+        createLabel="New genre"
+        isCreateOpen={isCreateOpen}
+        onCreateToggle={
+          isAdmin ? () => setIsCreateOpen((open) => !open) : undefined
+        }
+      />
+      {isAdmin && isCreateOpen && <CreateGenreForm />}
       {isLoading ? (
-        <div className="page-status page-status--loading">Loading genres...</div>
+        <TileGridSkeleton count={8} />
       ) : (
         <div className="genre-grid">
           {(genres ?? []).map((genre) => (

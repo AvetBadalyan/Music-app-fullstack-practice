@@ -1,7 +1,9 @@
 /**
  * Field length limits mirroring the backend DTOs in `src/dto/*.dto.ts`.
- * Keep these in sync with the server-side `@MaxLength()` decorators so the
- * frontend never sends a payload the backend would reject.
+ *
+ * Used for the `maxLength` on every text input, so the browser stops the
+ * visitor at the same point the API would reject the request. The server still
+ * validates - this only saves a pointless round trip.
  */
 export const FIELD_LIMITS = {
   artistName: 50,

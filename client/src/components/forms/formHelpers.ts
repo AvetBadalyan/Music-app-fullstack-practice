@@ -1,40 +1,37 @@
-export type FormFeedback = {
-  kind: 'idle' | 'success' | 'error';
-  message: string;
-  linkPath?: string;
-  linkLabel?: string;
-};
+export type FormFeedback =
+  | { kind: 'idle' }
+  | { kind: 'error'; message: string }
+  | {
+      kind: 'success';
+      message: string;
+      /** Route to the record just created, offered as a follow-up link. */
+      linkPath: string;
+      linkLabel: string;
+    };
 
-export const idleFeedback: FormFeedback = {
-  kind: 'idle',
-  message: '',
-};
+export const idleFeedback: FormFeedback = { kind: 'idle' };
 
+/**
+ * Pull a message out of a failed RTK Query mutation.
+ *
+ * The API answers with `{ error: string }`, but a request that never reached it
+ * (offline, CORS) rejects with a plain `Error` instead, so both are handled.
+ */
 export const getErrorMessage = (error: unknown): string => {
-  if (typeof error === 'object' && error !== null) {
-    if ('data' in error) {
-      const apiError = error as { data?: { error?: string } | string };
+  const fallback = 'Request failed.';
 
-      if (typeof apiError.data === 'string') {
-        return apiError.data;
-      }
+  if (typeof error !== 'object' || error === null) return fallback;
 
-      if (
-        apiError.data &&
-        typeof apiError.data === 'object' &&
-        'error' in apiError.data
-      ) {
-        return apiError.data.error ?? 'Request failed.';
-      }
-    }
+  const { data, message } = error as { data?: unknown; message?: unknown };
 
-    if (
-      'message' in error &&
-      typeof (error as { message?: unknown }).message === 'string'
-    ) {
-      return (error as { message: string }).message;
-    }
+  if (typeof data === 'string') return data;
+
+  if (typeof data === 'object' && data !== null) {
+    const apiError = (data as { error?: unknown }).error;
+    if (typeof apiError === 'string') return apiError;
   }
 
-  return 'Request failed.';
+  if (typeof message === 'string') return message;
+
+  return fallback;
 };

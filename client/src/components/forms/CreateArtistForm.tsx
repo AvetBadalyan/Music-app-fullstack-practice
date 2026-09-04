@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, type FormEvent } from 'react';
 import { useCreateArtistMutation } from '../../services/artistsApi';
 import { FIELD_LIMITS } from '../../constants/fieldLimits';
-import type { IArtist } from '../../types/artist';
+import type { IArtist } from '../../types/api';
+import FormFeedbackMessage from './FormFeedbackMessage';
 import {
   idleFeedback,
   getErrorMessage,
@@ -25,7 +25,7 @@ const CreateArtistForm = ({ onCreated }: CreateArtistFormProps) => {
   const [feedback, setFeedback] = useState<FormFeedback>(idleFeedback);
   const [createArtist, { isLoading }] = useCreateArtistMutation();
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setFeedback(idleFeedback);
 
@@ -88,14 +88,7 @@ const CreateArtistForm = ({ onCreated }: CreateArtistFormProps) => {
           {isLoading ? 'Uploading...' : 'Create artist'}
         </button>
       </form>
-      {feedback.kind !== 'idle' && (
-        <div className={`feedback ${feedback.kind}`}>
-          <span>{feedback.message}</span>
-          {feedback.linkPath && feedback.linkLabel && (
-            <Link to={feedback.linkPath}>{feedback.linkLabel}</Link>
-          )}
-        </div>
-      )}
+      <FormFeedbackMessage feedback={feedback} />
     </section>
   );
 };

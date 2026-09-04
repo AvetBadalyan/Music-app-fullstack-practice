@@ -1,17 +1,20 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <!-- viewport-fit=cover: required for env(safe-area-inset-*) below to resolve -->
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-        />
-        <title>MusicAvet</title>
-    </head>
-    <body>
-        <div id="root"></div>
-        <script type="module" src="/src/main.tsx"></script>
-    </body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- viewport-fit=cover: required for the env(safe-area-inset-*) values the player and layout use -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- Paints the browser UI to match the app background before the CSS loads -->
+    <meta name="theme-color" content="#0d0b11" />
+    <meta
+      name="description"
+      content="MusicAvet - a music library with a global audio player, browsable by song, artist, album and genre."
+    />
+    <title>MusicAvet</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

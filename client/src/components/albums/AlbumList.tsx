@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Disc3, Music, Play } from 'lucide-react';
 import EmptyState from '../common/EmptyState';
-import type { IAlbum } from '../../types/album';
+import type { IAlbum } from '../../types/api';
 import './AlbumList.scss';
 
 interface AlbumListProps {

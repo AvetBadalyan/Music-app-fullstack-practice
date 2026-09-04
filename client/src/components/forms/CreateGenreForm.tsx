@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, type FormEvent } from 'react';
 import { useCreateGenreMutation } from '../../services/genresApi';
-import type { IGenre } from '../../types/genre';
 import { FIELD_LIMITS } from '../../constants/fieldLimits';
+import type { IGenre } from '../../types/api';
+import FormFeedbackMessage from './FormFeedbackMessage';
 import {
   idleFeedback,
   getErrorMessage,
@@ -22,12 +22,13 @@ const CreateGenreForm = ({ onCreated }: CreateGenreFormProps) => {
   const [feedback, setFeedback] = useState<FormFeedback>(idleFeedback);
   const [createGenre, { isLoading }] = useCreateGenreMutation();
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setFeedback(idleFeedback);
 
     try {
       const created = await createGenre({ name: name.trim() }).unwrap();
+
       setName('');
       setFeedback({
         kind: 'success',
@@ -59,14 +60,7 @@ const CreateGenreForm = ({ onCreated }: CreateGenreFormProps) => {
           {isLoading ? 'Creating...' : 'Create genre'}
         </button>
       </form>
-      {feedback.kind !== 'idle' && (
-        <div className={`feedback ${feedback.kind}`}>
-          <span>{feedback.message}</span>
-          {feedback.linkPath && feedback.linkLabel && (
-            <Link to={feedback.linkPath}>{feedback.linkLabel}</Link>
-          )}
-        </div>
-      )}
+      <FormFeedbackMessage feedback={feedback} />
     </section>
   );
 };

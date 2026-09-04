@@ -129,12 +129,6 @@ button {
   }
 }
 
-@keyframes page-status-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .equalizer {
   display: inline-flex;
   align-items: flex-end;
@@ -192,65 +186,29 @@ button {
   background: var(--color-accent) !important;
 }
 
-/* Shared page-shell for list pages — padding, title, status text. */
-.albums-page,
-.artists-page,
-.songs-page,
-.genres-page,
-.genre-detail-page,
-.album-detail-page,
-.artist-detail-page,
-.song-detail-page {
+/* Shared shell for the list pages: one class instead of naming every page,
+   so a new page picks up the padding and title size by opting in.
+
+   The h1 selector sits in :where() so it adds no specificity - a title
+   inside a .page-toolbar needs no bottom margin, and this lets that rule win
+   on specificity rather than on stylesheet order, which is not ours to rely
+   on once the toolbar arrives in a lazily-loaded chunk. */
+.page {
   padding: var(--space-4);
 
-  h1 {
+  :where(&) h1 {
     font-size: var(--font-lg);
     font-weight: var(--weight-bold);
     color: var(--color-text);
     margin-bottom: var(--space-4);
   }
-
-  .loading,
-  .error,
-  .empty,
-  .hint {
-    color: var(--color-text-muted);
-  }
-
-  .page-status {
-    min-height: 24rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-3);
-    color: var(--color-text-muted);
-    text-align: center;
-  }
-
-  .page-status--loading::before {
-    content: '';
-    width: 2.4rem;
-    height: 2.4rem;
-    border: 2px solid rgba(255, 255, 255, 0.12);
-    border-top-color: var(--color-accent);
-    border-radius: 50%;
-    animation: page-status-spin 0.8s linear infinite;
-  }
 }
 
 @media (min-width: 481px) {
-  .albums-page,
-  .artists-page,
-  .songs-page,
-  .genres-page,
-  .genre-detail-page,
-  .album-detail-page,
-  .artist-detail-page,
-  .song-detail-page {
+  .page {
     padding: var(--space-5);
 
-    h1 {
+    :where(&) h1 {
       font-size: var(--font-xl);
       margin-bottom: var(--space-5);
     }

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Mic2 } from 'lucide-react';
 import EmptyState from '../common/EmptyState';
-import type { IArtist } from '../../types/artist';
+import type { IArtist } from '../../types/api';
 import './ArtistList.scss';
 
 interface ArtistListProps {

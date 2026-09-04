@@ -1,7 +1,10 @@
-import { lazy, Suspense } from 'react';
+import { lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import MainLayout from './components/layout/MainLayout';
 
+// Each page is its own bundle, so a first visit downloads the route it asked
+// for rather than the whole app. MainLayout renders the Suspense boundary that
+// covers them.
 const HomePage = lazy(() => import('./pages/HomePage'));
 const SongsPage = lazy(() => import('./pages/SongsPage'));
 const SongDetailPage = lazy(() => import('./pages/SongDetailPage'));
@@ -14,26 +17,24 @@ const GenreDetailPage = lazy(() => import('./pages/GenreDetailPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
-function App() {
-  return (
-    <Suspense>
-      <Routes>
-        <Route element={<MainLayout />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/songs" element={<SongsPage />} />
-          <Route path="/songs/:id" element={<SongDetailPage />} />
-          <Route path="/artists" element={<ArtistsPage />} />
-          <Route path="/artists/:id" element={<ArtistDetailPage />} />
-          <Route path="/albums" element={<AlbumsPage />} />
-          <Route path="/albums/:id" element={<AlbumDetailPage />} />
-          <Route path="/genres" element={<GenresPage />} />
-          <Route path="/genres/:id" element={<GenreDetailPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="*" element={<NotFoundPage />} />
-        </Route>
-      </Routes>
-    </Suspense>
-  );
-}
+const App = () => (
+  <Routes>
+    {/* MainLayout stays mounted across route changes, so the player keeps
+        playing while the visitor browses. */}
+    <Route element={<MainLayout />}>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/songs" element={<SongsPage />} />
+      <Route path="/songs/:id" element={<SongDetailPage />} />
+      <Route path="/artists" element={<ArtistsPage />} />
+      <Route path="/artists/:id" element={<ArtistDetailPage />} />
+      <Route path="/albums" element={<AlbumsPage />} />
+      <Route path="/albums/:id" element={<AlbumDetailPage />} />
+      <Route path="/genres" element={<GenresPage />} />
+      <Route path="/genres/:id" element={<GenreDetailPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="*" element={<NotFoundPage />} />
+    </Route>
+  </Routes>
+);
 
 export default App;

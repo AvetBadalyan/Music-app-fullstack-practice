@@ -1,0 +1,26 @@
+.page-status {
+  align-items: center;
+  color: var(--color-text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  justify-content: center;
+  min-height: 24rem;
+  text-align: center;
+
+  &--loading::before {
+    animation: page-status-spin 0.8s linear infinite;
+    border: 2px solid rgba(255, 255, 255, 0.12);
+    border-radius: 50%;
+    border-top-color: var(--color-accent);
+    content: '';
+    height: 2.4rem;
+    width: 2.4rem;
+  }
+}
+
+@keyframes page-status-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -4,7 +4,7 @@ import { Song } from '../entities/Song';
 import { Artist } from '../entities/Artist';
 import { Album } from '../entities/Album';
 import { Genre } from '../entities/Genre';
-import { NotFoundError, DatabaseError, CustomError } from '../utils/errors';
+import { NotFoundError } from '../utils/errors';
 import { SupabaseStorage } from './supabaseStorage';
 import type { ISong } from '../types/song';
 import type { CreateSongDto } from '../dto/song.dto';
@@ -22,74 +22,65 @@ export class SongService {
     audioFile: Express.Multer.File,
     duration: number,
   ): Promise<ISong> {
-    try {
-      const artist = await this.artistRepository.findOne({
-        where: { id: songData.artistId },
+    const artist = await this.artistRepository.findOne({
+      where: { id: songData.artistId },
+    });
+
+    if (!artist) {
+      throw new NotFoundError(
+        `Artist with ID ${songData.artistId} not found`,
+      );
+    }
+
+    let album: Album | undefined = undefined;
+    if (songData.albumId) {
+      const foundAlbum = await this.albumRepository.findOne({
+        where: { id: songData.albumId },
       });
 
-      if (!artist) {
+      if (!foundAlbum) {
         throw new NotFoundError(
-          `Artist with ID ${songData.artistId} not found`,
+          `Album with ID ${songData.albumId} not found`,
         );
       }
-
-      let album: Album | undefined = undefined;
-      if (songData.albumId) {
-        const foundAlbum = await this.albumRepository.findOne({
-          where: { id: songData.albumId },
-        });
-
-        if (!foundAlbum) {
-          throw new NotFoundError(
-            `Album with ID ${songData.albumId} not found`,
-          );
-        }
-        album = foundAlbum;
-      }
-
-      let genres: Genre[] = [];
-      if (songData.genreIds && songData.genreIds.length > 0) {
-        genres = await this.genreRepository.findByIds(songData.genreIds);
-        if (genres.length !== songData.genreIds.length) {
-          throw new NotFoundError('One or more genres not found');
-        }
-      }
-
-      // Only upload the file after all validations pass.
-
-      // Grouped by artist rather than by song title: a per-title folder would
-      // just repeat the file name, while this keeps an artist's tracks together.
-      const audioUrl = await this.supabaseStorage.uploadSongAudio({
-        fileBuffer: audioFile.buffer,
-        entityName: artist.name,
-        originalFileName: audioFile.originalname,
-        mimeType: audioFile.mimetype,
-      });
-
-      const songCreateData: Partial<Song> = {
-        title: songData.title,
-        duration,
-        audioFile: audioUrl,
-        artist,
-        genres,
-      };
-
-      if (album) {
-        songCreateData.album = album;
-      }
-
-      const song = this.songRepository.create(songCreateData);
-      const savedSong = (await this.songRepository.save(song)) as Song;
-
-      return this.getById(savedSong.id);
-    } catch (error) {
-      console.error('SERVICE CREATE FAILED:', error);
-
-      if (error instanceof CustomError) {
-        throw error;
-      }
-      throw new DatabaseError('Failed to create song');
+      album = foundAlbum;
     }
+
+    let genres: Genre[] = [];
+    if (songData.genreIds && songData.genreIds.length > 0) {
+      genres = await this.genreRepository.findByIds(songData.genreIds);
+      if (genres.length !== songData.genreIds.length) {
+        throw new NotFoundError('One or more genres not found');
+      }
+    }
+
+    // Only upload the file after all validations pass.
+
+    // Grouped by artist rather than by song title: a per-title folder would
+    // just repeat the file name, while this keeps an artist's tracks together.
+    const audioUrl = await this.supabaseStorage.uploadSongAudio({
+      fileBuffer: audioFile.buffer,
+      entityName: artist.name,
+      originalFileName: audioFile.originalname,
+      mimeType: audioFile.mimetype,
+    });
+
+    const songCreateData: Partial<Song> = {
+      title: songData.title,
+      duration,
+      audioFile: audioUrl,
+      artist,
+      genres,
+    };
+
+    if (album) {
+      songCreateData.album = album;
+    }
+
+    const song = this.songRepository.create(songCreateData);
+    const savedSong = (await this.songRepository.save(song)) as Song;
+
+    return this.getById(savedSong.id);
   }
 
   public async getById(id: string): Promise<ISong> {
@@ -124,36 +115,29 @@ export class SongService {
   }
 
   public async getAll(): Promise<ISong[]> {
-    try {
-      const songs = await this.songRepository.find({
-        relations: ['album', 'artist', 'genres'],
-        select: {
+    const songs = await this.songRepository.find({
+      relations: ['album', 'artist', 'genres'],
+      select: {
+        id: true,
+        title: true,
+        duration: true,
+        audioFile: true,
+        album: {
           id: true,
           title: true,
-          duration: true,
-          audioFile: true,
-          album: {
-            id: true,
-            title: true,
-          },
-          artist: {
-            id: true,
-            name: true,
-          },
-          genres: {
-            id: true,
-            name: true,
-          },
         },
-      });
+        artist: {
+          id: true,
+          name: true,
+        },
+        genres: {
+          id: true,
+          name: true,
+        },
+      },
+    });
 
-      return songs as ISong[];
-    } catch (error) {
-      if (error instanceof CustomError) {
-        throw error;
-      }
-      throw new DatabaseError('Failed to retrieve songs');
-    }
+    return songs as ISong[];
   }
 
   public async searchByTitle(title: string): Promise<ISong[]> {
@@ -184,32 +168,25 @@ export class SongService {
   }
 
   public async delete(id: string): Promise<void> {
-    try {
-      const song = await this.songRepository.findOne({ where: { id } });
+    const song = await this.songRepository.findOne({ where: { id } });
 
-      if (!song) {
-        throw new NotFoundError(`Song with ID ${id} not found`);
-      }
+    if (!song) {
+      throw new NotFoundError(`Song with ID ${id} not found`);
+    }
 
-      const { audioFile } = song;
-      await this.songRepository.remove(song);
+    const { audioFile } = song;
+    await this.songRepository.remove(song);
 
-      if (audioFile) {
-        try {
-          await this.supabaseStorage.deleteByPublicUrl(audioFile);
-        } catch (storageError) {
-          // Row is gone; orphaned file is non-fatal. Log and move on.
-          console.error(
-            'Failed to delete audio file from storage:',
-            storageError,
-          );
-        }
+    if (audioFile) {
+      try {
+        await this.supabaseStorage.deleteByPublicUrl(audioFile);
+      } catch (storageError) {
+        // Row is gone; orphaned file is non-fatal. Log and move on.
+        console.error(
+          'Failed to delete audio file from storage:',
+          storageError,
+        );
       }
-    } catch (error) {
-      if (error instanceof CustomError) {
-        throw error;
-      }
-      throw new DatabaseError('Failed to delete song');
     }
   }
 }

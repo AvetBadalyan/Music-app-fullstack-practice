@@ -1,16 +1,14 @@
-import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useMemo, useState, type FormEvent } from 'react';
 import { useGetAllAlbumsQuery } from '../../services/albumsApi';
 import { useGetAllGenresQuery } from '../../services/genresApi';
 import { useCreateSongMutation } from '../../services/songsApi';
-import type { IArtist } from '../../types/artist';
-import type { IAlbum } from '../../types/album';
-import type { IGenre } from '../../types/genre';
+import { FIELD_LIMITS } from '../../constants/fieldLimits';
+import type { IAlbum, IArtistRef, IGenre } from '../../types/api';
+import Modal from '../common/Modal';
 import ArtistPicker from './ArtistPicker';
 import CreateAlbumForm from './CreateAlbumForm';
 import CreateGenreForm from './CreateGenreForm';
-import Modal from '../common/Modal';
-import { FIELD_LIMITS } from '../../constants/fieldLimits';
+import FormFeedbackMessage from './FormFeedbackMessage';
 import {
   idleFeedback,
   getErrorMessage,
@@ -19,12 +17,12 @@ import {
 import './forms.scss';
 
 interface CreateSongFormProps {
-  initialArtist?: IArtist | null;
+  initialArtist?: IArtistRef | null;
 }
 
 const CreateSongForm = ({ initialArtist = null }: CreateSongFormProps) => {
   const [title, setTitle] = useState('');
-  const [artist, setArtist] = useState<IArtist | null>(initialArtist);
+  const [artist, setArtist] = useState<IArtistRef | null>(initialArtist);
   const [albumId, setAlbumId] = useState('');
   const [genreIds, setGenreIds] = useState<string[]>([]);
   const [audioFile, setAudioFile] = useState<File | null>(null);
@@ -36,14 +34,16 @@ const CreateSongForm = ({ initialArtist = null }: CreateSongFormProps) => {
   const { data: genres } = useGetAllGenresQuery();
   const { data: albums } = useGetAllAlbumsQuery();
 
-  const filteredAlbums = useMemo(() => {
+  // A song belongs to one of its own artist's albums, so the select only
+  // offers those once an artist is chosen.
+  const albumOptions = useMemo(() => {
     if (!albums) return [];
     if (!artist) return albums;
     return albums.filter((album) => album.artist?.id === artist.id);
   }, [albums, artist]);
 
-  const handleArtistSelect = (next: IArtist | null) => {
-    setArtist(next);
+  const handleArtistSelect = (selected: IArtistRef | null) => {
+    setArtist(selected);
     setAlbumId('');
   };
 
@@ -58,7 +58,7 @@ const CreateSongForm = ({ initialArtist = null }: CreateSongFormProps) => {
   const handleAlbumCreated = (album: IAlbum) => {
     setIsCreateAlbumOpen(false);
     // The visitor may have swapped the artist inside the modal - follow it, or
-    // the new album falls outside filteredAlbums and the select goes blank.
+    // the new album falls outside albumOptions and the select goes blank.
     if (album.artist) setArtist(album.artist);
     setAlbumId(album.id);
   };
@@ -68,7 +68,7 @@ const CreateSongForm = ({ initialArtist = null }: CreateSongFormProps) => {
     setGenreIds((current) => [...current, genre.id]);
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setFeedback(idleFeedback);
 
@@ -96,6 +96,7 @@ const CreateSongForm = ({ initialArtist = null }: CreateSongFormProps) => {
         albumId: albumId || undefined,
         genreIds,
       }).unwrap();
+
       setTitle('');
       setArtist(null);
       setAlbumId('');
@@ -141,10 +142,10 @@ const CreateSongForm = ({ initialArtist = null }: CreateSongFormProps) => {
               onChange={(event) => setAlbumId(event.target.value)}
             >
               <option value="">No album</option>
-              {filteredAlbums.map((album) => (
+              {albumOptions.map((album) => (
                 <option key={album.id} value={album.id}>
                   {album.title}
-                  {album.artist?.name ? ` - ${album.artist.name}` : ''}
+                  {album.artist ? ` - ${album.artist.name}` : ''}
                 </option>
               ))}
             </select>
@@ -196,21 +197,17 @@ const CreateSongForm = ({ initialArtist = null }: CreateSongFormProps) => {
           {isLoading ? 'Uploading...' : 'Create song'}
         </button>
       </form>
-      {feedback.kind !== 'idle' && (
-        <div className={`feedback ${feedback.kind}`}>
-          <span>{feedback.message}</span>
-          {feedback.linkPath && feedback.linkLabel && (
-            <Link to={feedback.linkPath}>{feedback.linkLabel}</Link>
-          )}
-        </div>
-      )}
+      <FormFeedbackMessage feedback={feedback} />
 
       <Modal
         open={isCreateAlbumOpen}
         title="Create new album"
         onClose={() => setIsCreateAlbumOpen(false)}
       >
-        <CreateAlbumForm initialArtist={artist} onCreated={handleAlbumCreated} />
+        <CreateAlbumForm
+          initialArtist={artist}
+          onCreated={handleAlbumCreated}
+        />
       </Modal>
 
       <Modal

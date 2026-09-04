@@ -3,25 +3,25 @@ import { useGetAllSongsQuery } from '../services/songsApi';
 import { useGetAllAlbumsQuery } from '../services/albumsApi';
 import SongList from '../components/songs/SongList';
 import AlbumList from '../components/albums/AlbumList';
+import HeroSlider from '../components/common/HeroSlider';
 import {
   SongListSkeleton,
-  AlbumGridSkeleton,
+  CardGridSkeleton,
 } from '../components/common/Skeleton';
-import HeroSlider from '../components/common/HeroSlider';
 import './HomePage.scss';
 
-const HomePage = () => {
-  const { data: songs, isLoading: songsLoading } = useGetAllSongsQuery();
-  const { data: albums, isLoading: albumsLoading } = useGetAllAlbumsQuery();
+/** How much of the library the landing page previews before "See all". */
+const RECENT_SONG_COUNT = 8;
+const FEATURED_ALBUM_COUNT = 6;
 
-  const recentSongs = songs?.slice(0, 8) ?? [];
+const HomePage = () => {
+  const { data: songs, isLoading: isLoadingSongs } = useGetAllSongsQuery();
+  const { data: albums, isLoading: isLoadingAlbums } = useGetAllAlbumsQuery();
 
   return (
     <div className="home-page">
       <section className="home-hero">
-        <div className="home-hero__media">
-          <HeroSlider />
-        </div>
+        <HeroSlider />
 
         <section className="home-hero__recent home-section">
           <div className="section-header">
@@ -30,10 +30,10 @@ const HomePage = () => {
               See all
             </Link>
           </div>
-          {songsLoading ? (
-            <SongListSkeleton rows={8} />
+          {isLoadingSongs ? (
+            <SongListSkeleton rows={RECENT_SONG_COUNT} />
           ) : (
-            <SongList songs={recentSongs} />
+            <SongList songs={songs?.slice(0, RECENT_SONG_COUNT) ?? []} />
           )}
         </section>
       </section>
@@ -45,10 +45,10 @@ const HomePage = () => {
             See all
           </Link>
         </div>
-        {albumsLoading ? (
-          <AlbumGridSkeleton count={6} />
+        {isLoadingAlbums ? (
+          <CardGridSkeleton count={FEATURED_ALBUM_COUNT} />
         ) : (
-          <AlbumList albums={albums?.slice(0, 6) ?? []} />
+          <AlbumList albums={albums?.slice(0, FEATURED_ALBUM_COUNT) ?? []} />
         )}
       </section>
     </div>

@@ -1,10 +1,9 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, type FormEvent } from 'react';
 import { useCreateAlbumMutation } from '../../services/albumsApi';
-import type { IArtist } from '../../types/artist';
-import type { IAlbum } from '../../types/album';
-import ArtistPicker from './ArtistPicker';
 import { FIELD_LIMITS } from '../../constants/fieldLimits';
+import type { IAlbum, IArtistRef } from '../../types/api';
+import ArtistPicker from './ArtistPicker';
+import FormFeedbackMessage from './FormFeedbackMessage';
 import {
   idleFeedback,
   getErrorMessage,
@@ -13,7 +12,7 @@ import {
 import './forms.scss';
 
 interface CreateAlbumFormProps {
-  initialArtist?: IArtist | null;
+  initialArtist?: IArtistRef | null;
   /** Called with the new album after a successful create - used by callers
    * that embed this form inline (e.g. CreateSongForm's "create new album"
    * modal) and need to react immediately. */
@@ -27,11 +26,11 @@ const CreateAlbumForm = ({
   const [title, setTitle] = useState('');
   const [releaseDate, setReleaseDate] = useState('');
   const [coverImage, setCoverImage] = useState<File | null>(null);
-  const [artist, setArtist] = useState<IArtist | null>(initialArtist);
+  const [artist, setArtist] = useState<IArtistRef | null>(initialArtist);
   const [feedback, setFeedback] = useState<FormFeedback>(idleFeedback);
   const [createAlbum, { isLoading }] = useCreateAlbumMutation();
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setFeedback(idleFeedback);
 
@@ -108,14 +107,7 @@ const CreateAlbumForm = ({
           {isLoading ? 'Uploading...' : 'Create album'}
         </button>
       </form>
-      {feedback.kind !== 'idle' && (
-        <div className={`feedback ${feedback.kind}`}>
-          <span>{feedback.message}</span>
-          {feedback.linkPath && feedback.linkLabel && (
-            <Link to={feedback.linkPath}>{feedback.linkLabel}</Link>
-          )}
-        </div>
-      )}
+      <FormFeedbackMessage feedback={feedback} />
     </section>
   );
 };

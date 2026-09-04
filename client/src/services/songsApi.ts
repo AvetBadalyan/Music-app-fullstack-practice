@@ -1,5 +1,5 @@
 import { api } from './api';
-import type { ISong } from '../types/song';
+import type { ISong } from '../types/api';
 
 export interface CreateSongPayload {
   title: string;

@@ -1,95 +1,33 @@
+/* Shared hero and section layout lives in styles/detailPage.scss. */
 .artist-detail-page {
-  padding: 0 0 var(--space-5);
-
-  .artist-header {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-4);
-    padding: var(--space-5) var(--space-4);
-    margin-bottom: var(--space-5);
-    transition: background 0.4s ease;
-
-    &.has-hero {
-      box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.25);
-    }
-
-    .profile-picture {
-      width: 14rem;
-      height: 14rem;
-      border-radius: 50%;
-      object-fit: cover;
-      box-shadow: var(--shadow-elevation);
-      flex-shrink: 0;
-    }
-
-    .artist-info {
-      h1 {
-        font-size: var(--font-xl);
-        font-weight: var(--weight-bold);
-        color: var(--color-text);
-        margin-bottom: var(--space-2);
-      }
-
-      .bio {
-        color: var(--color-text);
-        opacity: 0.85;
-        max-width: 60rem;
-        line-height: 1.5;
-      }
-
-      .toolbar-toggle {
-        margin-top: var(--space-3);
-      }
-
-      .artist-actions {
-        margin-top: var(--space-3);
-        display: flex;
-        gap: var(--space-3);
-        flex-wrap: wrap;
-        align-items: center;
-
-        .toolbar-toggle {
-          margin-top: 0;
-        }
-      }
-    }
+  .profile-picture {
+    border-radius: 50%;
+    box-shadow: var(--shadow-elevation);
+    flex-shrink: 0;
+    height: 14rem;
+    object-fit: cover;
+    width: 14rem;
   }
 
-  .artist-section {
-    padding: 0 var(--space-4);
-    margin-bottom: var(--space-5);
-
-    h2 {
-      font-size: var(--font-lg);
-      font-weight: var(--weight-bold);
-      color: var(--color-text);
-      margin-bottom: var(--space-4);
-    }
+  .bio {
+    color: var(--color-text);
+    line-height: 1.5;
+    max-width: 60rem;
+    opacity: 0.85;
   }
-
 }
 
 @media (min-width: 481px) {
   .artist-detail-page {
-    .artist-header {
-      flex-direction: row;
+    /* Centred rather than bottom-aligned: a round portrait next to a short
+       name looks lopsided pinned to the baseline. */
+    .detail-hero {
       align-items: center;
-      gap: var(--space-5);
-      padding: 6.4rem var(--space-5) var(--space-5);
-
-      .profile-picture {
-        width: 20rem;
-        height: 20rem;
-      }
-
-      .artist-info h1 {
-        font-size: var(--font-hero);
-      }
     }
 
-    .artist-section {
-      padding: 0 var(--space-5);
+    .profile-picture {
+      height: 20rem;
+      width: 20rem;
     }
   }
 }

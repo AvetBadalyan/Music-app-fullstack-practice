@@ -1,5 +1,4 @@
 # dependencies
-/node_modules
 node_modules
 
 # env files - real values never get committed, only the .example templates
@@ -7,6 +6,10 @@ node_modules
 .env.*
 !.env.example
 
-# production
+# build output
 /build
 /dist
+client/dist
+
+# hosting
+.vercel

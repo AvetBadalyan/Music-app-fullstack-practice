@@ -1,5 +1,5 @@
 import { api } from './api';
-import type { IAlbum } from '../types/album';
+import type { IAlbum } from '../types/api';
 
 interface CreateAlbumPayload {
   title: string;

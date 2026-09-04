@@ -123,12 +123,6 @@
     margin-top: -2px;
   }
 
-  .field-warning {
-    color: var(--color-warning, #f5a623);
-    font-size: var(--font-xs);
-    margin-top: -2px;
-  }
-
   .selected-pill {
     display: flex;
     align-items: center;
@@ -303,83 +297,8 @@
   }
 }
 
-/* Header row: title + toggle button on entity list pages. */
-.page-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  margin-bottom: var(--space-4);
-
-  h1 {
-    margin-bottom: 0;
-  }
-}
-
-.toolbar-toggle {
-  align-items: center;
-  background: var(--color-accent);
-  border: none;
-  border-radius: var(--radius-pill);
-  color: var(--color-text);
-  cursor: pointer;
-  display: inline-flex;
-  font-size: var(--font-sm);
-  font-weight: var(--weight-bold);
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-4);
-  transition: background var(--transition);
-
-  &:hover {
-    background: var(--color-accent-hover);
-  }
-
-  span {
-    display: none;
-  }
-}
-
-.delete-btn {
-  align-items: center;
-  background: transparent;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-pill);
-  color: var(--color-text-muted);
-  cursor: pointer;
-  display: inline-flex;
-  font-size: var(--font-sm);
-  font-weight: var(--weight-bold);
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-4);
-  transition:
-    background var(--transition),
-    border-color var(--transition),
-    color var(--transition);
-
-  @media (hover: hover) {
-    &:hover:not(:disabled) {
-      background: rgba(239, 68, 68, 0.08);
-      border-color: var(--color-danger);
-      color: var(--color-danger);
-    }
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
-  }
-}
-
 @media (min-width: 481px) {
   .entity-form {
     padding: var(--space-5);
-  }
-
-  .page-toolbar {
-    margin-bottom: var(--space-5);
-  }
-
-  .toolbar-toggle span {
-    display: inline;
   }
 }

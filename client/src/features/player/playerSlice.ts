@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { ISong } from '../../types/song';
+import type { ISong } from '../../types/api';
 
 export type RepeatMode = 'off' | 'all' | 'one';
 

@@ -2,22 +2,18 @@ import { Link } from 'react-router-dom';
 import { Pause, Play } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { playSong, togglePlay } from '../../features/player/playerSlice';
+import { formatDuration } from '../../utils/formatDuration';
 import EmptyState from '../common/EmptyState';
-import type { ISong } from '../../types/song';
+import type { ISong } from '../../types/api';
 import './SongList.scss';
 
 interface SongListProps {
   songs: ISong[];
+  /** Hidden on an album page, where every row shares the same album. */
   hideAlbumColumn?: boolean;
+  /** Hidden on a genre page, for the same reason. */
   hideGenreColumn?: boolean;
 }
-
-const formatDuration = (seconds?: number): string => {
-  if (!seconds) return '--:--';
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins}:${secs.toString().padStart(2, '0')}`;
-};
 
 const SongList = ({
   songs,
@@ -36,13 +32,24 @@ const SongList = ({
     );
   }
 
-  const className = `song-list${hideAlbumColumn ? ' song-list--hide-album' : ''}${hideGenreColumn ? ' song-list--hide-genre' : ''}`;
+  // Clicking a row plays the whole list from there, so the queue is this list.
+  const handleRowClick = (song: ISong, isActive: boolean) => {
+    dispatch(isActive ? togglePlay() : playSong({ song, queue: songs }));
+  };
+
+  const listClassName = [
+    'song-list',
+    hideAlbumColumn && 'song-list--hide-album',
+    hideGenreColumn && 'song-list--hide-genre',
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <div className={className}>
+    <div className={listClassName}>
       <div className="song-row song-header" aria-hidden="true">
         <span className="index-play">#</span>
-        <span className="title-col">Title</span>
+        <span>Title</span>
         {!hideAlbumColumn && <span className="album-col">Album</span>}
         {!hideGenreColumn && <span className="genre-col">Genre</span>}
         <span className="duration">Time</span>
@@ -50,14 +57,9 @@ const SongList = ({
       {songs.map((song, index) => {
         const isActive = currentSong?.id === song.id;
         const isActivePlaying = isActive && isPlaying;
-
-        const handleClick = () => {
-          if (isActive) {
-            dispatch(togglePlay());
-          } else {
-            dispatch(playSong({ song, queue: songs }));
-          }
-        };
+        const playLabel = isActivePlaying
+          ? `Pause ${song.title}`
+          : `Play ${song.title}`;
 
         return (
           <div
@@ -67,13 +69,9 @@ const SongList = ({
             <button
               type="button"
               className="index-play"
-              onClick={handleClick}
-              title={
-                isActivePlaying ? `Pause ${song.title}` : `Play ${song.title}`
-              }
-              aria-label={
-                isActivePlaying ? `Pause ${song.title}` : `Play ${song.title}`
-              }
+              onClick={() => handleRowClick(song, isActive)}
+              title={playLabel}
+              aria-label={playLabel}
             >
               <span className="index">{index + 1}</span>
               <span className="play-icon" aria-hidden="true">
@@ -103,14 +101,16 @@ const SongList = ({
                 <span className="album-col empty-col">—</span>
               ))}
             {!hideGenreColumn &&
-              (song.genres && song.genres.length > 0 ? (
+              (song.genres?.length ? (
                 <Link to={`/genres/${song.genres[0].id}`} className="genre-col">
                   {song.genres[0].name}
                 </Link>
               ) : (
                 <span className="genre-col empty-col">—</span>
               ))}
-            <span className="duration">{formatDuration(song.duration)}</span>
+            <span className="duration">
+              {formatDuration(song.duration, '--:--')}
+            </span>
           </div>
         );
       })}

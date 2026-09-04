@@ -1,92 +1,69 @@
-import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Trash2 } from 'lucide-react';
-import { toast } from 'react-toastify';
+import { useParams } from 'react-router-dom';
 import {
   useGetGenreByIdQuery,
   useDeleteGenreMutation,
 } from '../services/genresApi';
 import { useAppSelector } from '../app/hooks';
+import { useDeleteWithConfirm } from '../hooks/useDeleteWithConfirm';
 import SongList from '../components/songs/SongList';
 import ConfirmDialog from '../components/common/ConfirmDialog';
+import DeleteButton from '../components/common/DeleteButton';
+import PageStatus from '../components/common/PageStatus';
 
 const GenreDetailPage = () => {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  const { id = '' } = useParams<{ id: string }>();
   const isAdmin = useAppSelector((state) => state.auth.isAdmin);
-  const genreId = id ?? '';
+
+  const { data: genre, isLoading, error } = useGetGenreByIdQuery(id);
   const [deleteGenre, { isLoading: isDeleting }] = useDeleteGenreMutation();
-  const {
-    data: genre,
-    isLoading,
-    error,
-  } = useGetGenreByIdQuery(genreId, {
-    skip: !id,
-  });
-  const [confirmOpen, setConfirmOpen] = useState(false);
+  const { isConfirmOpen, openConfirm, closeConfirm, confirmDelete } =
+    useDeleteWithConfirm({ deleteEntity: deleteGenre, redirectTo: '/genres' });
 
   if (isLoading) {
     return (
-      <div className="genre-detail-page">
-        <div className="page-status page-status--loading">Loading genre...</div>
+      <div className="page">
+        <PageStatus isLoading>Loading genre...</PageStatus>
       </div>
     );
   }
 
   if (error || !genre) {
     return (
-      <div className="genre-detail-page">
-        <div className="page-status">Genre not found.</div>
+      <div className="page">
+        <PageStatus>Genre not found.</PageStatus>
       </div>
     );
   }
 
-  // Wait for the server before closing the dialog and navigating: the delete
-  // is not undoable, so the confirm button holds its "Working..." state until
-  // it succeeds. On failure the dialog stays open so the action can be retried.
-  const handleConfirmDelete = async () => {
-    const target = genre;
-    try {
-      await deleteGenre(target.id).unwrap();
-      setConfirmOpen(false);
-      navigate('/genres');
-      toast.success(`Deleted "${target.name}"`);
-    } catch {
-      toast.error(`Failed to delete "${target.name}"`);
-    }
-  };
+  const songs = genre.songs ?? [];
 
   return (
-    <div className="genre-detail-page">
+    <div className="page">
       <div className="page-toolbar">
         <h1>{genre.name}</h1>
         {isAdmin && (
-          <button
-            type="button"
-            className="delete-btn"
-            onClick={() => setConfirmOpen(true)}
-            disabled={isDeleting}
-            title="Delete genre"
-            aria-label="Delete genre"
-          >
-            <Trash2 size={16} strokeWidth={2} aria-hidden="true" />
-            <span>{isDeleting ? 'Deleting…' : 'Delete'}</span>
-          </button>
+          <DeleteButton
+            label="Delete genre"
+            isDeleting={isDeleting}
+            onClick={openConfirm}
+          />
         )}
       </div>
-      {genre.songs && genre.songs.length > 0 ? (
-        <SongList songs={genre.songs} hideGenreColumn />
+
+      {songs.length > 0 ? (
+        <SongList songs={songs} hideGenreColumn />
       ) : (
-        <div className="page-status">No songs in this genre yet.</div>
+        <PageStatus>No songs in this genre yet.</PageStatus>
       )}
+
       {isAdmin && (
         <ConfirmDialog
-          open={confirmOpen}
+          open={isConfirmOpen}
           title="Delete genre?"
           message={`"${genre.name}" will be removed. Songs will keep playing — only the genre tag is deleted.`}
           isLoading={isDeleting}
-          onConfirm={handleConfirmDelete}
-          onCancel={() => setConfirmOpen(false)}
+          onConfirm={() => confirmDelete(genre.id, genre.name)}
+          onCancel={closeConfirm}
         />
       )}
     </div>

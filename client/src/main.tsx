@@ -8,6 +8,7 @@ import { store } from './app/store';
 import App from './App';
 import AuthSessionProvider from './features/auth/AuthSessionProvider';
 import './styles/global.scss';
+import './styles/detailPage.scss';
 
 const rootElement = document.getElementById('root');
 

@@ -1,0 +1,47 @@
+/* Heading row for list pages, and the accent button that opens a create form.
+   .toolbar-toggle is also used on its own by the artist page's "Add song". */
+.page-toolbar {
+  align-items: center;
+  display: flex;
+  gap: var(--space-3);
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+
+  h1 {
+    margin-bottom: 0;
+  }
+}
+
+.toolbar-toggle {
+  align-items: center;
+  background: var(--color-accent);
+  border: none;
+  border-radius: var(--radius-pill);
+  color: var(--color-text);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: var(--font-sm);
+  font-weight: var(--weight-bold);
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  transition: background var(--transition);
+
+  &:hover {
+    background: var(--color-accent-hover);
+  }
+
+  /* Icon only on phones, where the toolbar has no room for the label. */
+  span {
+    display: none;
+  }
+}
+
+@media (min-width: 481px) {
+  .page-toolbar {
+    margin-bottom: var(--space-5);
+  }
+
+  .toolbar-toggle span {
+    display: inline;
+  }
+}
