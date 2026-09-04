@@ -518,7 +518,7 @@ Notes:
 - Artist, album and song creation use `multipart/form-data` because they accept file uploads (profile picture, cover image, audio file).
 - Create and delete routes require `Authorization: Bearer <supabase_access_token>` for the configured admin user.
 - Every `:id` path parameter must be a valid UUID v4; the `validateId` middleware rejects malformed ids with a 400 error.
-- All responses are JSON; errors follow `{ "error": "...", "details": ... }` shape via the central error handler.
+- All responses are JSON; errors follow a `{ "error": "..." }` shape via the central error handler.
 
 ### API Route Groups
 
