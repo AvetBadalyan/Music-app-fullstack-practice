@@ -27,7 +27,7 @@ const HomePage = () => {
           <div className="section-header">
             <h2>Recent Songs</h2>
             <Link to="/songs" className="see-all">
-              See all
+              See all songs
             </Link>
           </div>
           {isLoadingSongs ? (
@@ -42,7 +42,7 @@ const HomePage = () => {
         <div className="section-header">
           <h2>Albums</h2>
           <Link to="/albums" className="see-all">
-            See all
+            See all albums
           </Link>
         </div>
         {isLoadingAlbums ? (

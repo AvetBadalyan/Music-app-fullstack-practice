@@ -3,6 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      rel="preload"
+      as="image"
+      href="/singers/music_slide_1_768.webp"
+      imagesrcset="/singers/music_slide_1_768.webp 768w, /singers/music_slide_1_1600.webp 1600w"
+      imagesizes="100vw"
+      fetchpriority="high"
+    />
     <!-- viewport-fit=cover: required for the env(safe-area-inset-*) values the player and layout use -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <!-- Paints the browser UI to match the app background before the CSS loads -->

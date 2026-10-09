@@ -1,9 +1,43 @@
 import { defineConfig } from 'vite';
+import type { Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
+
+const inlineEntryCss: Plugin = {
+  name: 'inline-entry-css',
+  apply: 'build',
+  enforce: 'post',
+  generateBundle(_options, bundle) {
+    const htmlFile = bundle['index.html'];
+
+    if (!htmlFile || htmlFile.type !== 'asset' || typeof htmlFile.source !== 'string') {
+      throw new Error('Could not find the generated index.html asset');
+    }
+
+    const stylesheetTags = [
+      ...htmlFile.source.matchAll(/<link\b[^>]*\brel="stylesheet"[^>]*>/g),
+    ];
+
+    for (const [tag] of stylesheetTags) {
+      const href = tag.match(/\bhref="([^"]+)"/)?.[1];
+      const fileName = href?.replace(/^\/+/, '');
+      const cssAsset = fileName ? bundle[fileName] : undefined;
+
+      if (!fileName || !cssAsset || cssAsset.type !== 'asset') {
+        throw new Error(`Could not inline generated stylesheet: ${href ?? tag}`);
+      }
+
+      htmlFile.source = htmlFile.source.replace(
+        tag,
+        `<style>${String(cssAsset.source)}</style>`,
+      );
+      delete bundle[fileName];
+    }
+  },
+};
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), inlineEntryCss],
   server: {
     port: 5173,
     proxy: {

@@ -1,0 +1,20 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "MusicAvet"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:musicavet:website:library",
+      "displayName": "MusicAvet public music library",
+      "type": "text/html",
+      "url": "https://musicavet.vercel.app/",
+      "description": "Browse songs, albums, artists, and genres in the MusicAvet music library.",
+      "tags": ["music", "songs", "albums", "artists", "genres"],
+      "representativeQueries": [
+        "Browse songs, albums, and artists in the MusicAvet music library",
+        "Find music by artist, album, or genre"
+      ]
+    }
+  ]
+}

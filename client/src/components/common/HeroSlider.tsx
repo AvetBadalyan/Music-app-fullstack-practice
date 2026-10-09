@@ -4,19 +4,35 @@ import './HeroSlider.scss';
 
 const SLIDES = [
   {
-    src: '/singers/music_slide_1_1920x1080.jpg',
+    src: '/singers/music_slide_1_768.webp',
+    srcSet:
+      '/singers/music_slide_1_768.webp 768w, /singers/music_slide_1_1600.webp 1600w',
+    width: 1853,
+    height: 1040,
     alt: '',
   },
   {
-    src: '/singers/music_slide_2_1920x1080.jpg',
+    src: '/singers/music_slide_2_768.webp',
+    srcSet:
+      '/singers/music_slide_2_768.webp 768w, /singers/music_slide_2_1600.webp 1600w',
+    width: 1858,
+    height: 1048,
     alt: '',
   },
   {
-    src: '/singers/music_slide_3_1920x1080.jpg',
+    src: '/singers/music_slide_3_768.webp',
+    srcSet:
+      '/singers/music_slide_3_768.webp 768w, /singers/music_slide_3_1600.webp 1600w',
+    width: 1864,
+    height: 1040,
     alt: '',
   },
   {
-    src: '/singers/music_slide_4_1920x1080.jpg',
+    src: '/singers/music_slide_4_768.webp',
+    srcSet:
+      '/singers/music_slide_4_768.webp 768w, /singers/music_slide_4_1600.webp 1600w',
+    width: 1859,
+    height: 1045,
     alt: '',
   },
 ];
@@ -64,12 +80,16 @@ const HeroSlider = () => {
             >
               <img
                 src={slide.src}
+                srcSet={slide.srcSet}
+                sizes="100vw"
                 alt={slide.alt}
                 draggable={false}
-                loading="eager"
+                loading={i === 0 ? 'eager' : 'lazy'}
                 // First slide is the LCP element, so it loads at high priority.
                 fetchPriority={i === 0 ? 'high' : 'low'}
                 decoding="async"
+                width={slide.width}
+                height={slide.height}
               />
             </div>
           ))}

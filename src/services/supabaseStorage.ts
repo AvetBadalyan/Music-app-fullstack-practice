@@ -41,12 +41,14 @@ class SupabaseStorage {
       mimeType,
       upsert = false,
     }: UploadFileInput,
+    cacheControl?: string,
   ): Promise<string> {
     const storagePath = buildStoragePath(entityName, originalFileName);
     const bucketStorage = this.client.storage.from(bucketName);
 
     const { error } = await bucketStorage.upload(storagePath, fileBuffer, {
       contentType: mimeType,
+      ...(cacheControl ? { cacheControl } : {}),
       upsert,
     });
 
@@ -70,11 +72,11 @@ class SupabaseStorage {
   }
 
   uploadAlbumCover(input: UploadFileInput): Promise<string> {
-    return this.uploadToBucket(this.buckets.albumCovers, input);
+    return this.uploadToBucket(this.buckets.albumCovers, input, '86400');
   }
 
   uploadArtistImage(input: UploadFileInput): Promise<string> {
-    return this.uploadToBucket(this.buckets.artistImages, input);
+    return this.uploadToBucket(this.buckets.artistImages, input, '86400');
   }
 
   /**

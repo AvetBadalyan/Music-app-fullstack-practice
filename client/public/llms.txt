@@ -1,0 +1,11 @@
+# MusicAvet
+
+> A public music library for browsing songs, albums, artists, and genres.
+
+## Main pages
+
+- [Home](https://musicavet.vercel.app/)
+- [Songs](https://musicavet.vercel.app/songs)
+- [Artists](https://musicavet.vercel.app/artists)
+- [Albums](https://musicavet.vercel.app/albums)
+- [Genres](https://musicavet.vercel.app/genres)
