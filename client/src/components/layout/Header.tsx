@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { LogIn, LogOut, Menu, Music2, ShieldCheck, X } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useAppSelector } from '../../app/hooks';
-import { supabase } from '../../services/supabaseClient';
 import './Header.scss';
 
 interface HeaderProps {
@@ -14,16 +13,22 @@ const Header = ({ menuOpen, onMenuToggle }: HeaderProps) => {
   const { email, isAdmin } = useAppSelector((state) => state.auth);
 
   const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut();
+    try {
+      const { supabase } = await import('../../services/supabaseClient');
+      const { error } = await supabase.auth.signOut();
 
-    // The session is cleared by the auth listener in AuthSessionProvider, so
-    // there is nothing to do here but report the outcome.
-    if (error) {
-      toast.error(error.message);
-      return;
+      // The session is cleared by the auth listener in AuthSessionProvider, so
+      // there is nothing to do here but report the outcome.
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      toast.success('Signed out');
+    } catch (error) {
+      console.error('Failed to sign out:', error);
+      toast.error('Unable to sign out. Please try again.');
     }
-
-    toast.success('Signed out');
   };
 
   return (

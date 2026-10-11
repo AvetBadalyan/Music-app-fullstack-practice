@@ -1,7 +1,6 @@
 import { useEffect, type ReactNode } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { useAppDispatch } from '../../app/hooks';
-import { supabase } from '../../services/supabaseClient';
 import {
   clearAuthSession,
   setAuthSession,
@@ -21,27 +20,33 @@ const AuthSessionProvider = ({ children }: AuthSessionProviderProps) => {
 
   useEffect(() => {
     let mounted = true;
+    let unsubscribe: (() => void) | undefined;
 
-    supabase.auth
-      .getSession()
-      .then(({ data }) => {
+    import('../../services/supabaseClient')
+      .then(({ supabase }) => {
         if (!mounted) return;
-        dispatch(setAuthSession(getSessionPayload(data.session)));
+
+        const {
+          data: { subscription },
+        } = supabase.auth.onAuthStateChange((_event, session) => {
+          dispatch(setAuthSession(getSessionPayload(session)));
+        });
+        unsubscribe = () => subscription.unsubscribe();
+
+        return supabase.auth.getSession().then(({ data }) => {
+          if (!mounted) return;
+          dispatch(setAuthSession(getSessionPayload(data.session)));
+        });
       })
-      .catch(() => {
+      .catch((error: unknown) => {
         if (!mounted) return;
+        console.error('Failed to initialize Supabase auth session:', error);
         dispatch(clearAuthSession());
       });
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      dispatch(setAuthSession(getSessionPayload(session)));
-    });
-
     return () => {
       mounted = false;
-      subscription.unsubscribe();
+      unsubscribe?.();
     };
   }, [dispatch]);
 

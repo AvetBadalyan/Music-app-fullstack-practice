@@ -6,7 +6,7 @@ const SLIDES = [
   {
     src: '/singers/music_slide_1_768.webp',
     srcSet:
-      '/singers/music_slide_1_768.webp 768w, /singers/music_slide_1_1600.webp 1600w',
+      '/singers/music_slide_1_768.webp 768w, /singers/music_slide_1_1280.webp 1280w, /singers/music_slide_1_1600.webp 1600w',
     width: 1853,
     height: 1040,
     alt: '',
@@ -14,7 +14,7 @@ const SLIDES = [
   {
     src: '/singers/music_slide_2_768.webp',
     srcSet:
-      '/singers/music_slide_2_768.webp 768w, /singers/music_slide_2_1600.webp 1600w',
+      '/singers/music_slide_2_768.webp 768w, /singers/music_slide_2_1280.webp 1280w, /singers/music_slide_2_1600.webp 1600w',
     width: 1858,
     height: 1048,
     alt: '',
@@ -22,7 +22,7 @@ const SLIDES = [
   {
     src: '/singers/music_slide_3_768.webp',
     srcSet:
-      '/singers/music_slide_3_768.webp 768w, /singers/music_slide_3_1600.webp 1600w',
+      '/singers/music_slide_3_768.webp 768w, /singers/music_slide_3_1280.webp 1280w, /singers/music_slide_3_1600.webp 1600w',
     width: 1864,
     height: 1040,
     alt: '',
@@ -30,7 +30,7 @@ const SLIDES = [
   {
     src: '/singers/music_slide_4_768.webp',
     srcSet:
-      '/singers/music_slide_4_768.webp 768w, /singers/music_slide_4_1600.webp 1600w',
+      '/singers/music_slide_4_768.webp 768w, /singers/music_slide_4_1280.webp 1280w, /singers/music_slide_4_1600.webp 1600w',
     width: 1859,
     height: 1045,
     alt: '',
@@ -72,27 +72,32 @@ const HeroSlider = () => {
           className="hero-slider__track"
           style={{ transform: `translateX(-${current * 100}%)` }}
         >
-          {SLIDES.map((slide, i) => (
-            <div
-              key={slide.src}
-              className="hero-slider__slide"
-              aria-hidden={i !== current}
-            >
-              <img
-                src={slide.src}
-                srcSet={slide.srcSet}
-                sizes="100vw"
-                alt={slide.alt}
-                draggable={false}
-                loading={i === 0 ? 'eager' : 'lazy'}
-                // First slide is the LCP element, so it loads at high priority.
-                fetchPriority={i === 0 ? 'high' : 'low'}
-                decoding="async"
-                width={slide.width}
-                height={slide.height}
-              />
-            </div>
-          ))}
+          {SLIDES.map((slide, i) => {
+            const shouldLoad =
+              i === current || i === (current + 1) % SLIDES.length;
+
+            return (
+              <div
+                key={slide.src}
+                className="hero-slider__slide"
+                aria-hidden={i !== current}
+              >
+                <img
+                  src={shouldLoad ? slide.src : undefined}
+                  srcSet={shouldLoad ? slide.srcSet : undefined}
+                  sizes="100vw"
+                  alt={slide.alt}
+                  draggable={false}
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                  // First slide is the LCP element, so it loads at high priority.
+                  fetchPriority={i === 0 ? 'high' : 'low'}
+                  decoding="async"
+                  width={slide.width}
+                  height={slide.height}
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
 

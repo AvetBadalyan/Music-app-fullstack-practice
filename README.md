@@ -3,7 +3,6 @@
 A full-stack music library application with a global audio player, admin content management, and a fully responsive dark UI.
 
 **Live demo (Vercel):** https://musicavet.vercel.app/
-**Live demo (AWS Amplify):** https://main.d3kojl89wftd85.amplifyapp.com/
 
 ---
 
@@ -204,10 +203,10 @@ This loads genres, artists, albums, and real mp3 tracks into your database and u
   npx typeorm-ts-node-commonjs migration:generate src/migrations/Init -d src/data-source.ts
   npx typeorm-ts-node-commonjs migration:run -d src/data-source.ts
   ```
-- **CORS:** `CLIENT_URL` must match the deployed frontend origin(s) exactly (no trailing slash). Comma-separated for more than one — e.g. a Vercel deployment and an AWS Amplify deployment of the same frontend.
+- **CORS:** `CLIENT_URL` must match the deployed frontend origin(s) exactly (no trailing slash). Comma-separate multiple frontend origins.
 - **Vite proxy** is dev-only. In production deploy the frontend separately and set `VITE_API_URL` to the backend URL.
-- **`VITE_*` variables are baked in at build time**, not read at runtime. Changing one in the host's dashboard (Vercel, Amplify) does nothing until the site is rebuilt — editing the value alone is not enough.
-- **Local `.env` vs. `.env.production`:** `.env` / `client/.env` hold local-dev values (`localhost`, dev DB) and are never uploaded anywhere. `.env.production` / `client/.env.production` hold the real deployed values and exist only to be imported into the host's dashboard (Vercel's "Import .env", Amplify's env var editor) — they are git-ignored and should never be merged into the local `.env` files.
+- **`VITE_*` variables are baked in at build time**, not read at runtime. Changing one in Vercel's dashboard does nothing until the site is rebuilt.
+- **Environment files:** `.env` / `client/.env` are git-ignored and must never be committed. Configure deployed values in Vercel's project environment settings; use `.env.example` files as templates only.
 - **Backend hosting:** the API runs on Vercel as a single serverless function (`api/index.ts`, routed via `vercel.json`). Set `DATABASE_URL`, `CLIENT_URL`, `DB_SYNCHRONIZE=false` and the `SUPABASE_*` / `ADMIN_EMAIL` variables in the Vercel project's environment settings — none of these are read from a committed config file. (`NODE_ENV=production` is set by Vercel itself, which is what enables SSL to Postgres.)
 - **Entity columns declare their `type` explicitly** (`@Column({ type: 'varchar', length: 100 })`). Vercel compiles TypeScript with esbuild, which does not implement `emitDecoratorMetadata`, so TypeORM cannot infer a column type from the TypeScript type there and throws `ColumnTypeUndefinedError` while defining the class. Declaring the type keeps the entities portable across compilers; the resulting schema is identical to what was previously inferred.
 - **`buildCommand: ""`** skips the local `tsc` build on Vercel, which compiles the function from `src/` itself. `npm run build` / `npm start` remain for running the compiled server locally.
@@ -458,7 +457,7 @@ unset DATABASE_URL
 
 Why `NODE_ENV=production`? The backend enables SSL when `NODE_ENV=production`, which Supabase Postgres expects.
 
-After this finishes, your deployed app (Vercel/Amplify) will immediately show the seeded data because it reads from the same Supabase database.
+After this finishes, your deployed app on Vercel will immediately show the seeded data because it reads from the same Supabase database.
 
 Notes:
 
