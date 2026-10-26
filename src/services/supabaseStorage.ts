@@ -4,6 +4,14 @@ import { requireEnv } from '../utils/env';
 import { buildStoragePath } from '../utils/storagePath';
 import type { StorageConfig, UploadFileInput } from '../types/supabase';
 
+/**
+ * Cache lifetime (seconds) for uploaded images. Covers and artist images are
+ * effectively immutable once uploaded (a new upload gets a new storage path),
+ * so we let browsers and CDNs cache them for a year. This drives the
+ * `cache-control` header Supabase returns on the public URL.
+ */
+const IMAGE_CACHE_CONTROL = '31536000';
+
 class SupabaseStorage {
   private readonly buckets: StorageConfig['buckets'];
   private readonly client: SupabaseClient;
@@ -72,11 +80,11 @@ class SupabaseStorage {
   }
 
   uploadAlbumCover(input: UploadFileInput): Promise<string> {
-    return this.uploadToBucket(this.buckets.albumCovers, input, '86400');
+    return this.uploadToBucket(this.buckets.albumCovers, input, IMAGE_CACHE_CONTROL);
   }
 
   uploadArtistImage(input: UploadFileInput): Promise<string> {
-    return this.uploadToBucket(this.buckets.artistImages, input, '86400');
+    return this.uploadToBucket(this.buckets.artistImages, input, IMAGE_CACHE_CONTROL);
   }
 
   /**

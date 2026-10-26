@@ -7,32 +7,32 @@ const SLIDES = [
     src: '/singers/music_slide_1_768.webp',
     srcSet:
       '/singers/music_slide_1_768.webp 768w, /singers/music_slide_1_1280.webp 1280w, /singers/music_slide_1_1600.webp 1600w',
-    width: 1853,
-    height: 1040,
+    width: 1600,
+    height: 900,
     alt: '',
   },
   {
     src: '/singers/music_slide_2_768.webp',
     srcSet:
       '/singers/music_slide_2_768.webp 768w, /singers/music_slide_2_1280.webp 1280w, /singers/music_slide_2_1600.webp 1600w',
-    width: 1858,
-    height: 1048,
+    width: 1600,
+    height: 900,
     alt: '',
   },
   {
     src: '/singers/music_slide_3_768.webp',
     srcSet:
       '/singers/music_slide_3_768.webp 768w, /singers/music_slide_3_1280.webp 1280w, /singers/music_slide_3_1600.webp 1600w',
-    width: 1864,
-    height: 1040,
+    width: 1600,
+    height: 900,
     alt: '',
   },
   {
     src: '/singers/music_slide_4_768.webp',
     srcSet:
       '/singers/music_slide_4_768.webp 768w, /singers/music_slide_4_1280.webp 1280w, /singers/music_slide_4_1600.webp 1600w',
-    width: 1859,
-    height: 1045,
+    width: 1600,
+    height: 900,
     alt: '',
   },
 ];
@@ -73,6 +73,8 @@ const HeroSlider = () => {
           style={{ transform: `translateX(-${current * 100}%)` }}
         >
           {SLIDES.map((slide, i) => {
+            // Only mount the current and next slide's source so the browser
+            // doesn't fetch every slide on initial load.
             const shouldLoad =
               i === current || i === (current + 1) % SLIDES.length;
 
@@ -85,7 +87,7 @@ const HeroSlider = () => {
                 <img
                   src={shouldLoad ? slide.src : undefined}
                   srcSet={shouldLoad ? slide.srcSet : undefined}
-                  sizes="100vw"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1280px) 80vw, 1200px"
                   alt={slide.alt}
                   draggable={false}
                   loading={i === 0 ? 'eager' : 'lazy'}

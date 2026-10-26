@@ -17,17 +17,17 @@ export const artists = [
   {
     name: 'Charles Aznavour',
     bio: 'French-Armenian singer, lyricist, and actor.',
-    profileImageFile: 'Charles Aznavour.jpg',
+    profileImageFile: 'Charles Aznavour.webp',
   },
   {
     name: 'Ray Charles',
     bio: 'American singer, songwriter, and pianist.',
-    profileImageFile: 'Ray Charles.avif',
+    profileImageFile: 'Ray Charles.webp',
   },
   {
     name: 'Frank Sinatra',
     bio: 'American singer and actor, one of the most popular entertainers of the 20th century.',
-    profileImageFile: 'frank sinatra.jpg',
+    profileImageFile: 'frank sinatra.webp',
   },
   {
     name: 'Stevie Wonder',
@@ -40,25 +40,25 @@ export const albums = [
   {
     title: 'She',
     releaseDate: '1974-01-01',
-    coverImageFile: 'she album.jpg',
+    coverImageFile: 'she album.webp',
     artist: 'Charles Aznavour',
   },
   {
     title: 'Genius Loves Company',
     releaseDate: '2004-08-31',
-    coverImageFile: 'Genius Loves Company.jpg',
+    coverImageFile: 'Genius Loves Company.webp',
     artist: 'Ray Charles',
   },
   {
     title: 'In the Wee Small Hours',
     releaseDate: '1955-04-25',
-    coverImageFile: 'In the Wee Small Hours.jpg',
+    coverImageFile: 'In the Wee Small Hours.webp',
     artist: 'Frank Sinatra',
   },
   {
     title: 'The Definitive Collection',
     releaseDate: '1976-09-28',
-    coverImageFile: 'the definitive collection.jpg',
+    coverImageFile: 'the definitive collection.webp',
     artist: 'Stevie Wonder',
   },
 ];

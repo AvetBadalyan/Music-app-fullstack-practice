@@ -34,6 +34,8 @@ const ArtistList = ({ artists }: ArtistListProps) => {
               <img
                 src={artist.profilePicture}
                 alt={artist.name}
+                width="224"
+                height="224"
                 loading="lazy"
                 decoding="async"
               />

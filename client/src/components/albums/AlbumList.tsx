@@ -30,6 +30,8 @@ const AlbumList = ({ albums }: AlbumListProps) => {
               <img
                 src={album.coverImage}
                 alt={album.title}
+                width="288"
+                height="288"
                 loading="lazy"
                 decoding="async"
               />
