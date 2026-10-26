@@ -54,18 +54,16 @@ export default defineConfig({
       output: {
         // The dependencies change far less often than the app code, so they go
         // in their own chunks and stay cached in the browser across deploys.
-        advancedChunks: {
-          groups: [
-            {
-              name: 'react',
-              test: /node_modules[\\/](react|react-dom|scheduler|react-router)/,
-            },
-            {
-              name: 'redux',
-              test: /node_modules[\\/](@reduxjs|react-redux|immer|redux)/,
-            },
-            { name: 'supabase', test: /node_modules[\\/]@supabase/ },
-          ],
+        manualChunks: (id) => {
+          if (/node_modules\/(react|react-dom|react-router-dom|react-router|scheduler)\//.test(id)) {
+            return 'react';
+          }
+          if (/node_modules\/(@reduxjs|react-redux|immer|redux)\//.test(id)) {
+            return 'redux';
+          }
+          if (/node_modules\/@supabase\//.test(id)) {
+            return 'supabase';
+          }
         },
       },
     },
