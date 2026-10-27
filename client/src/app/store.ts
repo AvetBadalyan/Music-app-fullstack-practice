@@ -4,6 +4,7 @@ import playerReducer from '../features/player/playerSlice';
 import { playerListener } from '../features/player/playerListener';
 import { rtkQueryErrorToast } from './errorMiddleware';
 import authReducer from '../features/auth/authSlice';
+import uiReducer from '../features/ui/uiSlice';
 
 // Create the Redux store — the single source of truth for all app state
 export const store = configureStore({
@@ -12,6 +13,7 @@ export const store = configureStore({
     api: api.reducer, // RTK Query manages all server data (songs, albums, etc.)
     player: playerReducer, // Our manual slice for the music player state
     auth: authReducer,
+    ui: uiReducer, // Modal and sidebar open/close state
   },
 
   // `middleware` are functions that intercept state changes:

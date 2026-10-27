@@ -1,0 +1,114 @@
+// =============================================================================
+// _animations.scss — Shared keyframes, timing functions, and animation mixins
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// CSS Custom Properties (timing functions, durations, glassmorphism)
+// -----------------------------------------------------------------------------
+
+:root {
+  // Easing curves
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  // Duration scale
+  --duration-fast: 100ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --duration-slower: 400ms;
+
+  // Glassmorphism
+  --glass-blur: 16px;
+  --glass-bg: rgba(21, 18, 28, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.08);
+}
+
+// -----------------------------------------------------------------------------
+// Keyframes
+// -----------------------------------------------------------------------------
+
+@keyframes page-fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+@keyframes page-fade-slide-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes skeleton-shimmer-enhanced {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes progress-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
+}
+
+@keyframes dot-fill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+@keyframes ripple-expand {
+  from { transform: scale(0);   opacity: 0.4; }
+  to   { transform: scale(2.5); opacity: 0; }
+}
+
+@keyframes toast-slide-in {
+  from { transform: translateY(-100%); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
+@keyframes title-entrance {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
+}
+
+// -----------------------------------------------------------------------------
+// Page transition utility classes
+// -----------------------------------------------------------------------------
+
+.page-transition {
+  &-exit {
+    animation: page-fade-out var(--duration-normal) var(--ease-out-expo) forwards;
+  }
+
+  &-enter {
+    animation: page-fade-slide-in var(--duration-slow) var(--ease-out-expo) forwards;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Mixins
+// -----------------------------------------------------------------------------
+
+/// Wraps content in a `prefers-reduced-motion: reduce` media query.
+/// Use this wherever animations are defined to provide a no-motion fallback.
+///
+/// @example scss
+///   .my-element {
+///     animation: float 3s ease-in-out infinite;
+///
+///     @include reduced-motion {
+///       animation: none;
+///     }
+///   }
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}

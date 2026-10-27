@@ -21,6 +21,7 @@
     justify-content: center;
     font-size: var(--font-lg);
     margin-bottom: var(--space-2);
+    animation: float 3s ease-in-out infinite;
   }
 
   h3 {
@@ -60,5 +61,11 @@
         transform: translateY(-1px);
       }
     }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .empty-state .empty-icon {
+    animation: none;
   }
 }

@@ -124,6 +124,46 @@ const playerSlice = createSlice({
       state.queue = [];
       state.currentIndex = -1;
     },
+    removeFromQueue(state, action: PayloadAction<number>) {
+      const indexToRemove = action.payload;
+
+      if (indexToRemove < 0 || indexToRemove >= state.queue.length) return;
+
+      if (indexToRemove === state.currentIndex) {
+        state.queue.splice(indexToRemove, 1);
+
+        if (state.queue.length === 0) {
+          // Queue is now empty
+          state.currentSong = null;
+          state.currentIndex = -1;
+          state.isPlaying = false;
+        } else if (indexToRemove >= state.queue.length) {
+          // Was last song, wrap to first
+          state.currentIndex = 0;
+          state.currentSong = state.queue[0];
+        } else {
+          // Play next song at same index
+          state.currentSong = state.queue[indexToRemove];
+        }
+      } else {
+        // Removing non-current song
+        state.queue.splice(indexToRemove, 1);
+
+        // Adjust currentIndex if needed
+        if (indexToRemove < state.currentIndex) {
+          state.currentIndex -= 1;
+        }
+      }
+    },
+    playFromQueue(state, action: PayloadAction<number>) {
+      const index = action.payload;
+
+      if (index < 0 || index >= state.queue.length) return;
+
+      state.currentIndex = index;
+      state.currentSong = state.queue[index];
+      state.isPlaying = true;
+    },
   },
 });
 
@@ -138,5 +178,7 @@ export const {
   toggleShuffle,
   cycleRepeat,
   closePlayer,
+  removeFromQueue,
+  playFromQueue,
 } = playerSlice.actions;
 export default playerSlice.reducer;

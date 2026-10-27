@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
 import {
+  ListMusic,
   Pause,
   Play,
   Repeat,
@@ -26,6 +27,8 @@ import {
   cycleRepeat,
   closePlayer,
 } from '../../features/player/playerSlice';
+import { toggleQueueSidebar } from '../../features/ui/uiSlice';
+import { useColorExtract } from '../../hooks/useColorExtract';
 import { formatDuration } from '../../utils/formatDuration';
 import './MusicPlayer.scss';
 
@@ -64,6 +67,8 @@ const MusicPlayer = () => {
     repeat,
   } = useAppSelector((state) => state.player);
   const dispatch = useAppDispatch();
+
+  const { dominantColor } = useColorExtract(currentSong?.album?.coverImage);
 
   // Play/pause sync. A song with no audio file, or one the browser can't
   // load, can't actually play - fall back to paused rather than leaving the
@@ -251,7 +256,10 @@ const MusicPlayer = () => {
   const volumePct = Math.round((isMuted ? 0 : volume) * 100);
 
   return (
-    <div className="music-player">
+    <div
+      className={`music-player${isPlaying && dominantColor ? ' music-player--has-glow' : ''}`}
+      style={dominantColor ? { ['--cover-glow-color' as string]: dominantColor } : undefined}
+    >
       <audio
         key={currentSong.id}
         ref={audioRef}
@@ -265,13 +273,14 @@ const MusicPlayer = () => {
 
       <div className="now-playing">
         <Link to={`/songs/${currentSong.id}`} className="song-title">
-          {isPlaying && (
-            <span className="equalizer now-playing-status" aria-hidden="true">
-              <span />
-              <span />
-              <span />
-            </span>
-          )}
+          <span
+            className={`equalizer now-playing-status${!isPlaying ? ' is-paused' : ''}`}
+            aria-hidden="true"
+          >
+            <span />
+            <span />
+            <span />
+          </span>
           <span className="song-title-text">{currentSong.title}</span>
         </Link>
         {currentSong.artist && (
@@ -421,6 +430,16 @@ const MusicPlayer = () => {
           style={{ ['--progress' as string]: `${volumePct}%` }}
         />
       </div>
+
+      <button
+        type="button"
+        className="queue-btn"
+        onClick={() => dispatch(toggleQueueSidebar())}
+        title="Queue"
+        aria-label="Toggle queue sidebar"
+      >
+        <ListMusic size={16} strokeWidth={2} aria-hidden="true" />
+      </button>
 
       <button
         type="button"

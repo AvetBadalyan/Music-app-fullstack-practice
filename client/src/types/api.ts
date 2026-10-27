@@ -17,6 +17,7 @@ export interface IArtistRef {
 export interface IAlbumRef {
   id: string;
   title: string;
+  coverImage?: string | null;
 }
 
 export interface IGenre {

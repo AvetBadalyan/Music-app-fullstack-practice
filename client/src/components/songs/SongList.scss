@@ -22,6 +22,8 @@
   }
 
   .song-row {
+    position: relative;
+    overflow: hidden;
     display: grid;
     grid-template-columns: var(--song-list-columns);
     align-items: center;
@@ -29,7 +31,7 @@
     padding: var(--space-2) var(--space-4);
     margin-bottom: 2px;
     border-radius: var(--radius-md);
-    transition: background var(--transition);
+    transition: background 100ms ease-out;
 
     &.song-header {
       padding-top: var(--space-1);
@@ -87,6 +89,17 @@
 
       .index-play .index {
         color: var(--color-accent-hover);
+        opacity: 0;
+      }
+
+      // Show the equalizer on the active row
+      .index-play .equalizer {
+        opacity: 1;
+      }
+
+      // On hover, hide the equalizer so the play/pause icon is visible
+      .index-play:hover .equalizer {
+        opacity: 0;
       }
 
       .song-info .title {
@@ -114,15 +127,15 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        transition:
-          opacity var(--transition),
-          transform var(--transition);
       }
 
       .index {
         font-size: var(--font-md);
         color: inherit;
         opacity: 1;
+        transition:
+          opacity 150ms ease-out,
+          transform 150ms var(--ease-out-back);
       }
 
       .play-icon {
@@ -130,21 +143,35 @@
         font-size: var(--font-xs);
         letter-spacing: -1px;
         opacity: 0;
+        transform: scale(0.8);
+        transition:
+          opacity 150ms ease-out,
+          transform 150ms var(--ease-out-back);
+      }
+
+      // Equalizer icon — absolutely positioned like .index / .play-icon.
+      // Visibility is controlled by the .is-active rules below.
+      .equalizer {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: auto;
+        height: auto;
+        opacity: 0;
+        transition: opacity 150ms ease-out;
       }
 
       &:hover {
         .index {
           opacity: 0;
+          transform: scale(0.8);
         }
 
         .play-icon {
           opacity: 1;
-        }
-      }
-
-      @media (hover: hover) {
-        &:hover .play-icon {
-          transform: scale(1.15);
+          transform: scale(1);
         }
       }
     }
@@ -219,11 +246,6 @@
       overflow: hidden;
       text-overflow: ellipsis;
 
-      &:hover:not(.empty-col) {
-        color: var(--color-text);
-        text-decoration: underline;
-      }
-
       &.empty-col {
         cursor: default;
       }
@@ -233,11 +255,50 @@
       }
     }
 
+    .album-col {
+      background-image: linear-gradient(currentColor, currentColor);
+      background-repeat: no-repeat;
+      background-position: 0 100%;
+      background-size: 0% 1px;
+      padding-bottom: 2px;
+      transition:
+        background-size var(--transition),
+        color var(--transition);
+
+      @media (hover: hover) {
+        &:hover:not(.empty-col) {
+          color: var(--color-text);
+          background-size: 100% 1px;
+        }
+      }
+    }
+
+    .genre-col {
+      @media (hover: hover) {
+        &:hover:not(.empty-col) {
+          color: var(--color-text);
+          text-decoration: underline;
+        }
+      }
+    }
+
     .duration {
       color: var(--color-text-muted);
       font-size: var(--font-sm);
       text-align: right;
       font-variant-numeric: tabular-nums;
+    }
+
+    .song-row__ripple {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      margin-left: -100px;
+      margin-top: -100px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      pointer-events: none;
+      animation: ripple-expand 400ms ease-out forwards;
     }
   }
 }

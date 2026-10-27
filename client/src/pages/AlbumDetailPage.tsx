@@ -1,4 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
+import { Clock, Disc } from 'lucide-react';
 import {
   useGetAlbumByIdQuery,
   useDeleteAlbumMutation,
@@ -7,9 +8,13 @@ import { useAppSelector } from '../app/hooks';
 import { useHeroGradient } from '../hooks/useHeroGradient';
 import { useDeleteWithConfirm } from '../hooks/useDeleteWithConfirm';
 import SongList from '../components/songs/SongList';
+import StatsBadge from '../components/common/StatsBadge';
+import PlayAllButton from '../components/common/PlayAllButton';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import DeleteButton from '../components/common/DeleteButton';
 import PageStatus from '../components/common/PageStatus';
+import { formatTotalDurationMinutes } from '../utils/formatTotalDuration';
+import { sortByTrackNumber } from '../utils/sortSongs';
 import './AlbumDetailPage.scss';
 
 const AlbumDetailPage = () => {
@@ -44,6 +49,7 @@ const AlbumDetailPage = () => {
   }
 
   const songCount = album.songs?.length ?? 0;
+  const totalDuration = album.songs?.reduce((sum, s) => sum + (s.duration || 0), 0) ?? 0;
   const confirmMessage =
     `"${album.title}" will be permanently removed.` +
     (songCount ? `\n\nThis will also delete ${songCount} song(s).` : '') +
@@ -76,15 +82,38 @@ const AlbumDetailPage = () => {
           {album.releaseDate && (
             <p className="meta">{new Date(album.releaseDate).getFullYear()}</p>
           )}
-          {isAdmin && (
-            <div className="detail-hero__actions">
+
+          {/* Stats row — Requirements 5.4, 5.5 */}
+          <div className="detail-hero__stats">
+            <StatsBadge
+              icon={<Disc size={14} strokeWidth={2} />}
+              value={String(songCount)}
+              label={songCount === 1 ? 'track' : 'tracks'}
+            />
+            {totalDuration > 0 && (
+              <StatsBadge
+                icon={<Clock size={14} strokeWidth={2} />}
+                value={formatTotalDurationMinutes(totalDuration)}
+              />
+            )}
+          </div>
+
+          {/* Play All + admin delete — Requirements 5.7, 5.13 */}
+          <div className="detail-hero__actions">
+            <PlayAllButton
+              songs={album.songs ?? []}
+              sortFn={sortByTrackNumber}
+              disabled={songCount === 0}
+              disabledReason="No tracks available"
+            />
+            {isAdmin && (
               <DeleteButton
                 label="Delete album"
                 isDeleting={isDeleting}
                 onClick={openConfirm}
               />
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 

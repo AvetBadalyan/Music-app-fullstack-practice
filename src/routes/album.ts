@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { validateRequest } from '../middlewares/validateRequest';
 import { validateId } from '../middlewares/idValidator';
 import { validateImageUpload } from '../middlewares/fileUpload';
-import { CreateAlbumDto } from '../dto/album.dto';
+import { CreateAlbumDto, SearchAlbumDto } from '../dto/album.dto';
 import { AlbumController } from '../controllers/album';
 import { requireAdmin } from '../middlewares/requireAdmin';
 
@@ -17,6 +17,11 @@ router.post(
   albumController.create,
 );
 router.get('/', albumController.getAll);
+router.get(
+  '/search',
+  validateRequest(SearchAlbumDto),
+  albumController.searchByTitle,
+);
 router.get('/:id', validateId, albumController.getById);
 router.delete('/:id', requireAdmin, validateId, albumController.delete);
 

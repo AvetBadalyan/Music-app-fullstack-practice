@@ -1,0 +1,33 @@
+.play-all-btn {
+  align-items: center;
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-pill);
+  color: var(--color-text-on-primary, #fff);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: var(--font-sm);
+  font-weight: var(--weight-bold);
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-5);
+  transition:
+    background var(--transition),
+    opacity var(--transition),
+    transform var(--transition);
+
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      background: var(--color-primary-hover, var(--color-primary));
+      transform: translateY(-1px);
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+}

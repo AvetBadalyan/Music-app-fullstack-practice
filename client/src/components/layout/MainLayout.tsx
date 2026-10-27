@@ -1,15 +1,16 @@
 import { Suspense, useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import MusicPlayer from './MusicPlayer';
 import PageStatus from '../common/PageStatus';
+import PageTransition from '../common/PageTransition';
+import QueueSidebar from '../queue/QueueSidebar';
 import './MainLayout.scss';
 
 const MainLayout = () => {
-  // Drawer state for the mobile sidebar. The Sidebar closes itself on every
-  // NavLink click, so no explicit route-change handling is needed.
   const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
 
   return (
     <div className="main-layout">
@@ -20,14 +21,15 @@ const MainLayout = () => {
       <div className="layout-body">
         <Sidebar open={menuOpen} onClose={() => setMenuOpen(false)} />
         <main className="content">
-          {/* Inside the layout, so the header, nav and player stay on screen
-              while the next page's bundle loads. */}
           <Suspense fallback={<PageStatus isLoading>Loading...</PageStatus>}>
-            <Outlet />
+            <PageTransition transitionKey={location.key}>
+              <Outlet />
+            </PageTransition>
           </Suspense>
         </main>
       </div>
       <MusicPlayer />
+      <QueueSidebar />
     </div>
   );
 };

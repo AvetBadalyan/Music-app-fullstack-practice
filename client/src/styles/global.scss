@@ -1,3 +1,5 @@
+@use './animations';
+
 :root {
   /* Surfaces */
   --color-bg: #0d0b11;
@@ -15,6 +17,7 @@
   --color-accent: #9466ee;
   --color-accent-hover: #a87fff;
   --color-accent-soft: rgba(148, 102, 238, 0.14);
+  --color-accent-hsl: 268, 66%, 67%; /* matching accent color in HSL */
 
   /* Status */
   --color-success: #10b981;
@@ -44,9 +47,11 @@
   --weight-regular: 400; /* default body */
   --weight-bold: 700;   /* titles, song names, active nav */
 
-  /* Shadows — one neutral, one accent. */
+  /* Shadows — one neutral, one accent, plus dynamic glow controls. */
   --shadow-elevation: 0 2px 8px rgba(0, 0, 0, 0.35); /* cards, covers, toasts, hero panels */
   --shadow-glow: 0 8px 22px rgba(148, 102, 238, 0.36); /* primary buttons, equalizer */
+  --cover-glow-color: 268, 66%, 67%; /* HSL values without hsl() wrapper */
+  --cover-glow-opacity: 0;
 
   /* Transition */
   --transition: 0.2s ease;
@@ -93,17 +98,13 @@ a {
 
 button {
   font-family: inherit;
+  transition: transform 100ms ease-out;
+
+  &:not(:disabled):active {
+    transform: scale(0.95);
+  }
 }
 
-/* Skeleton shimmer */
-@keyframes skeleton-shimmer {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(100%);
-  }
-}
 
 .skeleton {
   position: relative;
@@ -119,16 +120,45 @@ button {
     background: linear-gradient(
       90deg,
       transparent 0%,
-      var(--color-surface-hover) 50%,
+      hsla(var(--color-accent-hsl), 0.1) 50%,
       transparent 100%
     );
-    animation: skeleton-shimmer 1.4s ease-in-out infinite;
+    background-size: 200% 100%;
+    animation: skeleton-shimmer-enhanced 1.5s ease-in-out infinite;
+  }
+}
+
+@for $i from 1 through 10 {
+  .skeleton:nth-child(#{$i})::after {
+    animation-delay: #{($i - 1) * 100}ms;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .skeleton::after {
     animation: none;
+  }
+}
+
+/* Skeleton fade-out on content load */
+@keyframes skeleton-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+.skeleton-container {
+  &.is-loaded {
+    .skeleton {
+      animation: skeleton-fade-out 200ms ease-out forwards;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-container.is-loaded .skeleton {
+    animation: none;
+    opacity: 0;
   }
 }
 
@@ -181,6 +211,7 @@ button {
   border-radius: var(--radius-md) !important;
   box-shadow: var(--shadow-elevation) !important;
   font-family: inherit;
+  animation: toast-slide-in 400ms var(--ease-out-back);
 }
 
 .Toastify__toast--success {
@@ -215,6 +246,7 @@ button {
     font-weight: var(--weight-bold);
     color: var(--color-text);
     margin-bottom: var(--space-4);
+    animation: title-entrance 400ms var(--ease-out-expo) forwards;
   }
 }
 
@@ -226,5 +258,49 @@ button {
       font-size: var(--font-xl);
       margin-bottom: var(--space-5);
     }
+  }
+}
+
+/* Gradient text effect for section headings.
+   Apply this class to any heading that should use the accent gradient. */
+.section-heading {
+  background: linear-gradient(
+    135deg,
+    var(--color-text) 0%,
+    var(--color-accent) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page h1 {
+    animation: none;
+  }
+}
+
+/* Global input focus indicator — baseline/fallback.
+   Applies only on keyboard navigation (focus-visible).
+   Component-level SCSS can override with higher specificity. */
+input,
+textarea,
+select {
+  transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+
+  &:focus-visible {
+    border-color: var(--color-accent);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--color-accent-soft);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

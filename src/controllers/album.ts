@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import { AlbumService } from '../services/album';
 import type { IAlbum } from '../types/album';
-import { CreateAlbumDto } from '../dto/album.dto';
+import { CreateAlbumDto, SearchAlbumDto } from '../dto/album.dto';
 
 export class AlbumController {
   private albumService: AlbumService;
@@ -47,8 +47,23 @@ export class AlbumController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const albums: IAlbum[] = await this.albumService.getAll();
+      const { sort, order } = req.query as { sort?: string; order?: string };
+      const albums: IAlbum[] = await this.albumService.getAll(sort, order);
       res.status(200).json(albums);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public searchByTitle = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const { title } = req.validatedData as SearchAlbumDto;
+      const albums: IAlbum[] = await this.albumService.searchByTitle(title);
+      res.json(albums);
     } catch (error) {
       next(error);
     }

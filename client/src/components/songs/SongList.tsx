@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { playSong, togglePlay } from '../../features/player/playerSlice';
 import { formatDuration } from '../../utils/formatDuration';
 import EmptyState from '../common/EmptyState';
+import useRipple from '../../hooks/useRipple';
 import type { ISong } from '../../types/api';
 import './SongList.scss';
 
@@ -15,12 +16,129 @@ interface SongListProps {
   hideGenreColumn?: boolean;
 }
 
+interface SongRowProps {
+  song: ISong;
+  index: number;
+  songs: ISong[];
+  isActive: boolean;
+  isPlaying: boolean;
+  hideAlbumColumn: boolean;
+  hideGenreColumn: boolean;
+}
+
+const SongRow = ({
+  song,
+  index,
+  songs,
+  isActive,
+  isPlaying,
+  hideAlbumColumn,
+  hideGenreColumn,
+}: SongRowProps) => {
+  const dispatch = useAppDispatch();
+  const { ripples, addRipple } = useRipple();
+
+  const isActivePlaying = isActive && isPlaying;
+  const playLabel = isActivePlaying
+    ? `Pause ${song.title}`
+    : `Play ${song.title}`;
+
+  const handlePlayClick = () => {
+    dispatch(isActive ? togglePlay() : playSong({ song, queue: songs }));
+  };
+
+  return (
+    <div
+      className={`song-row${isActive ? ' is-active' : ''}`}
+      onClick={addRipple}
+    >
+      {ripples.map((r) => (
+        <span
+          key={r.key}
+          className="song-row__ripple"
+          style={{ left: r.x, top: r.y }}
+        />
+      ))}
+      <button
+        type="button"
+        className="index-play"
+        onClick={handlePlayClick}
+        title={playLabel}
+        aria-label={playLabel}
+      >
+        <span className="index">{index + 1}</span>
+        {isActive && (
+          <span
+            className={`equalizer${!isPlaying ? ' is-paused' : ''}`}
+            aria-hidden="true"
+          >
+            <span />
+            <span />
+            <span />
+          </span>
+        )}
+        <span className="play-icon" aria-hidden="true">
+          {isActivePlaying ? (
+            <Pause size={14} strokeWidth={2.5} fill="currentColor" />
+          ) : (
+            <Play size={14} strokeWidth={2.5} fill="currentColor" />
+          )}
+        </span>
+      </button>
+      <div className="song-info">
+        <Link
+          to={`/songs/${song.id}`}
+          className="title"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {song.title}
+        </Link>
+        {song.artist && (
+          <Link
+            to={`/artists/${song.artist.id}`}
+            className="artist"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {song.artist.name}
+          </Link>
+        )}
+      </div>
+      {!hideAlbumColumn &&
+        (song.album ? (
+          <Link
+            to={`/albums/${song.album.id}`}
+            className="album-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {song.album.title}
+          </Link>
+        ) : (
+          <span className="album-col empty-col">—</span>
+        ))}
+      {!hideGenreColumn &&
+        (song.genres?.length ? (
+          <Link
+            to={`/genres/${song.genres[0].id}`}
+            className="genre-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {song.genres[0].name}
+          </Link>
+        ) : (
+          <span className="genre-col empty-col">—</span>
+        ))}
+      <span className="duration">
+        {formatDuration(song.duration, '--:--')}
+      </span>
+    </div>
+  );
+};
+
 const SongList = ({
   songs,
   hideAlbumColumn = false,
   hideGenreColumn = false,
 }: SongListProps) => {
-  const dispatch = useAppDispatch();
   const { currentSong, isPlaying } = useAppSelector((state) => state.player);
 
   if (songs.length === 0) {
@@ -31,11 +149,6 @@ const SongList = ({
       />
     );
   }
-
-  // Clicking a row plays the whole list from there, so the queue is this list.
-  const handleRowClick = (song: ISong, isActive: boolean) => {
-    dispatch(isActive ? togglePlay() : playSong({ song, queue: songs }));
-  };
 
   const listClassName = [
     'song-list',
@@ -56,62 +169,18 @@ const SongList = ({
       </div>
       {songs.map((song, index) => {
         const isActive = currentSong?.id === song.id;
-        const isActivePlaying = isActive && isPlaying;
-        const playLabel = isActivePlaying
-          ? `Pause ${song.title}`
-          : `Play ${song.title}`;
 
         return (
-          <div
+          <SongRow
             key={song.id}
-            className={`song-row${isActive ? ' is-active' : ''}`}
-          >
-            <button
-              type="button"
-              className="index-play"
-              onClick={() => handleRowClick(song, isActive)}
-              title={playLabel}
-              aria-label={playLabel}
-            >
-              <span className="index">{index + 1}</span>
-              <span className="play-icon" aria-hidden="true">
-                {isActivePlaying ? (
-                  <Pause size={14} strokeWidth={2.5} fill="currentColor" />
-                ) : (
-                  <Play size={14} strokeWidth={2.5} fill="currentColor" />
-                )}
-              </span>
-            </button>
-            <div className="song-info">
-              <Link to={`/songs/${song.id}`} className="title">
-                {song.title}
-              </Link>
-              {song.artist && (
-                <Link to={`/artists/${song.artist.id}`} className="artist">
-                  {song.artist.name}
-                </Link>
-              )}
-            </div>
-            {!hideAlbumColumn &&
-              (song.album ? (
-                <Link to={`/albums/${song.album.id}`} className="album-col">
-                  {song.album.title}
-                </Link>
-              ) : (
-                <span className="album-col empty-col">—</span>
-              ))}
-            {!hideGenreColumn &&
-              (song.genres?.length ? (
-                <Link to={`/genres/${song.genres[0].id}`} className="genre-col">
-                  {song.genres[0].name}
-                </Link>
-              ) : (
-                <span className="genre-col empty-col">—</span>
-              ))}
-            <span className="duration">
-              {formatDuration(song.duration, '--:--')}
-            </span>
-          </div>
+            song={song}
+            index={index}
+            songs={songs}
+            isActive={isActive}
+            isPlaying={isPlaying}
+            hideAlbumColumn={hideAlbumColumn}
+            hideGenreColumn={hideGenreColumn}
+          />
         );
       })}
     </div>

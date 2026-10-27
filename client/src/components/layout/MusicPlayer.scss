@@ -4,8 +4,10 @@
   left: 0;
   right: 0;
   min-height: 8.8rem;
-  background: var(--color-bg-elevated);
-  border-top: 1px solid var(--color-border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-top: 1px solid var(--glass-border);
   display: grid;
   grid-template-columns: 1fr;
   align-items: center;
@@ -14,6 +16,13 @@
   padding: var(--space-3) var(--space-4)
     calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
   z-index: 100;
+  transition: box-shadow var(--transition);
+
+  &.music-player--has-glow {
+    box-shadow:
+      0 -20px 60px -10px hsla(var(--cover-glow-color), 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
 
   .close-btn {
     position: absolute;
@@ -33,6 +42,32 @@
     &:hover {
       color: var(--color-text);
       background: rgba(255, 255, 255, 0.06);
+    }
+  }
+
+  // Queue toggle button — sits to the left of the close button
+  .queue-btn {    position: absolute;
+    top: var(--space-2);
+    right: calc(var(--space-2) + 2.8rem); // leave room for close-btn
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: var(--space-1);
+    border-radius: var(--radius-md);
+    transition: color var(--transition), background var(--transition);
+
+    &:hover {
+      color: var(--color-text);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
     }
   }
 
@@ -109,7 +144,7 @@
       cursor: pointer;
       transition:
         color var(--transition),
-        transform var(--transition),
+        transform 150ms var(--ease-out-back),
         opacity var(--transition),
         background var(--transition),
         box-shadow var(--transition);
@@ -126,6 +161,12 @@
         &:hover {
           color: var(--color-text-subtle);
           transform: none;
+        }
+      }
+
+      @media (hover: hover) {
+        &:hover:not(:disabled) {
+          transform: scale(1.1);
         }
       }
 
@@ -148,7 +189,7 @@
           &:hover {
             color: var(--color-text);
             background: var(--color-accent-hover);
-            transform: scale(1.05);
+            transform: scale(1.1);
             box-shadow: var(--shadow-glow);
           }
         }
@@ -194,6 +235,21 @@
 
     .progress-bar {
       width: 100%;
+
+      &::-webkit-slider-runnable-track {
+        background: linear-gradient(
+          90deg,
+          var(--color-accent) 0%,
+          var(--color-accent-hover) 50%,
+          var(--color-accent) 100%
+        );
+        background-size: 200% 100%;
+        animation: progress-shimmer 3s linear infinite;
+
+        @media (prefers-reduced-motion: reduce) {
+          animation: none;
+        }
+      }
     }
   }
 

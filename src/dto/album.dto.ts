@@ -7,6 +7,13 @@ import {
   IsUUID,
 } from 'class-validator';
 
+export class SearchAlbumDto {
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(100)
+  title: string;
+}
+
 export class CreateAlbumDto {
   @IsString()
   @IsNotEmpty()

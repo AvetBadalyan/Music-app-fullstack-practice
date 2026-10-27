@@ -1,0 +1,218 @@
+.header-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-4);
+  transition:
+    border-color var(--transition),
+    background var(--transition),
+    width var(--transition),
+    box-shadow var(--transition);
+  // Cap against the viewport so the field never crowds the logo / menu button /
+  // auth controls on narrow tablets (601-1024px), where the header shares the
+  // row with those elements. 1rem = 10px (html font-size: 62.5%), so 22rem =
+  // 220px. On wide viewports min() picks the rem value; on narrow ones the vw
+  // cap keeps everything on one row.
+  width: min(22rem, 38vw);
+
+  &--open,
+  &:focus-within {
+    border-color: var(--color-accent);
+    background: var(--color-bg-elevated);
+    width: min(34rem, 45vw);
+    box-shadow: 0 0 0 3px var(--color-accent-soft);
+  }
+
+  &__icon {
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+  }
+
+  &__input {
+    background: transparent;
+    border: none;
+    color: var(--color-text);
+    flex: 1;
+    font-size: var(--font-md);
+    min-width: 0;
+    outline: none;
+    padding: 0.5rem 0;
+
+    &::placeholder {
+      color: var(--color-text-muted);
+    }
+
+    /* Remove native search cancel button */
+    &::-webkit-search-cancel-button {
+      display: none;
+    }
+  }
+
+  &__clear {
+    align-items: center;
+    background: none;
+    border: none;
+    border-radius: 50%;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    display: flex;
+    flex-shrink: 0;
+    padding: 2px;
+    transition: color var(--transition);
+
+    &:hover {
+      color: var(--color-text);
+    }
+  }
+
+  // ── Dropdown ─────────────────────────────────────────────────────────────────
+  &__dropdown {
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-elevation);
+    display: flex;
+    flex-direction: column;
+    left: 0;
+    // Cap to the space below the header so the list never runs off a short
+    // (e.g. landscape phone) viewport; it scrolls internally when taller.
+    max-height: min(40rem, calc(100vh - var(--header-height) - var(--space-4)));
+    overflow-y: auto;
+    padding: var(--space-2) 0;
+    position: absolute;
+    right: 0;
+    top: calc(100% + var(--space-2));
+    z-index: 200;
+  }
+
+  // ── Group label ───────────────────────────────────────────────────────────────
+  &__group-label {
+    color: var(--color-text-muted);
+    font-size: var(--font-xs);
+    font-weight: var(--weight-bold);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: var(--space-2) var(--space-4) var(--space-1);
+    margin: 0;
+
+    &:not(:first-child) {
+      margin-top: var(--space-2);
+      border-top: 1px solid var(--color-border);
+      padding-top: var(--space-3);
+    }
+  }
+
+  // ── Result row ────────────────────────────────────────────────────────────────
+  &__item {
+    align-items: center;
+    background: none;
+    border: none;
+    color: var(--color-text);
+    cursor: pointer;
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-4);
+    text-align: left;
+    transition: background var(--transition);
+    width: 100%;
+
+    @media (hover: hover) {
+      &:hover {
+        background: var(--color-surface-hover);
+      }
+    }
+
+    &:focus-visible {
+      background: var(--color-surface-hover);
+      outline: none;
+    }
+  }
+
+  // ── Thumbnail ─────────────────────────────────────────────────────────────────
+  &__thumb {
+    align-items: center;
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    display: flex;
+    flex-shrink: 0;
+    height: 4.4rem;
+    justify-content: center;
+    overflow: hidden;
+    width: 4.4rem;
+
+    img {
+      height: 100%;
+      object-fit: cover;
+      width: 100%;
+    }
+
+    &--rounded { border-radius: var(--radius-md); }
+    &--circle  { border-radius: 50%; }
+  }
+
+  &__thumb-icon {
+    opacity: 0.7;
+  }
+
+  &__item-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__item-title {
+    font-size: var(--font-md);
+    font-weight: var(--weight-bold);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__item-sub {
+    color: var(--color-text-muted);
+    font-size: var(--font-sm);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__empty {
+    color: var(--color-text-muted);
+    font-size: var(--font-md);
+    padding: var(--space-4);
+    text-align: center;
+  }
+}
+
+// On mobile hide the label text, keep it compact
+@media (max-width: 600px) {
+  .header-search {
+    width: 3.2rem;
+    padding: var(--space-1) var(--space-2);
+
+    &__input {
+      width: 0;
+      padding: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    &--open,
+    &:focus-within {
+      width: 100%;
+
+      .header-search__input {
+        opacity: 1;
+        pointer-events: auto;
+        width: auto;
+        padding: 0.35rem 0;
+      }
+    }
+  }
+}

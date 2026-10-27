@@ -41,6 +41,20 @@ export const albumsApi = api.injectEndpoints({
       // Deleting an album DB-cascades to its songs.
       invalidatesTags: ['Album', 'Song', 'Artist', 'Genre'],
     }),
+    searchAlbums: build.query<IAlbum[], string>({
+      query: (title) => ({
+        url: '/albums/search',
+        params: { title },
+      }),
+      providesTags: ['Album'],
+    }),
+    getRecentAlbums: build.query<IAlbum[], void>({
+      query: () => ({
+        url: '/albums',
+        params: { sort: 'releaseDate', order: 'desc' },
+      }),
+      providesTags: ['Album'],
+    }),
   }),
 });
 
@@ -49,4 +63,6 @@ export const {
   useGetAlbumByIdQuery,
   useCreateAlbumMutation,
   useDeleteAlbumMutation,
+  useSearchAlbumsQuery,
+  useGetRecentAlbumsQuery,
 } = albumsApi;

@@ -12,6 +12,15 @@
   top: 0;
   z-index: 95; // above sidebar drawer + backdrop
 
+  transition:
+    backdrop-filter 200ms ease-out,
+    box-shadow 200ms ease-out;
+
+  &.is-scrolled {
+    backdrop-filter: blur(20px);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  }
+
   .menu-btn {
     display: inline-flex; // visible on mobile
     align-items: center;
@@ -37,9 +46,28 @@
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
+    position: relative;
 
     svg {
       color: var(--color-accent);
+    }
+
+    @media (hover: hover) {
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: var(--color-accent);
+        transition: width 200ms ease-out, left 200ms ease-out;
+      }
+
+      &:hover::after {
+        width: 100%;
+        left: 0;
+      }
     }
   }
 
@@ -47,7 +75,7 @@
     align-items: center;
     display: inline-flex;
     gap: var(--space-2);
-    margin-left: auto;
+    // margin-left handled by .search-btn which precedes it and takes auto space
   }
 
   .admin-badge,

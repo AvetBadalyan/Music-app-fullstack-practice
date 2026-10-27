@@ -1,0 +1,31 @@
+// =============================================================================
+// PageTransition.scss
+// =============================================================================
+//
+// Layout wrapper for the animated page transition.
+//
+// The actual animation keyframes and `.page-transition-exit` /
+// `.page-transition-enter` animation classes live in
+// `styles/_animations.scss`, which is emitted globally via global.scss.
+// This file only adds wrapper-specific layout and interaction rules.
+//
+// Class lifecycle managed by PageTransition.tsx:
+//   .page-transition                 — always present
+//   .page-transition + -exit         — 200ms fade-out  (pointer events blocked)
+//   .page-transition + -enter        — 300ms fade-in + slide-up
+//   (no suffix)                      — animation complete, normal state
+// =============================================================================
+
+.page-transition {
+  // Fill the layout content area so the animation covers the entire page
+  // rather than just the dimensions of the initial content.
+  width: 100%;
+  min-height: 100%;
+
+  // Block interaction while content is fading out — prevents accidental
+  // clicks on elements that will be swapped out in ≤200 ms.
+  // Pointer events are automatically restored when -exit class is removed.
+  &.page-transition-exit {
+    pointer-events: none;
+  }
+}

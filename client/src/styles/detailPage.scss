@@ -79,6 +79,20 @@
     gap: var(--space-3);
     margin-top: var(--space-3);
   }
+
+  /** Row of stat badges (song count, duration). */
+  &__stats {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+  }
+
+  /** Play All button row (kept separate from admin actions). */
+  &__play {
+    margin-top: var(--space-3);
+  }
 }
 
 .detail-section {

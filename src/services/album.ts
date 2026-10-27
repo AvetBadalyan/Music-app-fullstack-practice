@@ -1,3 +1,4 @@
+import { ILike } from 'typeorm';
 import { AppDataSource } from '../data-source';
 import { Album } from '../entities/Album';
 import { Artist } from '../entities/Artist';
@@ -89,8 +90,35 @@ export class AlbumService {
     return album as IAlbum;
   }
 
-  public async getAll(): Promise<IAlbum[]> {
+  public async getAll(
+    sort?: string,
+    order?: string,
+  ): Promise<IAlbum[]> {
+    const queryBuilder = this.albumRepository
+      .createQueryBuilder('album')
+      .leftJoinAndSelect('album.artist', 'artist')
+      .select([
+        'album.id',
+        'album.title',
+        'album.releaseDate',
+        'album.coverImage',
+        'artist.id',
+        'artist.name',
+      ]);
+
+    if (sort === 'releaseDate') {
+      queryBuilder
+        .where('album.releaseDate IS NOT NULL')
+        .orderBy('album.releaseDate', order === 'asc' ? 'ASC' : 'DESC');
+    }
+
+    const albums = await queryBuilder.getMany();
+    return albums as IAlbum[];
+  }
+
+  public async searchByTitle(title: string): Promise<IAlbum[]> {
     const albums = await this.albumRepository.find({
+      where: { title: ILike(`%${title}%`) },
       select: {
         id: true,
         title: true,
@@ -104,6 +132,7 @@ export class AlbumService {
       relations: {
         artist: true,
       },
+      take: 20,
     });
 
     return albums as IAlbum[];

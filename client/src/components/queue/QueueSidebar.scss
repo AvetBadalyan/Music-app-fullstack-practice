@@ -1,0 +1,223 @@
+// ── Variables ────────────────────────────────────────────────────────────────
+
+$sidebar-width: 32rem;
+$sidebar-z: 900;
+$backdrop-z: 890;
+$transition-duration: 300ms;
+$transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+
+// ── Backdrop ─────────────────────────────────────────────────────────────────
+
+.queue-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: $backdrop-z;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity $transition-duration $transition-easing;
+
+  &--visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+// ── Sidebar panel ─────────────────────────────────────────────────────────────
+
+.queue-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: $sidebar-width;
+  max-width: 100vw;
+  z-index: $sidebar-z;
+
+  display: flex;
+  flex-direction: column;
+
+  background: var(--color-bg-elevated);
+  border-left: 1px solid var(--color-border);
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.4);
+
+  // Slide-in from right — hidden by default
+  transform: translateX(100%);
+  transition: transform $transition-duration $transition-easing;
+
+  &--open {
+    transform: translateX(0);
+  }
+
+  // ── Header ────────────────────────────────────────────────────────────────
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4) var(--space-4) var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+    flex-shrink: 0;
+    gap: var(--space-3);
+  }
+
+  &__title-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+    flex: 1;
+  }
+
+  &__title-icon {
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+  }
+
+  &__title {
+    font-size: var(--font-md);
+    font-weight: var(--weight-bold);
+    color: var(--color-text);
+    white-space: nowrap;
+  }
+
+  // ── Mode badges (shuffle / repeat) ────────────────────────────────────────
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem var(--space-2);
+    border-radius: var(--radius-pill);
+    font-size: var(--font-xs);
+    font-weight: var(--weight-bold);
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    &--shuffle {
+      background: rgba(148, 102, 238, 0.15);
+      color: var(--color-accent-hover);
+      border: 1px solid rgba(148, 102, 238, 0.3);
+    }
+
+    &--repeat {
+      background: rgba(148, 102, 238, 0.15);
+      color: var(--color-accent-hover);
+      border: 1px solid rgba(148, 102, 238, 0.3);
+    }
+  }
+
+  // ── Close button ──────────────────────────────────────────────────────────
+
+  &__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.2rem;
+    height: 3.2rem;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: var(--radius-md);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition:
+      color var(--transition),
+      background var(--transition);
+
+    &:hover {
+      color: var(--color-text);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+    }
+  }
+
+  // ── Song count ────────────────────────────────────────────────────────────
+
+  &__count {
+    padding: var(--space-2) var(--space-4) 0;
+    font-size: var(--font-xs);
+    color: var(--color-text-subtle);
+    flex-shrink: 0;
+  }
+
+  // ── Scrollable body ───────────────────────────────────────────────────────
+
+  &__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-2) var(--space-3);
+
+    // Thin custom scrollbar that matches the dark theme
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--color-border);
+      border-radius: var(--radius-pill);
+    }
+  }
+
+  // ── Queue list ────────────────────────────────────────────────────────────
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  // ── Empty state ───────────────────────────────────────────────────────────
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--space-5) var(--space-4);
+    gap: var(--space-3);
+  }
+
+  &__empty-icon {
+    color: var(--color-text-subtle);
+    opacity: 0.6;
+  }
+
+  &__empty-title {
+    font-size: var(--font-sm);
+    font-weight: var(--weight-bold);
+    color: var(--color-text);
+  }
+
+  &__empty-hint {
+    font-size: var(--font-xs);
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    max-width: 22rem;
+  }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+
+@media (max-width: 480px) {
+  .queue-sidebar {
+    width: 100vw;
+  }
+}

@@ -1,0 +1,42 @@
+/* Read-only stat chip used in detail-page hero sections.
+   Two sizes: regular (default) and compact (tighter padding, smaller font). */
+
+.stats-badge {
+  align-items: center;
+  background: var(--color-accent-soft);
+  border: 1px solid rgba(148, 102, 238, 0.22);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-muted);
+  display: inline-flex;
+  gap: var(--space-2);
+  line-height: 1;
+  white-space: nowrap;
+
+  /* Regular size — matches other pill-shaped controls like .toolbar-toggle */
+  &--regular {
+    font-size: var(--font-sm);
+    padding: var(--space-2) var(--space-3);
+  }
+
+  /* Compact size — for denser layouts or secondary metadata rows */
+  &--compact {
+    font-size: var(--font-xs);
+    padding: var(--space-1) var(--space-2);
+  }
+
+  &__icon {
+    align-items: center;
+    color: var(--color-accent);
+    display: inline-flex;
+    flex-shrink: 0;
+  }
+
+  &__value {
+    color: var(--color-text);
+    font-weight: var(--weight-bold);
+  }
+
+  &__label {
+    color: var(--color-text-muted);
+  }
+}

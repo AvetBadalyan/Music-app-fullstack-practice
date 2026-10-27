@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import './HeroSlider.scss';
 
@@ -42,6 +42,8 @@ const AUTO_ADVANCE_MS = 5000;
 const HeroSlider = () => {
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
+  const sliderRef = useRef<HTMLElement>(null);
+  const rafIdRef = useRef<number | null>(null);
 
   const prev = useCallback(() => {
     setCurrent((c) => (c - 1 + SLIDES.length) % SLIDES.length);
@@ -59,29 +61,76 @@ const HeroSlider = () => {
     return () => clearInterval(id);
   }, [paused]);
 
+  // Parallax scroll effect — skipped when prefers-reduced-motion is set
+  useEffect(() => {
+    const slider = sliderRef.current;
+    if (!slider) return;
+
+    // Bail out early so no listener is registered when reduced motion is preferred
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    let isVisible = true;
+
+    // Only drive the rAF loop while the slider is on-screen
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        // If we scroll past the slider, cancel any pending frame
+        if (!isVisible && rafIdRef.current !== null) {
+          cancelAnimationFrame(rafIdRef.current);
+          rafIdRef.current = null;
+        }
+      },
+      { threshold: 0 },
+    );
+    observer.observe(slider);
+
+    const handleScroll = () => {
+      if (!isVisible) return;
+      if (rafIdRef.current !== null) return; // a frame is already queued
+
+      rafIdRef.current = requestAnimationFrame(() => {
+        rafIdRef.current = null;
+        slider.style.setProperty('--scroll-y', `${window.scrollY}px`);
+      });
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
+      observer.disconnect();
+    };
+  }, []);
+
   return (
     <section
+      ref={sliderRef}
       className="hero-slider"
       aria-label="Featured slideshow"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
       <div className="hero-slider__viewport">
-        {/* Track */}
-        <div
-          className="hero-slider__track"
-          style={{ transform: `translateX(-${current * 100}%)` }}
-        >
+        {/* Track — crossfade container, no translateX */}
+        <div className="hero-slider__track">
           {SLIDES.map((slide, i) => {
-            // Only mount the current and next slide's source so the browser
-            // doesn't fetch every slide on initial load.
+            // Load current, next, and previous so both crossfade partners are
+            // ready before a transition in either direction begins.
+            const prev = (current - 1 + SLIDES.length) % SLIDES.length;
             const shouldLoad =
-              i === current || i === (current + 1) % SLIDES.length;
+              i === current ||
+              i === (current + 1) % SLIDES.length ||
+              i === prev;
 
             return (
               <div
                 key={slide.src}
-                className="hero-slider__slide"
+                className={`hero-slider__slide${i === current ? ' is-active' : ''}`}
                 aria-hidden={i !== current}
               >
                 <img
@@ -125,7 +174,7 @@ const HeroSlider = () => {
       <div className="hero-slider__dots" role="tablist" aria-label="Slides">
         {SLIDES.map((slide, i) => (
           <button
-            key={slide.src}
+            key={i === current ? `${slide.src}-${current}` : slide.src}
             type="button"
             role="tab"
             aria-selected={i === current}

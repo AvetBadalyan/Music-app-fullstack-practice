@@ -16,6 +16,7 @@
     display: flex;
     align-items: center;
     gap: var(--space-3);
+    position: relative;
     transition:
       color var(--transition),
       background var(--transition),
@@ -34,6 +35,24 @@
       background: var(--color-surface);
       border-right: 3px solid var(--color-accent);
       box-shadow: inset 0 0 0 1px rgba(148, 102, 238, 0.06);
+    }
+
+    @media (hover: hover) {
+      &:not(.active)::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: var(--color-accent);
+        transition: width 200ms ease-out, left 200ms ease-out;
+      }
+
+      &:not(.active):hover::after {
+        width: 100%;
+        left: 0;
+      }
     }
   }
 }
