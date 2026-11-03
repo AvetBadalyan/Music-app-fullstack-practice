@@ -69,49 +69,32 @@
 
     img {
       width: 100%;
-      // 15% taller than the container so the extra image content at the top
-      // absorbs the downward shift when the parallax translateY is positive.
-      // margin-top centres the oversized image (half the extra height above).
-      height: 115%;
-      margin-top: -7.5%;
+      // Taller than the frame so the parallax shift never exposes a bare edge.
+      // Anchored to the top (object-position below), so this extra height sits
+      // at the BOTTOM — which is exactly where the image slides into as it
+      // moves up on scroll, and where the 16:9→wider crop is taken from. Both
+      // keep every singer's head fully in frame.
+      height: 112%;
       object-fit: cover;
-      object-position: center center;
+      object-position: center top;
       display: block;
       user-select: none;
       pointer-events: none;
-      // Parallax: moves at 0.5× scroll speed.
-      // --scroll-y (in px) is written by HeroSlider.tsx via a rAF scroll listener.
-      transform: translateY(calc(var(--scroll-y, 0px) * 0.5));
+      // Parallax: image moves UP at 0.3× scroll speed (negative translateY),
+      // sliding into the 12% of extra height below the frame, so no gap appears.
+      transform: translateY(calc(var(--scroll-y, 0px) * -0.3));
       will-change: transform;
     }
   }
 
-  // ── Reduced motion: disable animation entirely ────────────────
-  @media (prefers-reduced-motion: reduce) {
-    &__slide {
-      transition: none;
-      transform: none;
-
-      &.is-active {
-        transform: none;
-      }
-
-      // Also reset parallax transform on the image
-      img {
-        transform: none;
-        height: 100%;
-        margin-top: 0;
-      }
-    }
-  }
-
   // ── Navigation arrows ────────────────────────────────────────
+  // Hidden on mobile (overridden to flex at the desktop breakpoint below).
   &__arrow {
     position: absolute;
     top: 50%;
     transform: translate(var(--hero-arrow-shift, 0), -50%);
     z-index: 3;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     width: 3.8rem;
@@ -148,66 +131,68 @@
   }
 
   // ── Dot indicators ───────────────────────────────────────────
+  // Each button is a large tap target. Inside it sits a thin pill track,
+  // and the active dot gets a fill span that animates left→right over 5 s.
+  // The fill and the track have different colors so progress is always visible.
   &__dots {
     position: absolute;
-    bottom: var(--space-4);
-    right: var(--space-5);
     z-index: 3;
     display: flex;
     align-items: center;
     gap: var(--space-2);
+    // Mobile: centered
+    bottom: var(--space-3);
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   &__dot {
-    position: relative;
-    overflow: hidden;
-    width: 2rem;
-    height: 0.6rem;
-    border-radius: var(--radius-pill);
-    border: none;
-    background: rgba(255, 255, 255, 0.3);
-    cursor: pointer;
+    display: flex;
+    align-items: center;
+    // Large touch target so mobile taps register reliably
+    width: 3.6rem;
+    height: 2.4rem;
     padding: 0;
-    transition: background 0.3s ease;
-
-    // Invisible tap-target expansion — does not affect visual shape
-    &::before {
-      content: '';
-      position: absolute;
-      inset: -1rem -0.4rem;
-    }
-
-    &--active {
-      background: var(--color-accent);
-      box-shadow: 0 0 8px rgba(148, 102, 238, 0.6);
-
-      // Progress fill — grows left→right over AUTO_ADVANCE_MS (5 s)
-      &::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: var(--color-accent);
-        border-radius: inherit;
-        transform-origin: left;
-        animation: dot-fill 5s linear forwards;
-      }
-    }
-
-    @media (hover: hover) {
-      &:not(&--active):hover {
-        background: rgba(255, 255, 255, 0.6);
-      }
-    }
+    border: 0;
+    background: none;
+    cursor: pointer;
   }
 
-  // Pause the dot fill while the user hovers (same trigger as auto-advance pause)
-  @media (hover: hover) {
-    &:hover &__dot--active::after {
-      animation-play-state: paused;
-    }
+  &__dot-track {
+    position: relative;
+    width: 100%;
+    height: 0.35rem;
+    overflow: hidden;
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, 0.25);
+    transition: background 0.2s ease;
   }
 
-  // ── Arrow fade-in on hover (pointer devices only) ────────────
+  &__dot:hover &__dot-track {
+    background: rgba(255, 255, 255, 0.45);
+  }
+
+  // Active dot track is slightly brighter to distinguish from inactive.
+  &__dot[aria-current='true'] &__dot-track {
+    background: rgba(255, 255, 255, 0.35);
+  }
+
+  // The fill grows left→right. It is a separate element (not ::after) so
+  // mounting a fresh one on each slide change restarts the animation cleanly.
+  &__dot-fill {
+    position: absolute;
+    inset: 0;
+    background: var(--color-accent);
+    transform-origin: left;
+    animation: dot-fill 5s linear forwards;
+  }
+
+  // Hovering or focusing the slider pauses the fill bar.
+  &.is-paused &__dot-fill {
+    animation-play-state: paused;
+  }
+
+  // Arrows fade in on hover (pointer devices only).
   @media (hover: hover) {
     &__arrow {
       opacity: 0;
@@ -219,40 +204,47 @@
   }
 
   // ── Responsive ───────────────────────────────────────────────
-  // Phone: arrows hidden, dots centered
-  // These are the mobile (base) defaults; desktop enhances via min-width
-  &__arrow {
-    display: none;
-  }
-
-  &__dots {
-    right: 50%;
-    transform: translateX(50%);
-    bottom: var(--space-3);
-  }
-
+  // Desktop: shorter 2:1 banner, arrows shown, dots moved to bottom-right.
   @media (min-width: 481px) {
-    aspect-ratio: 21 / 9;
+    aspect-ratio: 2 / 1;
 
     &__arrow {
       display: flex;
     }
 
     &__dots {
+      bottom: var(--space-4);
+      left: auto;
       right: var(--space-5);
       transform: none;
-      bottom: var(--space-4);
+    }
+
+    &__dot {
+      width: 4.4rem;
     }
   }
 
-  // Disable gradient animation and dot fill for users who prefer reduced motion
+  // ── Reduced motion ───────────────────────────────────────────
+  // Turn off every moving part: slide crossfade/zoom, image parallax, the
+  // ambient gradient, and the dot progress fill (shown full instead).
   @media (prefers-reduced-motion: reduce) {
+    &__slide {
+      transition: none;
+      transform: none;
+
+      img {
+        transform: none;
+        height: 100%;
+      }
+    }
+
     &__viewport::before {
       animation: none;
     }
 
-    &__dot--active::after {
+    &__dot-fill {
       animation: none;
+      transform: scaleX(1);
     }
   }
 }

@@ -9,7 +9,7 @@ const SLIDES = [
       '/singers/music_slide_1_768.webp 768w, /singers/music_slide_1_1280.webp 1280w, /singers/music_slide_1_1600.webp 1600w',
     width: 1600,
     height: 900,
-    alt: '',
+    alt: 'Singer smiling into a microphone, quote: Enjoy the music, enjoy the life.',
   },
   {
     src: '/singers/music_slide_2_768.webp',
@@ -17,7 +17,7 @@ const SLIDES = [
       '/singers/music_slide_2_768.webp 768w, /singers/music_slide_2_1280.webp 1280w, /singers/music_slide_2_1600.webp 1600w',
     width: 1600,
     height: 900,
-    alt: '',
+    alt: 'Singer in a yellow jacket raising a fist, quote about music as an escape from life.',
   },
   {
     src: '/singers/music_slide_3_768.webp',
@@ -25,7 +25,7 @@ const SLIDES = [
       '/singers/music_slide_3_768.webp 768w, /singers/music_slide_3_1280.webp 1280w, /singers/music_slide_3_1600.webp 1600w',
     width: 1600,
     height: 900,
-    alt: '',
+    alt: 'Singer performing, quote: Music can change the world because it can change people.',
   },
   {
     src: '/singers/music_slide_4_768.webp',
@@ -33,49 +33,40 @@ const SLIDES = [
       '/singers/music_slide_4_768.webp 768w, /singers/music_slide_4_1280.webp 1280w, /singers/music_slide_4_1600.webp 1600w',
     width: 1600,
     height: 900,
-    alt: '',
+    alt: 'Smiling singer at a piano, quote: Lose yourself in the music and you will find yourself everywhere.',
   },
 ];
 
-const AUTO_ADVANCE_MS = 5000;
-
 const HeroSlider = () => {
   const [current, setCurrent] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const sliderRef = useRef<HTMLElement>(null);
   const rafIdRef = useRef<number | null>(null);
 
-  const prev = useCallback(() => {
-    setCurrent((c) => (c - 1 + SLIDES.length) % SLIDES.length);
-  }, []);
+  // Prefers-reduced-motion users get no autoplay: the fill animation is
+  // skipped so onAnimationEnd never fires and slides only change manually.
+  const autoplay = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  const next = useCallback(() => {
+  const showNext = useCallback(() => {
     setCurrent((c) => (c + 1) % SLIDES.length);
   }, []);
 
-  useEffect(() => {
-    if (paused) return;
-    const id = setInterval(() => {
-      setCurrent((c) => (c + 1) % SLIDES.length);
-    }, AUTO_ADVANCE_MS);
-    return () => clearInterval(id);
-  }, [paused]);
+  const showPrev = useCallback(() => {
+    setCurrent((c) => (c - 1 + SLIDES.length) % SLIDES.length);
+  }, []);
 
-  // Parallax scroll effect — skipped when prefers-reduced-motion is set
+  // Parallax scroll effect — skipped when prefers-reduced-motion is set.
+  // The rAF loop only runs while the slider is on-screen (IntersectionObserver).
   useEffect(() => {
     const slider = sliderRef.current;
     if (!slider) return;
-
-    // Bail out early so no listener is registered when reduced motion is preferred
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     let isVisible = true;
 
-    // Only drive the rAF loop while the slider is on-screen
     const observer = new IntersectionObserver(
       ([entry]) => {
         isVisible = entry.isIntersecting;
-        // If we scroll past the slider, cancel any pending frame
         if (!isVisible && rafIdRef.current !== null) {
           cancelAnimationFrame(rafIdRef.current);
           rafIdRef.current = null;
@@ -87,8 +78,7 @@ const HeroSlider = () => {
 
     const handleScroll = () => {
       if (!isVisible) return;
-      if (rafIdRef.current !== null) return; // a frame is already queued
-
+      if (rafIdRef.current !== null) return;
       rafIdRef.current = requestAnimationFrame(() => {
         rafIdRef.current = null;
         slider.style.setProperty('--scroll-y', `${window.scrollY}px`);
@@ -110,27 +100,31 @@ const HeroSlider = () => {
   return (
     <section
       ref={sliderRef}
-      className="hero-slider"
+      className={`hero-slider${isPaused ? ' is-paused' : ''}`}
       aria-label="Featured slideshow"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
+      aria-roledescription="carousel"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onFocus={() => setIsPaused(true)}
+      onBlur={() => setIsPaused(false)}
     >
       <div className="hero-slider__viewport">
-        {/* Track — crossfade container, no translateX */}
         <div className="hero-slider__track">
           {SLIDES.map((slide, i) => {
-            // Load current, next, and previous so both crossfade partners are
-            // ready before a transition in either direction begins.
-            const prev = (current - 1 + SLIDES.length) % SLIDES.length;
+            const prevIndex = (current - 1 + SLIDES.length) % SLIDES.length;
+            // Keep current + neighbours decoded so crossfade is always smooth.
             const shouldLoad =
               i === current ||
               i === (current + 1) % SLIDES.length ||
-              i === prev;
+              i === prevIndex;
 
             return (
               <div
                 key={slide.src}
                 className={`hero-slider__slide${i === current ? ' is-active' : ''}`}
+                role="group"
+                aria-roledescription="slide"
+                aria-label={`${i + 1} of ${SLIDES.length}`}
                 aria-hidden={i !== current}
               >
                 <img
@@ -140,7 +134,6 @@ const HeroSlider = () => {
                   alt={slide.alt}
                   draggable={false}
                   loading={i === 0 ? 'eager' : 'lazy'}
-                  // First slide is the LCP element, so it loads at high priority.
                   fetchPriority={i === 0 ? 'high' : 'low'}
                   decoding="async"
                   width={slide.width}
@@ -152,36 +145,50 @@ const HeroSlider = () => {
         </div>
       </div>
 
-      {/* Prev / Next arrows */}
+      {/* Arrows */}
       <button
         type="button"
         className="hero-slider__arrow hero-slider__arrow--prev"
-        onClick={prev}
+        onClick={showPrev}
         aria-label="Previous slide"
       >
-        <ChevronLeft size={20} strokeWidth={2} />
+        <ChevronLeft size={20} strokeWidth={2} aria-hidden="true" />
       </button>
       <button
         type="button"
         className="hero-slider__arrow hero-slider__arrow--next"
-        onClick={next}
+        onClick={showNext}
         aria-label="Next slide"
       >
-        <ChevronRight size={20} strokeWidth={2} />
+        <ChevronRight size={20} strokeWidth={2} aria-hidden="true" />
       </button>
 
-      {/* Dot indicators */}
+      {/* Dots — each dot button wraps a visible track bar and a fill bar.
+          The fill bar only mounts for the active slide; its animation (5 s)
+          drives autoplay via onAnimationEnd, so timing is always in sync. */}
       <div className="hero-slider__dots" role="tablist" aria-label="Slides">
         {SLIDES.map((slide, i) => (
           <button
-            key={i === current ? `${slide.src}-${current}` : slide.src}
+            key={slide.src}
             type="button"
             role="tab"
             aria-selected={i === current}
+            aria-current={i === current ? 'true' : undefined}
             aria-label={`Go to slide ${i + 1}`}
-            className={`hero-slider__dot${i === current ? ' hero-slider__dot--active' : ''}`}
+            className="hero-slider__dot"
             onClick={() => setCurrent(i)}
-          />
+          >
+            <span className="hero-slider__dot-track">
+              {/* Fill only exists for the active dot. Mounting a fresh element
+                  on each slide change restarts the animation from 0. */}
+              {i === current && (
+                <span
+                  className="hero-slider__dot-fill"
+                  onAnimationEnd={autoplay ? showNext : undefined}
+                />
+              )}
+            </span>
+          </button>
         ))}
       </div>
     </section>
