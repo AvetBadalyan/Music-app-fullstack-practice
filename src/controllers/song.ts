@@ -62,7 +62,7 @@ export class SongController {
   };
 
   public getById = async (
-    req: Request,
+    req: Request<{ id: string }>,
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
@@ -102,7 +102,7 @@ export class SongController {
   };
 
   public delete = async (
-    req: Request,
+    req: Request<{ id: string }>,
     res: Response,
     next: NextFunction,
   ): Promise<void> => {

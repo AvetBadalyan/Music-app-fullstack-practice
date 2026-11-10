@@ -29,7 +29,7 @@ export class AlbumController {
   };
 
   public getById = async (
-    { params: { id } }: Request,
+    { params: { id } }: Request<{ id: string }>,
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
@@ -70,7 +70,7 @@ export class AlbumController {
   };
 
   public delete = async (
-    { params: { id } }: Request,
+    { params: { id } }: Request<{ id: string }>,
     res: Response,
     next: NextFunction,
   ): Promise<void> => {

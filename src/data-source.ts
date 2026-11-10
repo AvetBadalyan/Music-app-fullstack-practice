@@ -5,7 +5,7 @@ import { requireEnv } from './utils/env';
 
 import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config({ quiet: true });
 
 const isProduction = process.env.NODE_ENV === 'production';
 const commonOptions = {

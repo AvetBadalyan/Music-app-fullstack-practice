@@ -29,7 +29,7 @@ export class ArtistController {
   };
 
   public getById = async (
-    req: Request,
+    req: Request<{ id: string }>,
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
@@ -69,7 +69,7 @@ export class ArtistController {
   };
 
   public delete = async (
-    req: Request,
+    req: Request<{ id: string }>,
     res: Response,
     next: NextFunction,
   ): Promise<void> => {

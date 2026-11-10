@@ -9,7 +9,7 @@ import { albumRouter } from './routes/album';
 import { genreRouter } from './routes/genre';
 import { DatabaseError } from './utils/errors';
 
-dotenv.config();
+dotenv.config({ quiet: true });
 
 const app = express();
 
