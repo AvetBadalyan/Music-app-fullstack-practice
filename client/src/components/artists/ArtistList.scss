@@ -1,6 +1,8 @@
+// auto-fill, not auto-fit: a single search result must stay card-sized instead
+// of stretching across the whole row.
 .artist-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
   gap: var(--space-4);
 
   .artist-card {
@@ -9,15 +11,21 @@
     padding: var(--space-3);
     text-decoration: none;
     text-align: center;
-    transition: background var(--transition);
+    min-width: 0;
+    transition:
+      background var(--transition),
+      transform 200ms var(--ease-out-expo);
 
-    &:hover {
-      background: var(--color-surface-hover);
+    @media (hover: hover) {
+      &:hover {
+        background: var(--color-surface-hover);
+        transform: translateY(-4px);
+      }
     }
 
     .artist-avatar {
-      width: 11rem;
-      height: 11rem;
+      width: 12rem;
+      height: 12rem;
       border-radius: 50%;
       overflow: hidden;
       margin: 0 auto var(--space-3);
@@ -45,7 +53,7 @@
       font-size: var(--font-sm);
     }
 
-    .artist-label {
+    .artist-stats {
       color: var(--color-text-muted);
       font-size: var(--font-xs);
       margin-top: var(--space-1);
@@ -55,15 +63,15 @@
 
 @media (min-width: 481px) {
   .artist-grid {
-    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
     gap: var(--space-5);
 
     .artist-card {
       padding: var(--space-4);
 
       .artist-avatar {
-        width: 14rem;
-        height: 14rem;
+        width: 15rem;
+        height: 15rem;
       }
     }
   }

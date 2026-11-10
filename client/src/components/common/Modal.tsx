@@ -1,4 +1,11 @@
-import { useEffect, useId, useRef, type ReactNode, type RefObject } from 'react';
+import {
+  useEffect,
+  useId,
+  useRef,
+  type KeyboardEvent,
+  type ReactNode,
+  type RefObject,
+} from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import './Modal.scss';
@@ -44,6 +51,11 @@ const Modal = ({
   // anything is clicked, and lock body scroll while open.
   useEffect(() => {
     if (!open) return;
+
+    // Remember what had focus (usually the button that opened the modal) so
+    // we can give focus back when the modal closes.
+    const elementThatOpenedModal = document.activeElement as HTMLElement | null;
+
     (initialFocusRef?.current ?? panelRef.current)?.focus();
 
     const previousOverflow = document.body.style.overflow;
@@ -51,8 +63,34 @@ const Modal = ({
 
     return () => {
       document.body.style.overflow = previousOverflow;
+      elementThatOpenedModal?.focus();
     };
   }, [open, initialFocusRef]);
+
+  // Keep Tab inside the modal: from the last control go back to the first,
+  // and from the first (Shift+Tab) go to the last.
+  const keepTabInsidePanel = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key !== 'Tab' || !panelRef.current) return;
+
+    const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+      'button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex="0"]',
+    );
+    if (focusable.length === 0) {
+      e.preventDefault();
+      return;
+    }
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  };
 
   if (!open) return null;
 
@@ -76,6 +114,7 @@ const Modal = ({
         // modal opened from inside another modal would close its parent too
         // (Escape) and submit the form it is nested under (submit).
         onKeyDown={(e) => {
+          keepTabInsidePanel(e);
           if (e.key !== 'Escape') return;
           e.stopPropagation();
           if (!disableClose) onClose();

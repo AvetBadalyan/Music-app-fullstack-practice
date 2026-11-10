@@ -1,79 +1,55 @@
+// The home page uses the shared `.page` padding (see global.scss), so the
+// banner and every section below it share the same left and right edges.
 .home-page {
-  --home-hero-width: 114rem;
-  --home-section-width: 96rem;
+  .hero-slider {
+    margin-bottom: var(--space-5);
+  }
 
   .home-section {
     margin-bottom: var(--space-5);
   }
 
-  .section-header {
+  // Title on the left, "see all" link on the right, on one line.
+  .home-section__header {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: baseline;
+    gap: var(--space-4);
     margin-bottom: var(--space-4);
+  }
 
-    h2 {
-      font-size: var(--font-lg);
-      font-weight: var(--weight-bold);
-      color: var(--color-text);
-      letter-spacing: -0.01em;
-    }
+  .home-section__title {
+    font-size: var(--font-lg);
+    font-weight: var(--weight-bold);
+    letter-spacing: -0.01em;
+  }
 
-    .see-all {
-      color: var(--color-text-muted);
-      text-decoration: none;
-      font-size: var(--font-xs);
-      font-weight: var(--weight-bold);
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+  // A pill-shaped link: easy to see and tap, and it looks clickable.
+  .home-section__link {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    min-height: max(3.6rem, var(--touch-target));
+    padding: 0 var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    color: var(--color-text-muted);
+    font-size: var(--font-xs);
+    font-weight: var(--weight-bold);
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition:
+      color var(--transition),
+      border-color var(--transition),
+      background var(--transition);
 
+    @media (hover: hover) {
       &:hover {
         color: var(--color-text);
+        border-color: var(--color-accent-border);
+        background: var(--color-accent-soft);
       }
     }
-  }
-
-  .loading {
-    color: var(--color-text-muted);
-  }
-}
-
-// ── Hero grid ─────────────────────────────────────────────────
-.home-page {
-  padding: var(--space-4);
-}
-
-.home-hero {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  margin-bottom: var(--space-5);
-
-  &__recent {
-    margin-bottom: 0;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    padding: var(--space-3);
-    box-shadow: var(--shadow-elevation);
-
-    .section-header {
-      margin-bottom: var(--space-3);
-      padding-inline: var(--space-4);
-    }
-
-    .song-list .song-row {
-      padding-inline: var(--space-4);
-    }
-  }
-}
-
-@media (min-width: 481px) {
-  .home-page {
-    padding: var(--space-5);
-  }
-
-  .home-hero__recent {
-    padding: var(--space-4);
   }
 }

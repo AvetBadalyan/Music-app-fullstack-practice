@@ -11,8 +11,7 @@ $transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
 .queue-sidebar-backdrop {
   position: fixed;
   inset: 0;
-  width: 100vw;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--color-scrim);
   backdrop-filter: blur(2px);
   z-index: $backdrop-z;
   opacity: 0;
@@ -32,8 +31,8 @@ $transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
   top: 0;
   right: 0;
   bottom: 0;
-  width: $sidebar-width;
-  max-width: 100vw;
+  // Full width on a phone, a fixed-width panel on anything larger.
+  width: min($sidebar-width, 100vw);
   z-index: $sidebar-z;
 
   display: flex;
@@ -41,14 +40,21 @@ $transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
 
   background: var(--color-bg-elevated);
   border-left: 1px solid var(--color-border);
-  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-elevation);
 
-  // Slide-in from right — hidden by default
+  // Slides in from the right. While closed it is also `visibility: hidden`
+  // (after the slide-out has finished), so its buttons cannot be reached
+  // with the Tab key.
   transform: translateX(100%);
-  transition: transform $transition-duration $transition-easing;
+  visibility: hidden;
+  transition:
+    transform $transition-duration $transition-easing,
+    visibility 0s linear $transition-duration;
 
   &--open {
     transform: translateX(0);
+    visibility: visible;
+    transition-delay: 0s;
   }
 
   // ── Header ────────────────────────────────────────────────────────────────
@@ -96,16 +102,12 @@ $transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
     white-space: nowrap;
     flex-shrink: 0;
 
-    &--shuffle {
-      background: rgba(148, 102, 238, 0.15);
-      color: var(--color-accent-hover);
-      border: 1px solid rgba(148, 102, 238, 0.3);
-    }
-
+    // Shuffle and repeat badges look the same.
+    &--shuffle,
     &--repeat {
-      background: rgba(148, 102, 238, 0.15);
+      background: var(--color-accent-soft);
       color: var(--color-accent-hover);
-      border: 1px solid rgba(148, 102, 238, 0.3);
+      border: 1px solid hsla(var(--color-accent-hsl), 0.3);
     }
   }
 
@@ -115,8 +117,8 @@ $transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 3.2rem;
-    height: 3.2rem;
+    min-width: max(3.2rem, var(--touch-target));
+    min-height: max(3.2rem, var(--touch-target));
     padding: 0;
     background: none;
     border: none;
@@ -128,14 +130,11 @@ $transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
       color var(--transition),
       background var(--transition);
 
-    &:hover {
-      color: var(--color-text);
-      background: rgba(255, 255, 255, 0.06);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--color-accent);
-      outline-offset: 2px;
+    @media (hover: hover) {
+      &:hover {
+        color: var(--color-text);
+        background: var(--color-surface-hover);
+      }
     }
   }
 
@@ -153,7 +152,8 @@ $transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
   &__body {
     flex: 1;
     overflow-y: auto;
-    padding: var(--space-2) var(--space-3);
+    padding: var(--space-2) var(--space-3)
+      calc(var(--space-2) + env(safe-area-inset-bottom, 0px));
 
     // Thin custom scrollbar that matches the dark theme
     scrollbar-width: thin;
@@ -211,13 +211,5 @@ $transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
     color: var(--color-text-muted);
     line-height: 1.6;
     max-width: 22rem;
-  }
-}
-
-// ── Responsive ────────────────────────────────────────────────────────────────
-
-@media (max-width: 480px) {
-  .queue-sidebar {
-    width: 100vw;
   }
 }

@@ -1,94 +1,57 @@
+// The player sits at the bottom of the window (`sticky`) but is part of the
+// page layout, placed after the content (see MainLayout.tsx). So it takes up
+// room only while a song is loaded, and it never covers the end of a page.
 .music-player {
-  position: fixed;
+  position: sticky;
   bottom: 0;
-  left: 0;
-  right: 0;
-  min-height: 8.8rem;
+  z-index: 100;
+  display: grid;
+  // Phones: song and two small buttons on top, the controls underneath.
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'info extras'
+    'center center';
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  // The extra bottom padding keeps clear of the iPhone home bar.
+  padding: var(--space-2) var(--space-4)
+    calc(var(--space-2) + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--glass-border);
   background: var(--glass-bg);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
-  border-top: 1px solid var(--glass-border);
-  display: grid;
-  grid-template-columns: 1fr;
-  align-items: center;
-  gap: var(--space-3);
-  // Extra bottom padding for the iOS home-bar / Android gesture area.
-  padding: var(--space-3) var(--space-4)
-    calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
-  z-index: 100;
   transition: box-shadow var(--transition);
+  animation: player-enter var(--duration-slow) var(--ease-out-expo) backwards;
 
+  // A soft glow in the colour of the album cover, while a song plays.
   &.music-player--has-glow {
     box-shadow:
       0 -20px 60px -10px hsla(var(--cover-glow-color), 0.25),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      inset 0 1px 0 var(--color-border);
   }
 
-  .close-btn {
-    position: absolute;
-    top: var(--space-2);
-    right: var(--space-2);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    color: var(--color-text-muted);
-    cursor: pointer;
-    padding: var(--space-1);
-    border-radius: var(--radius-md);
-    transition: color var(--transition), background var(--transition);
-
-    &:hover {
-      color: var(--color-text);
-      background: rgba(255, 255, 255, 0.06);
-    }
-  }
-
-  // Queue toggle button — sits to the left of the close button
-  .queue-btn {    position: absolute;
-    top: var(--space-2);
-    right: calc(var(--space-2) + 2.8rem); // leave room for close-btn
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    color: var(--color-text-muted);
-    cursor: pointer;
-    padding: var(--space-1);
-    border-radius: var(--radius-md);
-    transition: color var(--transition), background var(--transition);
-
-    &:hover {
-      color: var(--color-text);
-      background: rgba(255, 255, 255, 0.06);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--color-accent);
-      outline-offset: 2px;
-    }
-  }
-
+  // ── Song title and artist ────────────────────────────────────────────────
   .now-playing {
+    grid-area: info;
     display: flex;
     flex-direction: column;
-    min-width: 0;
     gap: var(--space-1);
+    min-width: 0;
 
     .song-title {
-      color: var(--color-text);
-      text-decoration: none;
-      font-size: var(--font-sm);
-      font-weight: var(--weight-bold);
       display: inline-flex;
       align-items: center;
       gap: var(--space-2);
       min-width: 0;
+      color: var(--color-text);
+      font-size: var(--font-sm);
+      font-weight: var(--weight-bold);
+      text-decoration: none;
 
-      &:hover {
-        text-decoration: underline;
+      @media (hover: hover) {
+        &:hover {
+          text-decoration: underline;
+        }
       }
 
       .now-playing-status {
@@ -99,48 +62,54 @@
 
       .song-title-text {
         min-width: 0;
-        white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        white-space: nowrap;
       }
     }
 
     .artist-name {
-      color: var(--color-text-muted);
-      text-decoration: none;
-      font-size: var(--font-xs);
-      white-space: nowrap;
       overflow: hidden;
+      color: var(--color-text-muted);
+      font-size: var(--font-xs);
+      text-decoration: none;
       text-overflow: ellipsis;
+      white-space: nowrap;
 
-      &:hover {
-        color: var(--color-text);
-        text-decoration: underline;
+      @media (hover: hover) {
+        &:hover {
+          color: var(--color-text);
+          text-decoration: underline;
+        }
       }
     }
   }
 
+  // ── Transport controls and seek bar ──────────────────────────────────────
   .player-center {
+    grid-area: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-2);
+    gap: var(--space-1);
     min-width: 0;
   }
 
   .controls {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
+    gap: var(--space-1);
 
     button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: none;
+      min-width: max(3.6rem, var(--touch-target));
+      min-height: max(3.6rem, var(--touch-target));
+      padding: 0;
       border: none;
+      background: none;
       color: var(--color-text-muted);
-      font-size: var(--font-lg);
       cursor: pointer;
       transition:
         color var(--transition),
@@ -149,19 +118,16 @@
         background var(--transition),
         box-shadow var(--transition);
 
-      &:hover {
-        color: var(--color-text);
+      @media (hover: hover) {
+        &:hover {
+          color: var(--color-text);
+        }
       }
 
       &:disabled {
         color: var(--color-text-subtle);
         cursor: not-allowed;
         opacity: 0.5;
-
-        &:hover {
-          color: var(--color-text-subtle);
-          transform: none;
-        }
       }
 
       @media (hover: hover) {
@@ -170,50 +136,41 @@
         }
       }
 
-      .transport-icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        line-height: 1;
-      }
-
       &.play-pause {
-        color: var(--color-text);
-        background: var(--color-accent);
-        border-radius: 50%;
         width: 4.4rem;
         height: 4.4rem;
+        border-radius: 50%;
+        background: var(--color-accent);
         box-shadow: var(--shadow-glow);
+        color: var(--color-text);
 
         @media (hover: hover) {
           &:hover {
-            color: var(--color-text);
             background: var(--color-accent-hover);
-            transform: scale(1.1);
-            box-shadow: var(--shadow-glow);
           }
         }
       }
 
+      // Shuffle and repeat are dimmed until they are switched on; a dot
+      // underneath shows when they are.
       &.mode-btn {
-        font-size: var(--font-md);
         opacity: 0.75;
 
         &.is-active {
+          position: relative;
           color: var(--color-accent);
           opacity: 1;
-          position: relative;
 
           &::after {
             content: '';
             position: absolute;
-            bottom: -6px;
+            bottom: 0.4rem;
             left: 50%;
-            transform: translateX(-50%);
             width: 4px;
             height: 4px;
             border-radius: 50%;
             background: var(--color-accent);
+            transform: translateX(-50%);
           }
         }
       }
@@ -221,60 +178,51 @@
   }
 
   .progress-row {
-    width: 100%;
     display: grid;
     grid-template-columns: 3.6rem minmax(0, 1fr) 3.6rem;
     align-items: center;
     gap: var(--space-2);
+    width: 100%;
 
     .time {
       color: var(--color-text-muted);
       font-size: var(--font-xs);
       font-variant-numeric: tabular-nums;
     }
-
-    .progress-bar {
-      width: 100%;
-
-      &::-webkit-slider-runnable-track {
-        background: linear-gradient(
-          90deg,
-          var(--color-accent) 0%,
-          var(--color-accent-hover) 50%,
-          var(--color-accent) 100%
-        );
-        background-size: 200% 100%;
-        animation: progress-shimmer 3s linear infinite;
-
-        @media (prefers-reduced-motion: reduce) {
-          animation: none;
-        }
-      }
-    }
   }
 
-  .volume-control {
+  // ── Volume, queue and close ──────────────────────────────────────────────
+  .player-extras {
+    grid-area: extras;
     display: flex;
     align-items: center;
+    gap: var(--space-1);
+  }
+
+  // Phones have hardware volume buttons, so the slider only appears from the
+  // tablet size up (see the bottom of this file).
+  .volume-control {
+    display: none;
+    align-items: center;
     gap: var(--space-2);
-    justify-self: stretch;
-    width: 100%;
-    max-width: none;
 
     .volume-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: none;
+      min-width: max(3.2rem, var(--touch-target));
+      min-height: max(3.2rem, var(--touch-target));
+      padding: 0;
       border: none;
+      background: none;
       color: var(--color-text-muted);
       cursor: pointer;
-      font-size: var(--font-md);
-      padding: var(--space-1);
       transition: color var(--transition);
 
-      &:hover {
-        color: var(--color-text);
+      @media (hover: hover) {
+        &:hover {
+          color: var(--color-text);
+        }
       }
     }
 
@@ -283,28 +231,55 @@
       min-width: 0;
     }
   }
+
+  .queue-btn,
+  .close-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: max(3.2rem, var(--touch-target));
+    min-height: max(3.2rem, var(--touch-target));
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-md);
+    background: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition:
+      color var(--transition),
+      background var(--transition);
+
+    @media (hover: hover) {
+      &:hover {
+        background: var(--color-surface-hover);
+        color: var(--color-text);
+      }
+    }
+  }
 }
 
-/* Custom range slider — used for progress + volume.
-   The filled portion is driven by an inline --progress: 0..100% set in TSX. */
+// ── Sliders (seek bar and volume) ──────────────────────────────────────────
+// The coloured part is driven by an inline `--progress: 0..100%` set in
+// MusicPlayer.tsx.
 .range {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 1.6rem; /* hit area */
+  // The clickable height. The visible track is much thinner.
+  height: max(1.6rem, var(--touch-target));
   margin: 0;
-  background: transparent; /* track is drawn below */
+  background: transparent;
   cursor: pointer;
 
   --progress: 0%;
-  --track-bg: rgba(255, 255, 255, 0.14);
+  --track-bg: var(--color-surface-hover);
   --track-fill: var(--color-accent);
-  --track-h: 0.4rem;
+  --track-height: 0.4rem;
   --thumb-size: 1.2rem;
 
-  /* WebKit / Blink */
+  // Chrome, Safari, Edge
   &::-webkit-slider-runnable-track {
-    height: var(--track-h);
+    height: var(--track-height);
     border-radius: var(--radius-pill);
     background: linear-gradient(
       to right,
@@ -320,26 +295,26 @@
     appearance: none;
     width: var(--thumb-size);
     height: var(--thumb-size);
+    margin-top: calc((var(--track-height) - var(--thumb-size)) / 2);
+    border: none;
     border-radius: 50%;
     background: var(--color-text);
-    border: none;
-    margin-top: calc((var(--track-h) - var(--thumb-size)) / 2);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-elevation);
     opacity: 0;
     transition:
       opacity var(--transition),
       transform var(--transition);
   }
 
-  /* Firefox */
+  // Firefox
   &::-moz-range-track {
-    height: var(--track-h);
+    height: var(--track-height);
     border-radius: var(--radius-pill);
     background: var(--track-bg);
   }
 
   &::-moz-range-progress {
-    height: var(--track-h);
+    height: var(--track-height);
     border-radius: var(--radius-pill);
     background: var(--track-fill);
   }
@@ -347,28 +322,38 @@
   &::-moz-range-thumb {
     width: var(--thumb-size);
     height: var(--thumb-size);
+    border: none;
     border-radius: 50%;
     background: var(--color-text);
-    border: none;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-elevation);
     opacity: 0;
     transition:
       opacity var(--transition),
       transform var(--transition);
   }
 
-  /* Reveal thumb on hover/focus, brighten fill */
+  // The thumb appears on hover or focus, and the fill gets brighter.
   &:hover,
   &:focus-visible {
     --track-fill: var(--color-accent-hover);
   }
+
   &:hover::-webkit-slider-thumb,
   &:focus-visible::-webkit-slider-thumb {
     opacity: 1;
   }
+
   &:hover::-moz-range-thumb,
   &:focus-visible::-moz-range-thumb {
     opacity: 1;
+  }
+
+  // Touch screens have no hover, so the thumb is always shown.
+  @media (hover: none) {
+    &::-webkit-slider-thumb,
+    &::-moz-range-thumb {
+      opacity: 1;
+    }
   }
 
   &:focus-visible {
@@ -381,29 +366,43 @@
   }
 }
 
+// ── Tablets and up ─────────────────────────────────────────────────────────
+@media (min-width: 481px) {
+  .music-player {
+    gap: var(--space-2) var(--space-3);
+    padding-block: var(--space-3)
+      calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+
+    .volume-control {
+      display: flex;
+      width: 14rem;
+    }
+  }
+}
+
+// ── Desktop: everything on one row ─────────────────────────────────────────
 @media (min-width: 1025px) {
   .music-player {
-    grid-template-columns: minmax(18rem, 24rem) minmax(0, 1fr) minmax(16rem, 22rem);
+    grid-template-columns:
+      minmax(18rem, 1fr)
+      minmax(0, 2fr)
+      minmax(18rem, 1fr);
+    grid-template-areas: 'info center extras';
     gap: var(--space-5);
-    padding: var(--space-3) var(--space-5);
+    padding-inline: var(--space-5);
 
-    .now-playing {
-      min-width: 20rem;
+    .player-extras {
+      justify-self: end;
     }
 
     .controls {
-      gap: var(--space-4);
+      gap: var(--space-3);
     }
 
     .progress-row {
       width: min(100%, 72rem);
       grid-template-columns: 4.4rem minmax(0, 1fr) 4.4rem;
       gap: var(--space-3);
-    }
-
-    .volume-control {
-      justify-self: end;
-      max-width: 20rem;
     }
   }
 }

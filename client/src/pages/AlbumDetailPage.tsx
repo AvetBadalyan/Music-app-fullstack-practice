@@ -1,21 +1,29 @@
-import { useParams, Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { Clock, Disc } from 'lucide-react';
 import {
-  useGetAlbumByIdQuery,
   useDeleteAlbumMutation,
+  useGetAlbumByIdQuery,
+  useGetAllAlbumsQuery,
 } from '../services/albumsApi';
 import { useAppSelector } from '../app/hooks';
-import { useHeroGradient } from '../hooks/useHeroGradient';
 import { useDeleteWithConfirm } from '../hooks/useDeleteWithConfirm';
-import SongList from '../components/songs/SongList';
-import StatsBadge from '../components/common/StatsBadge';
-import PlayAllButton from '../components/common/PlayAllButton';
+import { useHeroGradient } from '../hooks/useHeroGradient';
+import { formatTotalDuration } from '../utils/formatTotalDuration';
+import { getReleaseYear } from '../utils/getReleaseYear';
+import { pluralize } from '../utils/pluralize';
+import AlbumList from '../components/albums/AlbumList';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import DeleteButton from '../components/common/DeleteButton';
+import GenreTags from '../components/common/GenreTags';
 import PageStatus from '../components/common/PageStatus';
-import { formatTotalDurationMinutes } from '../utils/formatTotalDuration';
-import { sortByTrackNumber } from '../utils/sortSongs';
+import PlayAllButton from '../components/common/PlayAllButton';
+import StatsBadge from '../components/common/StatsBadge';
+import SongList from '../components/songs/SongList';
+import type { IGenre } from '../types/api';
 import './AlbumDetailPage.scss';
+
+/** How many other albums to suggest at the bottom of the page. */
+const MORE_ALBUMS_COUNT = 4;
 
 const AlbumDetailPage = () => {
   const { id = '' } = useParams<{ id: string }>();
@@ -26,6 +34,8 @@ const AlbumDetailPage = () => {
     isLoading,
     error,
   } = useGetAlbumByIdQuery(id, { skip: !id });
+  const { data: allAlbums } = useGetAllAlbumsQuery();
+
   const [deleteAlbum, { isLoading: isDeleting }] = useDeleteAlbumMutation();
   const { isConfirmOpen, openConfirm, closeConfirm, confirmDelete } =
     useDeleteWithConfirm({ deleteEntity: deleteAlbum, redirectTo: '/albums' });
@@ -48,11 +58,28 @@ const AlbumDetailPage = () => {
     );
   }
 
-  const songCount = album.songs?.length ?? 0;
-  const totalDuration = album.songs?.reduce((sum, s) => sum + (s.duration || 0), 0) ?? 0;
+  const songs = album.songs ?? [];
+  const releaseYear = getReleaseYear(album.releaseDate);
+  const totalSeconds = songs.reduce((sum, song) => sum + song.duration, 0);
+  const otherAlbums = (allAlbums ?? [])
+    .filter((other) => other.id !== album.id)
+    .slice(0, MORE_ALBUMS_COUNT);
+
+  // The album's genres are the genres of its songs, each listed once.
+  const genres: IGenre[] = [];
+  for (const song of songs) {
+    for (const genre of song.genres ?? []) {
+      if (!genres.some((existing) => existing.id === genre.id)) {
+        genres.push(genre);
+      }
+    }
+  }
+
   const confirmMessage =
     `"${album.title}" will be permanently removed.` +
-    (songCount ? `\n\nThis will also delete ${songCount} song(s).` : '') +
+    (songs.length
+      ? `\n\nThis will also delete ${pluralize(songs.length, 'song')}.`
+      : '') +
     `\n\nThis cannot be undone.`;
 
   return (
@@ -79,33 +106,24 @@ const AlbumDetailPage = () => {
               </Link>
             </p>
           )}
-          {album.releaseDate && (
-            <p className="meta">{new Date(album.releaseDate).getFullYear()}</p>
-          )}
+          {releaseYear && <p className="meta">{releaseYear}</p>}
 
-          {/* Stats row — Requirements 5.4, 5.5 */}
           <div className="detail-hero__stats">
             <StatsBadge
               icon={<Disc size={14} strokeWidth={2} />}
-              value={String(songCount)}
-              label={songCount === 1 ? 'track' : 'tracks'}
+              value={String(songs.length)}
+              label={songs.length === 1 ? 'track' : 'tracks'}
             />
-            {totalDuration > 0 && (
+            {totalSeconds > 0 && (
               <StatsBadge
                 icon={<Clock size={14} strokeWidth={2} />}
-                value={formatTotalDurationMinutes(totalDuration)}
+                value={formatTotalDuration(totalSeconds)}
               />
             )}
           </div>
 
-          {/* Play All + admin delete — Requirements 5.7, 5.13 */}
           <div className="detail-hero__actions">
-            <PlayAllButton
-              songs={album.songs ?? []}
-              sortFn={sortByTrackNumber}
-              disabled={songCount === 0}
-              disabledReason="No tracks available"
-            />
+            <PlayAllButton songs={songs} />
             {isAdmin && (
               <DeleteButton
                 label="Delete album"
@@ -117,12 +135,26 @@ const AlbumDetailPage = () => {
         </div>
       </div>
 
-      {album.songs && album.songs.length > 0 && (
+      {genres.length > 0 && (
         <section className="detail-section">
-          <h2>Tracklist</h2>
-          <SongList songs={album.songs} hideAlbumColumn />
+          <GenreTags genres={genres} />
         </section>
       )}
+
+      {songs.length > 0 && (
+        <section className="detail-section">
+          <h2>Tracklist</h2>
+          <SongList songs={songs} hideAlbumColumn />
+        </section>
+      )}
+
+      {otherAlbums.length > 0 && (
+        <section className="detail-section">
+          <h2>More albums</h2>
+          <AlbumList albums={otherAlbums} />
+        </section>
+      )}
+
       {isAdmin && (
         <ConfirmDialog
           open={isConfirmOpen}

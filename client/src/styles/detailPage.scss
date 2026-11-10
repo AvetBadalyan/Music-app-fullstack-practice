@@ -18,7 +18,7 @@
   flex-direction: column;
   gap: var(--space-4);
   margin-bottom: var(--space-5);
-  padding: var(--space-5) var(--space-4);
+  padding: var(--space-5) var(--page-gutter);
   /* Separates the tinted hero from the page background below it. */
   box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.25);
   /* Eases the colour in once sampling finishes, instead of a hard swap. */
@@ -49,8 +49,10 @@
       font-weight: var(--weight-bold);
       text-decoration: none;
 
-      &:hover {
-        text-decoration: underline;
+      @media (hover: hover) {
+        &:hover {
+          text-decoration: underline;
+        }
       }
     }
 
@@ -65,8 +67,10 @@
         color: inherit;
         text-decoration: none;
 
-        &:hover {
-          text-decoration: underline;
+        @media (hover: hover) {
+          &:hover {
+            text-decoration: underline;
+          }
         }
       }
     }
@@ -88,16 +92,11 @@
     gap: var(--space-2);
     margin-top: var(--space-3);
   }
-
-  /** Play All button row (kept separate from admin actions). */
-  &__play {
-    margin-top: var(--space-3);
-  }
 }
 
 .detail-section {
   margin-bottom: var(--space-5);
-  padding-inline: var(--space-4);
+  padding-inline: var(--page-gutter);
 
   h2 {
     color: var(--color-text);
@@ -112,14 +111,11 @@
     align-items: flex-end;
     flex-direction: row;
     gap: var(--space-5);
-    padding: 6.4rem var(--space-5) var(--space-5);
+    padding: var(--header-height) var(--page-gutter) var(--space-5);
 
     &__info h1 {
       font-size: var(--font-hero);
     }
   }
 
-  .detail-section {
-    padding-inline: var(--space-5);
-  }
 }

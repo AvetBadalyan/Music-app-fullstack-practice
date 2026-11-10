@@ -1,0 +1,29 @@
+.genre-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  list-style: none;
+}
+
+.genre-tag {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-muted);
+  display: inline-block;
+  font-size: var(--font-sm);
+  padding: var(--space-2) var(--space-4);
+  text-decoration: none;
+  transition:
+    background var(--transition),
+    border-color var(--transition),
+    color var(--transition);
+
+  @media (hover: hover) {
+    &:hover {
+      background: var(--color-surface-hover);
+      border-color: var(--color-accent-border);
+      color: var(--color-text);
+    }
+  }
+}

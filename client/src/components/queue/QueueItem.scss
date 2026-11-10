@@ -1,30 +1,16 @@
 .queue-item {
   display: grid;
-  // indicator | info | duration | remove
-  grid-template-columns: 2.4rem minmax(0, 1fr) auto 2.8rem;
+  // the play button takes the row, the remove button sits on the right
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-md);
-  cursor: pointer;
   transition: background var(--transition);
-  // Give the row a minimum tap target height
-  min-height: 4.8rem;
 
-  &:hover {
-    background: var(--color-surface-hover);
-
-    .queue-item__remove {
-      opacity: 1;
+  @media (hover: hover) {
+    &:hover {
+      background: var(--color-surface-hover);
     }
   }
-
-  &:focus-visible {
-    outline: 2px solid var(--color-accent);
-    outline-offset: -2px;
-  }
-
-  // ── Current song state ────────────────────────────────────────────────────
 
   &--current {
     background: var(--color-accent-soft);
@@ -32,24 +18,35 @@
     .queue-item__title {
       color: var(--color-accent-hover);
     }
-
-    &:hover {
-      background: color-mix(
-        in srgb,
-        var(--color-accent-soft) 80%,
-        var(--color-surface-hover) 20%
-      );
-    }
   }
 
-  // ── Indicator column (equalizer or position number) ───────────────────────
+  &__play {
+    display: grid;
+    // position | title and artist | duration
+    grid-template-columns: 2.4rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-3);
+    width: 100%;
+    min-height: 4.8rem;
+    padding: var(--space-2) var(--space-3);
+    border: none;
+    border-radius: var(--radius-md);
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    text-align: left;
+
+    &:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: -2px;
+    }
+  }
 
   &__indicator {
     display: flex;
     align-items: center;
     justify-content: center;
-    // Match the height used by the global .equalizer class
-    height: 1.4rem;
+    height: 1.4rem; // the height of the global `.equalizer`
     color: var(--color-text-muted);
   }
 
@@ -59,36 +56,30 @@
     line-height: 1;
   }
 
-  // ── Song metadata ─────────────────────────────────────────────────────────
-
   &__info {
     display: flex;
     flex-direction: column;
     min-width: 0;
   }
 
+  &__title,
+  &__artist {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   &__title {
     color: var(--color-text);
     font-size: var(--font-sm);
-    font-weight: var(--weight-regular);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.4;
     transition: color var(--transition);
   }
 
   &__artist {
+    margin-top: var(--space-1);
     color: var(--color-text-muted);
     font-size: var(--font-xs);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-top: 2px;
-    line-height: 1.4;
   }
-
-  // ── Duration ──────────────────────────────────────────────────────────────
 
   &__duration {
     color: var(--color-text-muted);
@@ -97,41 +88,43 @@
     white-space: nowrap;
   }
 
-  // ── Remove button ─────────────────────────────────────────────────────────
-
   &__remove {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: none;
+    min-width: max(3.2rem, var(--touch-target));
+    min-height: max(3.2rem, var(--touch-target));
+    margin-right: var(--space-2);
+    padding: 0;
     border: none;
+    border-radius: var(--radius-md);
+    background: none;
     color: var(--color-text-muted);
     cursor: pointer;
-    padding: var(--space-1);
-    border-radius: var(--radius-md);
-    // Hide by default; reveal on row hover or keyboard focus
+    // With a mouse the button only shows while the row is hovered or focused.
     opacity: 0;
     transition:
       opacity var(--transition),
       color var(--transition),
       background var(--transition);
 
-    &:hover {
-      color: var(--color-text);
-      background: rgba(255, 255, 255, 0.06);
-      opacity: 1;
+    @media (hover: hover) {
+      &:hover {
+        background: var(--color-surface-hover);
+        color: var(--color-text);
+      }
     }
+  }
 
-    &:focus-visible {
-      opacity: 1;
-      outline: 2px solid var(--color-accent);
-      outline-offset: 2px;
-    }
+  &:hover &__remove,
+  &:focus-within &__remove,
+  &__remove:focus-visible {
+    opacity: 1;
   }
 }
 
-// On touch devices the user can't hover, so keep the remove button always
-// visible at a subdued opacity so they know it's there.
+// Touch screens cannot hover, so the remove button stays visible, a little
+// dimmed.
 @media (hover: none) {
   .queue-item__remove {
     opacity: 0.6;

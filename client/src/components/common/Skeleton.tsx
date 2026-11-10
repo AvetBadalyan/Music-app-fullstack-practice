@@ -12,6 +12,7 @@ interface SongListSkeletonProps {
 
 export const SongListSkeleton = ({ rows = 6 }: SongListSkeletonProps) => (
   <div className="song-list-skeleton" aria-busy="true" aria-label="Loading">
+    <div className="skeleton-header" />
     {Array.from({ length: rows }, (_, index) => (
       <div key={index} className="skeleton-row">
         <span className="skeleton sk-index" />
@@ -20,6 +21,7 @@ export const SongListSkeleton = ({ rows = 6 }: SongListSkeletonProps) => (
           <span className="skeleton sk-sub" />
         </div>
         <span className="skeleton sk-album" />
+        <span className="skeleton sk-genre" />
         <span className="skeleton sk-duration" />
       </div>
     ))}
@@ -38,7 +40,10 @@ export const CardGridSkeleton = ({
 }: CardGridSkeletonProps) => (
   <div className="card-grid-skeleton" aria-busy="true" aria-label="Loading">
     {Array.from({ length: count }, (_, index) => (
-      <div key={index} className="skeleton-card">
+      <div
+        key={index}
+        className={`skeleton-card skeleton-card--${shape}`}
+      >
         <span className={`skeleton sk-media sk-media--${shape}`} />
         <span className="skeleton sk-card-title" />
         <span className="skeleton sk-card-sub" />

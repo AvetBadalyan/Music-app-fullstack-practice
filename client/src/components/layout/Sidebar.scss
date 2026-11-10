@@ -26,15 +26,17 @@
       flex-shrink: 0;
     }
 
-    &:hover {
-      color: var(--color-text);
+    @media (hover: hover) {
+      &:hover {
+        color: var(--color-text);
+      }
     }
 
     &.active {
       color: var(--color-text);
       background: var(--color-surface);
       border-right: 3px solid var(--color-accent);
-      box-shadow: inset 0 0 0 1px rgba(148, 102, 238, 0.06);
+      box-shadow: inset 0 0 0 1px hsla(var(--color-accent-hsl), 0.06);
     }
 
     @media (hover: hover) {
@@ -66,7 +68,12 @@
   width: min(28rem, 80vw);
   z-index: 90;
   transform: translateX(-100%);
-  transition: transform 0.25s ease;
+  // A closed drawer is hidden as well as moved off screen, so its links
+  // cannot be reached with the Tab key. `visibility` waits for the slide-out.
+  visibility: hidden;
+  transition:
+    transform 0.25s ease,
+    visibility 0s linear 0.25s;
   box-shadow: var(--shadow-elevation);
 
   overflow-y: auto; // long nav lists stay reachable
@@ -74,6 +81,8 @@
 
   &.is-open {
     transform: translateX(0);
+    visibility: visible;
+    transition-delay: 0s;
   }
 }
 
@@ -81,7 +90,7 @@
   display: block;
   position: fixed;
   inset: var(--header-height) 0 0 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: var(--color-scrim);
   z-index: 80;
   opacity: 0;
   pointer-events: none;
@@ -104,6 +113,7 @@
     width: 22rem; // sticky is in normal flow, so it must reclaim its own width
     flex: 0 0 22rem;
     transform: none;
+    visibility: visible;
     box-shadow: none;
     transition: none;
   }

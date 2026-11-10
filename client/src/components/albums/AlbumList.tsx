@@ -1,6 +1,6 @@
+import type { CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
-import { Disc3, Music, Play } from 'lucide-react';
-import EmptyState from '../common/EmptyState';
+import { Music } from 'lucide-react';
 import { useColorExtract } from '../../hooks/useColorExtract';
 import type { IAlbum } from '../../types/api';
 import './AlbumList.scss';
@@ -21,7 +21,11 @@ const AlbumCard = ({ album }: AlbumCardProps) => {
     <Link
       to={`/albums/${album.id}`}
       className="album-card"
-      style={dominantColor ? ({ '--cover-glow-color': dominantColor } as React.CSSProperties) : undefined}
+      style={
+        dominantColor
+          ? ({ '--cover-glow-color': dominantColor } as CSSProperties)
+          : undefined
+      }
     >
       <div className="album-cover">
         {album.coverImage ? (
@@ -38,9 +42,6 @@ const AlbumCard = ({ album }: AlbumCardProps) => {
             <Music size={32} strokeWidth={1.5} />
           </div>
         )}
-        <span className="play-overlay" aria-hidden="true">
-          <Play size={18} strokeWidth={2.5} fill="currentColor" />
-        </span>
       </div>
       <p className="album-title">{album.title}</p>
       {album.artist && <p className="album-artist">{album.artist.name}</p>}
@@ -48,26 +49,12 @@ const AlbumCard = ({ album }: AlbumCardProps) => {
   );
 };
 
-const AlbumList = ({ albums }: AlbumListProps) => {
-  if (albums.length === 0) {
-    return (
-      <EmptyState
-        icon={<Disc3 size={32} strokeWidth={1.75} />}
-        title="No albums to show"
-        description="Create your first album to start curating your collection."
-        actionLabel="Create an album"
-        actionTo="/albums"
-      />
-    );
-  }
-
-  return (
-    <div className="album-grid">
-      {albums.map((album) => (
-        <AlbumCard key={album.id} album={album} />
-      ))}
-    </div>
-  );
-};
+const AlbumList = ({ albums }: AlbumListProps) => (
+  <div className="album-grid">
+    {albums.map((album) => (
+      <AlbumCard key={album.id} album={album} />
+    ))}
+  </div>
+);
 
 export default AlbumList;

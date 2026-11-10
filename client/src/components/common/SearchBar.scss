@@ -5,7 +5,6 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-pill);
   padding: var(--space-2) var(--space-3) var(--space-2) var(--space-4);
-  margin-bottom: var(--space-5);
   max-width: 100%;
   transition:
     border-color var(--transition),
@@ -26,7 +25,7 @@
     border: none;
     outline: none;
     color: var(--color-text);
-    font-size: var(--font-sm);
+    font-size: var(--input-font-size);
     line-height: 1;
     height: 1.6rem;
     width: 100%;
@@ -34,6 +33,13 @@
 
     &::placeholder {
       color: var(--color-text-subtle);
+    }
+
+    // The pill shows the focus ring; the global input focus style would
+    // draw a second one inside it.
+    &:focus-visible {
+      border-color: transparent;
+      box-shadow: none;
     }
   }
 
@@ -46,6 +52,8 @@
     color: var(--color-text-muted);
     cursor: pointer;
     height: 1.6rem;
+    min-height: var(--touch-target);
+    min-width: var(--touch-target);
     width: 1.6rem;
     padding: 0;
     margin-left: var(--space-2);
@@ -54,9 +62,11 @@
       color var(--transition),
       background var(--transition);
 
-    &:hover {
-      color: var(--color-text);
-      background: var(--color-surface-hover);
+    @media (hover: hover) {
+      &:hover {
+        color: var(--color-text);
+        background: var(--color-surface-hover);
+      }
     }
   }
 }

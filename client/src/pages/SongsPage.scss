@@ -1,0 +1,12 @@
+// Three equal columns, so the cards stay the same width whatever the numbers say.
+.stat-row {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (min-width: 481px) {
+  .stat-row {
+    gap: var(--space-4);
+  }
+}

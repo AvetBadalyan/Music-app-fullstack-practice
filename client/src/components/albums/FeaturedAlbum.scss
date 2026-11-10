@@ -1,0 +1,135 @@
+.featured-album {
+  align-items: center;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: auto minmax(0, 1fr);
+  isolation: isolate;
+  overflow: hidden;
+  padding: var(--space-4);
+  position: relative;
+  text-decoration: none;
+
+  // The blurred, darkened cover that tints the whole banner. Oversized so the
+  // blur's soft edge falls outside the clipped frame.
+  &__backdrop {
+    filter: blur(28px) saturate(1.4) brightness(0.55);
+    height: 140%;
+    inset: -20% auto auto -20%;
+    object-fit: cover;
+    position: absolute;
+    transition: transform 600ms var(--ease-out-expo);
+    width: 140%;
+    z-index: -1;
+  }
+
+  &__cover {
+    border-radius: var(--radius-md);
+    box-shadow: 0 0.8rem 2.4rem rgba(0, 0, 0, 0.5);
+    height: 11rem;
+    overflow: hidden;
+    width: 11rem;
+
+    img {
+      display: block;
+      height: 100%;
+      object-fit: cover;
+      width: 100%;
+    }
+  }
+
+  &__placeholder {
+    align-items: center;
+    background: var(--gradient-placeholder);
+    color: rgba(255, 255, 255, 0.4);
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+  }
+
+  &__badge {
+    align-items: center;
+    background: var(--color-accent-soft);
+    border-radius: var(--radius-pill);
+    color: var(--color-accent-hover);
+    display: inline-flex;
+    font-size: var(--font-xs);
+    font-weight: var(--weight-bold);
+    gap: var(--space-1);
+    letter-spacing: 0.08em;
+    padding: var(--space-1) var(--space-3);
+    text-transform: uppercase;
+  }
+
+  &__title {
+    font-size: var(--font-lg);
+    font-weight: var(--weight-bold);
+    line-height: 1.15;
+    margin-top: var(--space-2);
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+  }
+
+  &__meta {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: var(--font-sm);
+    margin-top: var(--space-1);
+  }
+
+  // The whole banner is the link; this only tells you what a click does.
+  &__cta {
+    align-items: center;
+    display: none;
+    font-size: var(--font-sm);
+    font-weight: var(--weight-bold);
+    gap: var(--space-2);
+    transition: transform var(--transition);
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      .featured-album__backdrop {
+        transform: scale(1.04);
+      }
+
+      .featured-album__cta {
+        transform: translateX(4px);
+      }
+    }
+  }
+}
+
+@media (min-width: 481px) {
+  .featured-album {
+    gap: var(--space-5);
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    padding: var(--space-5);
+
+    &__cover {
+      height: 18rem;
+      width: 18rem;
+    }
+
+    &__title {
+      font-size: var(--font-xl);
+    }
+
+    &__meta {
+      font-size: var(--font-md);
+    }
+
+    &__cta {
+      display: inline-flex;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .featured-album__backdrop,
+  .featured-album__cta {
+    transition: none;
+  }
+}

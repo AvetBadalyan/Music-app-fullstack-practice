@@ -1,70 +1,61 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type { MouseEvent } from 'react';
 
-interface RippleState {
+export interface RippleState {
   x: number;
   y: number;
   key: number;
 }
 
+/** How long a ripple stays on screen; matches the CSS animation. */
+const RIPPLE_DURATION_MS = 400;
+
 /**
- * Provides click ripple animation state for interactive elements.
- * Coordinates are relative to the clicked element's bounding rect.
+ * Click ripple state for interactive elements. Coordinates are relative to the
+ * clicked element's bounding box.
  *
  * Usage:
- *   const { ripples, addRipple, clearRipples } = useRipple();
+ *   const { ripples, addRipple } = useRipple();
  *   <div onClick={addRipple} style={{ position: 'relative', overflow: 'hidden' }}>
- *     {ripples.map(r => (
+ *     {ripples.map((r) => (
  *       <span key={r.key} className="ripple" style={{ left: r.x, top: r.y }} />
  *     ))}
  *   </div>
  */
-function useRipple(): {
-  ripples: RippleState[];
-  addRipple: (event: React.MouseEvent) => void;
-  clearRipples: () => void;
-} {
+const useRipple = () => {
   const [ripples, setRipples] = useState<RippleState[]>([]);
 
-  // Counter ref avoids triggering re-renders just to generate a unique key
+  // A ref, not state: generating a unique key must not cause a re-render.
   const counterRef = useRef(0);
 
-  // Store all pending timeouts so they can be cleared on unmount
+  // Pending removals, so they can be cancelled when the component unmounts.
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-  // Clean up all pending timeouts when the component using this hook unmounts
   useEffect(() => {
-    return () => {
-      timeoutsRef.current.forEach(clearTimeout);
-    };
+    const timeouts = timeoutsRef.current;
+    return () => timeouts.forEach(clearTimeout);
   }, []);
 
-  const addRipple = useCallback((event: React.MouseEvent) => {
-    const element = event.currentTarget as HTMLElement;
-    const rect = element.getBoundingClientRect();
-
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
+  const addRipple = useCallback((event: MouseEvent<HTMLElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
     const key = counterRef.current++;
+    const ripple = {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+      key,
+    };
 
-    setRipples(prev => [...prev, { x, y, key }]);
+    setRipples((current) => [...current, ripple]);
 
-    const id = setTimeout(() => {
-      setRipples(prev => prev.filter(r => r.key !== key));
-      // Remove this timeout from the tracking array
-      timeoutsRef.current = timeoutsRef.current.filter(t => t !== id);
-    }, 400);
+    const timeout = setTimeout(() => {
+      setRipples((current) => current.filter((item) => item.key !== key));
+      timeoutsRef.current = timeoutsRef.current.filter((t) => t !== timeout);
+    }, RIPPLE_DURATION_MS);
 
-    timeoutsRef.current.push(id);
+    timeoutsRef.current.push(timeout);
   }, []);
 
-  const clearRipples = useCallback(() => {
-    timeoutsRef.current.forEach(clearTimeout);
-    timeoutsRef.current = [];
-    setRipples([]);
-  }, []);
+  return { ripples, addRipple };
+};
 
-  return { ripples, addRipple, clearRipples };
-}
-
-export type { RippleState };
 export default useRipple;

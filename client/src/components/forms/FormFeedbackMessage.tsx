@@ -13,7 +13,10 @@ const FormFeedbackMessage = ({ feedback }: FormFeedbackMessageProps) => {
   if (feedback.kind === 'idle') return null;
 
   return (
-    <div className={`feedback ${feedback.kind}`} role="status">
+    <div
+      className={`feedback ${feedback.kind}`}
+      role={feedback.kind === 'error' ? 'alert' : 'status'}
+    >
       <span>{feedback.message}</span>
       {feedback.kind === 'success' && (
         <Link to={feedback.linkPath}>{feedback.linkLabel}</Link>

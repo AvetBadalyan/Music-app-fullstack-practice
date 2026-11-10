@@ -1,0 +1,16 @@
+.list-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  // Titles carry no margin of their own here; the gap spaces them.
+  :where(&) h1 {
+    margin-bottom: 0;
+  }
+}
+
+@media (min-width: 481px) {
+  .list-page {
+    gap: var(--space-5);
+  }
+}

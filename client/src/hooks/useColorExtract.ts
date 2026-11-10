@@ -1,179 +1,153 @@
 import { useEffect, useState } from 'react';
 
-/** Accent color HSL values as fallback (no `hsl()` wrapper) for use in `hsla()` */
+/** The accent colour as bare HSL values, used when nothing can be sampled. */
 const ACCENT_COLOR_HSL = '268, 66%, 67%';
 
-/** Module-level cache — shared across all component instances, persists for the session */
+/** Sampling the same image always gives the same colour, so keep the result. */
 const colorCache = new Map<string, string>();
 
+const SAMPLE_SIZE = 32; // 1024 pixels is plenty for an average, and quick
+
 export interface ColorExtractResult {
-  /** Dominant color as HSL values, e.g. `"268, 66%, 67%"`, for `hsla(var(--cover-glow-color), 0.25)` */
+  /** Bare HSL values, e.g. "268, 66%, 67%", for `hsla(var(--cover-glow-color), 0.25)`. */
   dominantColor: string | null;
-  /** Whether canvas extraction is in progress */
+  /** True while the image is still being sampled. */
   isLoading: boolean;
 }
 
-/** Convert RGB components to a comma-separated HSL string (no `hsl()` wrapper) */
-function rgbToHslString(r: number, g: number, b: number): string {
-  const rn = r / 255;
-  const gn = g / 255;
-  const bn = b / 255;
+/** Turns RGB (0-255) into bare HSL values, with no `hsl()` wrapper. */
+const rgbToHslString = (red: number, green: number, blue: number): string => {
+  const r = red / 255;
+  const g = green / 255;
+  const b = blue / 255;
 
-  const max = Math.max(rn, gn, bn);
-  const min = Math.min(rn, gn, bn);
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
   const delta = max - min;
+  const lightness = (max + min) / 2;
+  const saturation =
+    delta === 0 ? 0 : delta / (1 - Math.abs(2 * lightness - 1));
 
-  let h = 0;
-  const l = (max + min) / 2;
-  const s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
-
+  let hue = 0;
   if (delta !== 0) {
-    if (max === rn) {
-      h = ((gn - bn) / delta + (gn < bn ? 6 : 0)) / 6;
-    } else if (max === gn) {
-      h = ((bn - rn) / delta + 2) / 6;
-    } else {
-      h = ((rn - gn) / delta + 4) / 6;
-    }
+    if (max === r) hue = ((g - b) / delta + (g < b ? 6 : 0)) / 6;
+    else if (max === g) hue = ((b - r) / delta + 2) / 6;
+    else hue = ((r - g) / delta + 4) / 6;
   }
 
-  return `${Math.round(h * 360)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%`;
-}
+  return `${Math.round(hue * 360)}, ${Math.round(saturation * 100)}%, ${Math.round(lightness * 100)}%`;
+};
 
 /**
- * Draw the center 50% of the image onto a small off-screen canvas and return
- * a saturation-weighted average color as an HSL string.
+ * Average the centre of an already-loaded image into one HSL colour.
  *
- * Sampling the center region avoids border/edge artifacts common in album art.
- * Weighting pixels by their saturation pulls the result toward the most vivid
- * hue rather than averaging toward grey.
+ * The centre 50% is used to dodge the borders common in album art, and each
+ * pixel is weighted by its saturation so the most vivid hue wins over grey.
  *
- * Returns `null` on CORS errors (tainted canvas) or if all pixels are transparent.
+ * Returns null if the canvas is unreadable (a cross-origin image served
+ * without CORS headers taints it) or if every pixel is transparent.
  */
-function extractCenterHsl(image: HTMLImageElement): string | null {
-  const SIZE = 32; // 32×32 = 1 024 pixels — enough for a reliable average
+const sampleCenterColor = (image: HTMLImageElement): string | null => {
   const canvas = document.createElement('canvas');
-  canvas.width = SIZE;
-  canvas.height = SIZE;
+  canvas.width = SAMPLE_SIZE;
+  canvas.height = SAMPLE_SIZE;
 
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return null;
+  const context = canvas.getContext('2d');
+  if (!context) return null;
 
-  const { naturalWidth: w, naturalHeight: h } = image;
-  // Crop to the center 50% × 50% region before scaling down
-  ctx.drawImage(image, w * 0.25, h * 0.25, w * 0.5, h * 0.5, 0, 0, SIZE, SIZE);
+  const { naturalWidth: width, naturalHeight: height } = image;
+  context.drawImage(
+    image,
+    width * 0.25,
+    height * 0.25,
+    width * 0.5,
+    height * 0.5,
+    0,
+    0,
+    SAMPLE_SIZE,
+    SAMPLE_SIZE,
+  );
 
   let pixels: Uint8ClampedArray;
   try {
-    pixels = ctx.getImageData(0, 0, SIZE, SIZE).data;
+    pixels = context.getImageData(0, 0, SAMPLE_SIZE, SAMPLE_SIZE).data;
   } catch {
-    // Canvas tainted by CORS — image served without Access-Control-Allow-Origin header
-    return null;
+    return null; // tainted canvas
   }
 
-  let wR = 0, wG = 0, wB = 0, totalW = 0;
+  let red = 0;
+  let green = 0;
+  let blue = 0;
+  let totalWeight = 0;
 
   for (let i = 0; i < pixels.length; i += 4) {
     if (pixels[i + 3] < 128) continue; // skip mostly-transparent pixels
 
-    const r = pixels[i];
-    const g = pixels[i + 1];
-    const b = pixels[i + 2];
+    const max = Math.max(pixels[i], pixels[i + 1], pixels[i + 2]);
+    const min = Math.min(pixels[i], pixels[i + 1], pixels[i + 2]);
+    const saturation = max === 0 ? 0 : (max - min) / max;
+    // A base weight lets grey pixels count a little; saturation boosts vivid ones.
+    const weight = 0.1 + saturation * 0.9;
 
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-    // Saturation in HSV space: 0 for grey, 1 for fully saturated
-    const sat = max === 0 ? 0 : (max - min) / max;
-    // Base weight of 0.1 ensures even grey pixels contribute; saturation boosts vivid ones
-    const weight = 0.1 + sat * 0.9;
-
-    wR += r * weight;
-    wG += g * weight;
-    wB += b * weight;
-    totalW += weight;
+    red += pixels[i] * weight;
+    green += pixels[i + 1] * weight;
+    blue += pixels[i + 2] * weight;
+    totalWeight += weight;
   }
 
-  if (totalW === 0) return null;
+  if (totalWeight === 0) return null;
 
   return rgbToHslString(
-    Math.round(wR / totalW),
-    Math.round(wG / totalW),
-    Math.round(wB / totalW),
+    Math.round(red / totalWeight),
+    Math.round(green / totalWeight),
+    Math.round(blue / totalWeight),
   );
-}
+};
 
 /**
- * Extracts the dominant color from an album cover image for Cover_Glow effects.
- *
- * - Samples the **center 50%** of the image to avoid edge artifacts
- * - Weights pixels by saturation so the dominant hue wins over grey tones
- * - Caches results per URL in a module-level `Map` — no re-extraction on remount
- * - Falls back to the accent color (`268, 66%, 67%`) on CORS errors, canvas
- *   failures, extraction returning no opaque pixels, or when `imageUrl` is missing
- *
- * The returned `dominantColor` is a bare HSL value string, e.g. `"152, 48%, 42%"`,
- * intended for use as `hsla(var(--cover-glow-color), 0.25)`.
+ * The dominant colour of an album cover, for the glow behind cards and the
+ * player. Results are cached per URL; anything that cannot be sampled (no
+ * image, a CORS error, a failed load) falls back to the accent colour.
  *
  * @example
- * ```tsx
- * const { dominantColor, isLoading } = useColorExtract(song.album.coverImage);
- *
- * <div
- *   style={{ '--cover-glow-color': dominantColor ?? '268, 66%, 67%' } as React.CSSProperties}
- *   className={dominantColor ? 'player--has-glow' : undefined}
- * />
- * ```
+ * const { dominantColor } = useColorExtract(song.album?.coverImage);
+ * <div style={{ '--cover-glow-color': dominantColor } as CSSProperties} />
  */
-export function useColorExtract(imageUrl: string | null | undefined): ColorExtractResult {
-  // A version counter that increments once extraction settles (success or error).
-  // Using a functional updater avoids stale-closure issues inside the effect.
+export const useColorExtract = (
+  imageUrl: string | null | undefined,
+): ColorExtractResult => {
+  // Bumped once a sample settles, only to re-render and re-read the cache.
   const [, setVersion] = useState(0);
 
   useEffect(() => {
-    // Nothing to do — null/undefined URL or result already cached
     if (!imageUrl || colorCache.has(imageUrl)) return;
 
     let cancelled = false;
-    const img = new Image();
-    // crossOrigin must be set before src to request a CORS-enabled fetch.
-    // Supabase Storage serves public objects with Access-Control-Allow-Origin.
-    img.crossOrigin = 'anonymous';
+    const image = new Image();
+    // Required to read the pixels back. Supabase Storage serves its public
+    // objects with the matching Access-Control-Allow-Origin header.
+    image.crossOrigin = 'anonymous';
 
-    img.onload = () => {
+    const settle = (color: string) => {
       if (cancelled) return;
-      const hsl = extractCenterHsl(img);
-      // Store the extracted color or the accent fallback on canvas failure
-      colorCache.set(imageUrl, hsl ?? ACCENT_COLOR_HSL);
-      setVersion(v => v + 1);
+      colorCache.set(imageUrl, color);
+      setVersion((version) => version + 1);
     };
 
-    img.onerror = () => {
-      if (cancelled) return;
-      // Network or format error — store fallback so we don't retry on next render
-      colorCache.set(imageUrl, ACCENT_COLOR_HSL);
-      setVersion(v => v + 1);
-    };
-
-    img.src = imageUrl;
+    image.onload = () => settle(sampleCenterColor(image) ?? ACCENT_COLOR_HSL);
+    // Cache the fallback too, so a broken image is not retried on every render.
+    image.onerror = () => settle(ACCENT_COLOR_HSL);
+    image.src = imageUrl;
 
     return () => {
-      // Prevent stale callbacks from updating state after unmount or URL change
       cancelled = true;
     };
   }, [imageUrl]);
 
-  // Derive return values directly from the cache — no duplicate state
-  if (!imageUrl) {
-    // Missing URL: return accent fallback immediately
-    return { dominantColor: ACCENT_COLOR_HSL, isLoading: false };
-  }
+  if (!imageUrl) return { dominantColor: ACCENT_COLOR_HSL, isLoading: false };
 
   const cached = colorCache.get(imageUrl);
-  if (cached !== undefined) {
-    // Cache hit: extraction already done (or failed with fallback stored)
-    return { dominantColor: cached, isLoading: false };
-  }
+  if (cached !== undefined) return { dominantColor: cached, isLoading: false };
 
-  // Cache miss: extraction is in flight
   return { dominantColor: null, isLoading: true };
-}
+};

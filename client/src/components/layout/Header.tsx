@@ -54,7 +54,6 @@ const Header = ({ menuOpen, onMenuToggle }: HeaderProps) => {
         <span>MusicAvet</span>
       </Link>
 
-      {/* Inline search — expands on focus, shows dropdown results */}
       <HeaderSearch />
 
       <div className="auth-actions">
@@ -71,13 +70,14 @@ const Header = ({ menuOpen, onMenuToggle }: HeaderProps) => {
               type="button"
               className="auth-button"
               onClick={handleSignOut}
+              aria-label="Sign out"
             >
               <LogOut size={15} strokeWidth={2.25} aria-hidden="true" />
               <span>Sign out</span>
             </button>
           </>
         ) : (
-          <Link to="/login" className="auth-button">
+          <Link to="/login" className="auth-button" aria-label="Admin sign in">
             <LogIn size={15} strokeWidth={2.25} aria-hidden="true" />
             <span>Admin</span>
           </Link>

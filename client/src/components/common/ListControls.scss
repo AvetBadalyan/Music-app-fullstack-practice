@@ -1,0 +1,102 @@
+.list-controls {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-4);
+
+  &__summary {
+    color: var(--color-text-muted);
+    font-size: var(--font-sm);
+    margin-left: auto;
+  }
+}
+
+// ── Sort dropdown ────────────────────────────────────────────────────────────
+
+.sort-select {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--space-2);
+
+  &__label {
+    color: var(--color-text-muted);
+    font-size: var(--font-sm);
+    font-weight: var(--weight-bold);
+    white-space: nowrap;
+  }
+
+  &__field {
+    appearance: none;
+    background-color: var(--color-bg-elevated);
+    // Chevron, stroked in --color-text-muted (#b8b0c6).
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23b8b0c6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-position: right var(--space-3) center;
+    background-repeat: no-repeat;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    color: var(--color-text);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: var(--input-font-size);
+    min-height: var(--touch-target);
+    // The right padding leaves room for the chevron.
+    padding: var(--space-2) 3.2rem var(--space-2) var(--space-4);
+    transition:
+      background-color var(--transition),
+      border-color var(--transition);
+
+    option {
+      background: var(--color-bg-elevated);
+      color: var(--color-text);
+    }
+
+    @media (hover: hover) {
+      &:hover {
+        background-color: var(--color-surface-hover);
+        border-color: var(--color-accent-border);
+      }
+    }
+  }
+}
+
+// ── Filter chips ─────────────────────────────────────────────────────────────
+
+.chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chip {
+  align-items: center;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: var(--font-sm);
+  line-height: 1;
+  min-height: var(--touch-target);
+  padding: var(--space-2) var(--space-4);
+  transition:
+    background var(--transition),
+    border-color var(--transition),
+    color var(--transition);
+  white-space: nowrap;
+
+  @media (hover: hover) {
+    &:hover:not(.chip--active) {
+      background: var(--color-surface-hover);
+      border-color: var(--color-accent-border);
+      color: var(--color-text);
+    }
+  }
+
+  &--active {
+    background: var(--color-accent-soft);
+    border-color: var(--color-accent);
+    color: var(--color-accent-hover);
+    font-weight: var(--weight-bold);
+  }
+}

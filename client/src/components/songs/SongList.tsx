@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { Pause, Play } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
@@ -51,6 +52,7 @@ const SongRow = ({
     <div
       className={`song-row${isActive ? ' is-active' : ''}`}
       onClick={addRipple}
+      role="row"
     >
       {ripples.map((r) => (
         <span
@@ -59,33 +61,35 @@ const SongRow = ({
           style={{ left: r.x, top: r.y }}
         />
       ))}
-      <button
-        type="button"
-        className="index-play"
-        onClick={handlePlayClick}
-        title={playLabel}
-        aria-label={playLabel}
-      >
-        <span className="index">{index + 1}</span>
-        {isActive && (
-          <span
-            className={`equalizer${!isPlaying ? ' is-paused' : ''}`}
-            aria-hidden="true"
-          >
-            <span />
-            <span />
-            <span />
-          </span>
-        )}
-        <span className="play-icon" aria-hidden="true">
-          {isActivePlaying ? (
-            <Pause size={14} strokeWidth={2.5} fill="currentColor" />
-          ) : (
-            <Play size={14} strokeWidth={2.5} fill="currentColor" />
+      <div role="cell">
+        <button
+          type="button"
+          className="index-play"
+          onClick={handlePlayClick}
+          title={playLabel}
+          aria-label={playLabel}
+        >
+          <span className="index">{index + 1}</span>
+          {isActive && (
+            <span
+              className={`equalizer${!isPlaying ? ' is-paused' : ''}`}
+              aria-hidden="true"
+            >
+              <span />
+              <span />
+              <span />
+            </span>
           )}
-        </span>
-      </button>
-      <div className="song-info">
+          <span className="play-icon" aria-hidden="true">
+            {isActivePlaying ? (
+              <Pause size={14} strokeWidth={2.5} fill="currentColor" />
+            ) : (
+              <Play size={14} strokeWidth={2.5} fill="currentColor" />
+            )}
+          </span>
+        </button>
+      </div>
+      <div className="song-info" role="cell">
         <Link
           to={`/songs/${song.id}`}
           className="title"
@@ -103,31 +107,44 @@ const SongRow = ({
           </Link>
         )}
       </div>
-      {!hideAlbumColumn &&
-        (song.album ? (
-          <Link
-            to={`/albums/${song.album.id}`}
-            className="album-col"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {song.album.title}
-          </Link>
-        ) : (
-          <span className="album-col empty-col">—</span>
-        ))}
+      {!hideAlbumColumn && (
+        <span
+          className={`album-col${song.album ? '' : ' empty-col'}`}
+          role="cell"
+        >
+          {song.album ? (
+            <Link
+              to={`/albums/${song.album.id}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {song.album.title}
+            </Link>
+          ) : (
+            '—'
+          )}
+        </span>
+      )}
       {!hideGenreColumn &&
         (song.genres?.length ? (
-          <Link
-            to={`/genres/${song.genres[0].id}`}
-            className="genre-col"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {song.genres[0].name}
-          </Link>
+          <span className="genre-col" role="cell">
+            {song.genres.map((genre, position) => (
+              <Fragment key={genre.id}>
+                {position > 0 && ', '}
+                <Link
+                  to={`/genres/${genre.id}`}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {genre.name}
+                </Link>
+              </Fragment>
+            ))}
+          </span>
         ) : (
-          <span className="genre-col empty-col">—</span>
+          <span className="genre-col empty-col" role="cell">
+            —
+          </span>
         ))}
-      <span className="duration">
+      <span className="duration" role="cell">
         {formatDuration(song.duration, '--:--')}
       </span>
     </div>
@@ -144,7 +161,7 @@ const SongList = ({
   if (songs.length === 0) {
     return (
       <EmptyState
-        title="No songs yet"
+        context="no-songs"
         description="Your library is quiet. Add a track to get the music going."
       />
     );
@@ -159,13 +176,27 @@ const SongList = ({
     .join(' ');
 
   return (
-    <div className={listClassName}>
-      <div className="song-row song-header" aria-hidden="true">
-        <span className="index-play">#</span>
-        <span>Title</span>
-        {!hideAlbumColumn && <span className="album-col">Album</span>}
-        {!hideGenreColumn && <span className="genre-col">Genre</span>}
-        <span className="duration">Time</span>
+    // role="table" + row/cell roles give screen readers the column context
+    // that a plain <div> grid would otherwise lose. The layout stays CSS grid.
+    <div className={listClassName} role="table" aria-label="Songs">
+      <div className="song-row song-header" role="row">
+        <span className="index-play" role="columnheader">
+          #
+        </span>
+        <span role="columnheader">Title</span>
+        {!hideAlbumColumn && (
+          <span className="album-col" role="columnheader">
+            Album
+          </span>
+        )}
+        {!hideGenreColumn && (
+          <span className="genre-col" role="columnheader">
+            Genre
+          </span>
+        )}
+        <span className="duration" role="columnheader">
+          Time
+        </span>
       </div>
       {songs.map((song, index) => {
         const isActive = currentSong?.id === song.id;

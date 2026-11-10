@@ -25,7 +25,7 @@ const SearchBar = ({
   maxLength = FIELD_LIMITS.searchQuery,
 }: SearchBarProps) => {
   const [term, setTerm] = useState(value);
-  const debouncedTerm = useDebouncedValue(term);
+  const debouncedTerm = useDebouncedValue(term).trim();
 
   useEffect(() => {
     onChange(debouncedTerm);

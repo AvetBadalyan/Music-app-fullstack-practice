@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { ListMusic, Repeat, Repeat1, Shuffle, X } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { closeQueueSidebar } from '../../features/ui/uiSlice';
+import { pluralize } from '../../utils/pluralize';
 import {
   removeFromQueue,
   playFromQueue,
@@ -10,17 +11,15 @@ import QueueItem from './QueueItem';
 import './QueueSidebar.scss';
 
 /**
- * Slide-out sidebar that shows the current playback queue.
+ * Slide-out panel that shows the playback queue.
  *
- * Opens/closes via the Redux ui.isQueueSidebarOpen flag. Slides in from the
- * right with a 300ms CSS transform transition. Closes on Escape key or when
- * the user clicks the close button.
+ * It opens and closes through the Redux `ui.isQueueSidebarOpen` flag, and
+ * slides in from the right. Escape, the close button and a click on the dimmed
+ * area all close it.
  *
- * Accessibility:
- * - The panel has role="complementary" and aria-label
- * - Focus moves to the panel header on open and returns to the queue button
- *   (if it still exists) on close
- * - Escape key closes the panel
+ * Keyboard: focus moves into the panel when it opens and goes back to the
+ * button that opened it when it closes. While the panel is closed it is
+ * hidden with CSS `visibility`, so its buttons are not in the tab order.
  */
 const QueueSidebar = () => {
   const dispatch = useAppDispatch();
@@ -29,17 +28,18 @@ const QueueSidebar = () => {
     (state) => state.player,
   );
 
-  const panelRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  // The element that had focus before the panel opened (the queue button).
+  const openerRef = useRef<HTMLElement | null>(null);
 
-  // Move focus into the sidebar when it opens; restore on close.
+  // Move focus into the panel when it opens, and give it back when it closes.
   useEffect(() => {
     if (isOpen) {
-      // Short rAF so the transition has kicked off before we shift focus
-      const id = requestAnimationFrame(() => {
-        closeButtonRef.current?.focus();
-      });
-      return () => cancelAnimationFrame(id);
+      openerRef.current = document.activeElement as HTMLElement | null;
+      closeButtonRef.current?.focus();
+    } else {
+      openerRef.current?.focus();
+      openerRef.current = null;
     }
   }, [isOpen]);
 
@@ -84,11 +84,8 @@ const QueueSidebar = () => {
 
       {/* Sidebar panel */}
       <aside
-        ref={panelRef}
         className={`queue-sidebar${isOpen ? ' queue-sidebar--open' : ''}`}
-        role="complementary"
         aria-label="Now playing queue"
-        aria-hidden={!isOpen}
       >
         {/* ── Header ─────────────────────────────────────────────────────── */}
         <div className="queue-sidebar__header">
@@ -143,7 +140,7 @@ const QueueSidebar = () => {
         {/* ── Song count ─────────────────────────────────────────────────── */}
         {queue.length > 0 && (
           <p className="queue-sidebar__count" aria-live="polite">
-            {queue.length} {queue.length === 1 ? 'song' : 'songs'}
+            {pluralize(queue.length, 'song')}
           </p>
         )}
 
@@ -163,13 +160,9 @@ const QueueSidebar = () => {
               </p>
             </div>
           ) : (
-            <ul
-              className="queue-sidebar__list"
-              role="list"
-              aria-label="Queue items"
-            >
+            <ul className="queue-sidebar__list" aria-label="Queue items">
               {queue.map((song, index) => (
-                <li key={`${song.id}-${index}`} role="listitem">
+                <li key={`${song.id}-${index}`}>
                   <QueueItem
                     song={song}
                     index={index}

@@ -1,23 +1,27 @@
-import { useParams, Link } from 'react-router-dom';
-import { Play, Music } from 'lucide-react';
+import { Link, useParams } from 'react-router-dom';
+import { Music } from 'lucide-react';
 import {
-  useGetSongByIdQuery,
   useDeleteSongMutation,
+  useGetAllSongsQuery,
+  useGetSongByIdQuery,
 } from '../services/songsApi';
-import { useGetAlbumByIdQuery } from '../services/albumsApi';
-import { useAppDispatch, useAppSelector } from '../app/hooks';
-import { useHeroGradient } from '../hooks/useHeroGradient';
+import { useAppSelector } from '../app/hooks';
 import { useDeleteWithConfirm } from '../hooks/useDeleteWithConfirm';
-import { playSong } from '../features/player/playerSlice';
+import { useHeroGradient } from '../hooks/useHeroGradient';
 import { formatDuration } from '../utils/formatDuration';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import DeleteButton from '../components/common/DeleteButton';
+import GenreTags from '../components/common/GenreTags';
 import PageStatus from '../components/common/PageStatus';
+import PlayAllButton from '../components/common/PlayAllButton';
+import SongList from '../components/songs/SongList';
 import './SongDetailPage.scss';
+
+/** How many songs to suggest at the bottom of the page. */
+const MORE_SONGS_COUNT = 5;
 
 const SongDetailPage = () => {
   const { id = '' } = useParams<{ id: string }>();
-  const dispatch = useAppDispatch();
   const isAdmin = useAppSelector((state) => state.auth.isAdmin);
 
   const {
@@ -25,14 +29,13 @@ const SongDetailPage = () => {
     isLoading,
     error,
   } = useGetSongByIdQuery(id, { skip: !id });
+  const { data: allSongs } = useGetAllSongsQuery();
   const [deleteSong, { isLoading: isDeleting }] = useDeleteSongMutation();
   const { isConfirmOpen, openConfirm, closeConfirm, confirmDelete } =
     useDeleteWithConfirm({ deleteEntity: deleteSong, redirectTo: '/songs' });
 
-  const { data: album } = useGetAlbumByIdQuery(song?.album?.id ?? '', {
-    skip: !song?.album?.id,
-  });
-  const coverImage = album?.coverImage;
+  // ISong.album is IAlbumRef which already includes coverImage — no extra fetch needed.
+  const coverImage = song?.album?.coverImage;
   const heroStyle = useHeroGradient(coverImage);
 
   if (isLoading) {
@@ -50,6 +53,19 @@ const SongDetailPage = () => {
       </div>
     );
   }
+
+  const genres = song.genres ?? [];
+
+  // Other songs that share at least one genre with this one.
+  const similarSongs = (allSongs ?? [])
+    .filter(
+      (other) =>
+        other.id !== song.id &&
+        other.genres?.some((otherGenre) =>
+          genres.some((genre) => genre.id === otherGenre.id),
+        ),
+    )
+    .slice(0, MORE_SONGS_COUNT);
 
   return (
     <div className="song-detail-page">
@@ -81,50 +97,39 @@ const SongDetailPage = () => {
           <p className="meta">
             {song.album && (
               <>
-                <span>Album: </span>
                 <Link to={`/albums/${song.album.id}`}>{song.album.title}</Link>
+                {' · '}
               </>
             )}
-            {song.album && song.duration ? <span> · </span> : null}
-            {song.duration && <span>{formatDuration(song.duration)}</span>}
+            {formatDuration(song.duration)}
           </p>
-          {song.genres && song.genres.length > 0 && (
-            <div className="genres">
-              {song.genres.map((genre) => (
-                <Link
-                  key={genre.id}
-                  to={`/genres/${genre.id}`}
-                  className="genre-tag"
-                >
-                  {genre.name}
-                </Link>
-              ))}
-            </div>
-          )}
+
+          <div className="detail-hero__actions">
+            <PlayAllButton songs={[song]} label="Play" />
+            {isAdmin && (
+              <DeleteButton
+                label="Delete song"
+                isDeleting={isDeleting}
+                onClick={openConfirm}
+              />
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="song-actions">
-        <button
-          className="play-btn"
-          onClick={() => dispatch(playSong({ song }))}
-        >
-          <Play
-            size={16}
-            strokeWidth={2.5}
-            fill="currentColor"
-            aria-hidden="true"
-          />
-          <span>Play</span>
-        </button>
-        {isAdmin && (
-          <DeleteButton
-            label="Delete song"
-            isDeleting={isDeleting}
-            onClick={openConfirm}
-          />
-        )}
-      </div>
+      {genres.length > 0 && (
+        <section className="detail-section">
+          <GenreTags genres={genres} />
+        </section>
+      )}
+
+      {similarSongs.length > 0 && (
+        <section className="detail-section">
+          <h2>More like this</h2>
+          <SongList songs={similarSongs} />
+        </section>
+      )}
+
       {isAdmin && (
         <ConfirmDialog
           open={isConfirmOpen}

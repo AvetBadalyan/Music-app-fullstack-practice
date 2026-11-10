@@ -1,5 +1,12 @@
-import { useEffect, useRef, useState, type ChangeEvent } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type CSSProperties,
+} from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import {
   ListMusic,
   Pause,
@@ -27,7 +34,10 @@ import {
   cycleRepeat,
   closePlayer,
 } from '../../features/player/playerSlice';
-import { toggleQueueSidebar } from '../../features/ui/uiSlice';
+import {
+  closeQueueSidebar,
+  toggleQueueSidebar,
+} from '../../features/ui/uiSlice';
 import { useColorExtract } from '../../hooks/useColorExtract';
 import { formatDuration } from '../../utils/formatDuration';
 import './MusicPlayer.scss';
@@ -38,15 +48,29 @@ type TimelineState = {
   duration: number;
 };
 
-const isTypingTarget = (target: EventTarget | null) => {
-  if (!(target instanceof HTMLElement)) return false;
-  const tag = target.tagName;
-  return (
-    tag === 'INPUT' ||
-    tag === 'TEXTAREA' ||
-    tag === 'SELECT' ||
-    target.isContentEditable
-  );
+// Shortcuts must not steal keys from something that is already using them:
+// typing in a field, or pressing Space on a focused button or link.
+const isInteractiveTarget = (target: EventTarget | null) =>
+  target instanceof HTMLElement &&
+  (target.isContentEditable ||
+    target.closest('input, textarea, select, button, a, [tabindex="0"]') !==
+      null);
+
+const getRepeatLabel = (repeat: string) => {
+  if (repeat === 'one') return 'Repeat one (on)';
+  if (repeat === 'all') return 'Repeat all (on)';
+  return 'Repeat (off)';
+};
+
+// Picks the speaker icon for the current loudness (0 means muted) and returns
+// it already rendered, so the caller just drops it in. Returning the element
+// (not the component) keeps React from treating it as a new component type.
+const renderVolumeIcon = (level: number) => {
+  const props = { size: 18, strokeWidth: 2, 'aria-hidden': true } as const;
+  if (level === 0) return <VolumeX {...props} />;
+  if (level < 0.4) return <Volume {...props} />;
+  if (level < 0.75) return <Volume1 {...props} />;
+  return <Volume2 {...props} />;
 };
 
 const MusicPlayer = () => {
@@ -89,19 +113,22 @@ const MusicPlayer = () => {
     void audioRef.current.play().catch(() => dispatch(pause()));
   }, [isPlaying, currentSong?.audioFile, dispatch]);
 
-  // Volume / mute sync
+  // Volume / mute sync. The <audio> element is re-created when currentSong.id
+  // changes (it's the key), so the effect must also depend on the song to apply
+  // volume and mute to the new element.
   useEffect(() => {
     if (!audioRef.current) return;
     audioRef.current.volume = isMuted ? 0 : volume;
     audioRef.current.muted = isMuted;
-  }, [volume, isMuted]);
+  }, [volume, isMuted, currentSong?.id]);
 
-  // Global keyboard shortcuts
+  // Global keyboard shortcuts. Up and Down are left out on purpose: they keep
+  // scrolling the page (the volume slider already answers to the arrow keys).
   useEffect(() => {
     if (!currentSong) return;
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (isTypingTarget(event.target)) return;
+      if (isInteractiveTarget(event.target)) return;
       if (event.metaKey || event.ctrlKey || event.altKey) return;
 
       switch (event.code) {
@@ -109,31 +136,18 @@ const MusicPlayer = () => {
           event.preventDefault();
           dispatch(togglePlay());
           break;
+        // The browser keeps currentTime between 0 and the song length.
         case 'ArrowRight':
           if (audioRef.current) {
             event.preventDefault();
-            audioRef.current.currentTime = Math.min(
-              audioRef.current.currentTime + 5,
-              audioRef.current.duration || audioRef.current.currentTime + 5,
-            );
+            audioRef.current.currentTime += 5;
           }
           break;
         case 'ArrowLeft':
           if (audioRef.current) {
             event.preventDefault();
-            audioRef.current.currentTime = Math.max(
-              audioRef.current.currentTime - 5,
-              0,
-            );
+            audioRef.current.currentTime -= 5;
           }
-          break;
-        case 'ArrowUp':
-          event.preventDefault();
-          dispatch(setVolume(Math.min(1, volume + 0.05)));
-          break;
-        case 'ArrowDown':
-          event.preventDefault();
-          dispatch(setVolume(Math.max(0, volume - 0.05)));
           break;
         case 'KeyM':
           event.preventDefault();
@@ -160,7 +174,7 @@ const MusicPlayer = () => {
 
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [dispatch, volume, currentSong]);
+  }, [dispatch, currentSong]);
 
   const syncTimeline = () => {
     if (!audioRef.current || !currentSong) {
@@ -195,9 +209,18 @@ const MusicPlayer = () => {
     dispatch(setVolume(Number(event.currentTarget.value) / 100));
   };
 
+  // The browser could not load or decode the audio file (missing file,
+  // network problem). Without this the play button would silently do nothing.
+  const handleAudioError = () => {
+    dispatch(pause());
+    toast.error('This song could not be played.');
+  };
+
   const handleEnded = () => {
-    // Repeat one: replay current song
-    if (repeat === 'one' && audioRef.current) {
+    // Repeat one, or a one-song queue that should loop (repeat all or
+    // shuffle): there is no other song to switch to, so replay this one.
+    const loopsSingleSong = queue.length <= 1 && (repeat === 'all' || shuffle);
+    if ((repeat === 'one' || loopsSingleSong) && audioRef.current) {
       audioRef.current.currentTime = 0;
       void audioRef.current.play().catch(() => {});
       return;
@@ -220,6 +243,11 @@ const MusicPlayer = () => {
     dispatch(pause());
   };
 
+  const handleClosePlayer = () => {
+    dispatch(closePlayer());
+    dispatch(closeQueueSidebar());
+  };
+
   if (!currentSong) return null;
 
   const activeTimeline =
@@ -236,21 +264,8 @@ const MusicPlayer = () => {
   const progressValue =
     progressMax > 0 ? Math.min(activeTimeline.currentTime, progressMax) : 0;
 
-  const repeatLabel =
-    repeat === 'one'
-      ? 'Repeat one (on)'
-      : repeat === 'all'
-        ? 'Repeat all (on)'
-        : 'Repeat (off)';
-
-  const VolumeIcon =
-    isMuted || volume === 0
-      ? VolumeX
-      : volume < 0.4
-        ? Volume
-        : volume < 0.75
-          ? Volume1
-          : Volume2;
+  const repeatLabel = getRepeatLabel(repeat);
+  const volumeIcon = renderVolumeIcon(isMuted ? 0 : volume);
 
   const progressPct = progressMax > 0 ? (progressValue / progressMax) * 100 : 0;
   const volumePct = Math.round((isMuted ? 0 : volume) * 100);
@@ -258,7 +273,11 @@ const MusicPlayer = () => {
   return (
     <div
       className={`music-player${isPlaying && dominantColor ? ' music-player--has-glow' : ''}`}
-      style={dominantColor ? { ['--cover-glow-color' as string]: dominantColor } : undefined}
+      style={
+        dominantColor
+          ? ({ '--cover-glow-color': dominantColor } as CSSProperties)
+          : undefined
+      }
     >
       <audio
         key={currentSong.id}
@@ -269,6 +288,7 @@ const MusicPlayer = () => {
         onDurationChange={syncTimeline}
         onTimeUpdate={syncTimeline}
         onEnded={handleEnded}
+        onError={handleAudioError}
       />
 
       <div className="now-playing">
@@ -294,7 +314,7 @@ const MusicPlayer = () => {
       </div>
 
       <div className="player-center">
-        <div className="controls transport-controls">
+        <div className="controls">
           <button
             type="button"
             className={`mode-btn${shuffle ? ' is-active' : ''}`}
@@ -303,12 +323,7 @@ const MusicPlayer = () => {
             aria-label={shuffle ? 'Disable shuffle' : 'Enable shuffle'}
             aria-pressed={shuffle}
           >
-            <Shuffle
-              size={16}
-              strokeWidth={2}
-              className="transport-icon"
-              aria-hidden="true"
-            />
+            <Shuffle size={16} strokeWidth={2} aria-hidden="true" />
           </button>
           <button
             type="button"
@@ -321,7 +336,6 @@ const MusicPlayer = () => {
               size={20}
               strokeWidth={2}
               fill="currentColor"
-              className="transport-icon"
               aria-hidden="true"
             />
           </button>
@@ -360,7 +374,6 @@ const MusicPlayer = () => {
               size={20}
               strokeWidth={2}
               fill="currentColor"
-              className="transport-icon"
               aria-hidden="true"
             />
           </button>
@@ -372,19 +385,9 @@ const MusicPlayer = () => {
             aria-label={repeatLabel}
           >
             {repeat === 'one' ? (
-              <Repeat1
-                size={16}
-                strokeWidth={2}
-                className="transport-icon"
-                aria-hidden="true"
-              />
+              <Repeat1 size={16} strokeWidth={2} aria-hidden="true" />
             ) : (
-              <Repeat
-                size={16}
-                strokeWidth={2}
-                className="transport-icon"
-                aria-hidden="true"
-              />
+              <Repeat size={16} strokeWidth={2} aria-hidden="true" />
             )}
           </button>
         </div>
@@ -392,7 +395,7 @@ const MusicPlayer = () => {
         <div className="progress-row">
           <span className="time">{formatDuration(activeTimeline.currentTime)}</span>
           <input
-            className="range progress-bar"
+            className="range"
             type="range"
             min="0"
             max={progressMax}
@@ -401,55 +404,57 @@ const MusicPlayer = () => {
             onChange={handleSeek}
             aria-label="Seek within current song"
             disabled={progressMax === 0}
-            style={{ ['--progress' as string]: `${progressPct}%` }}
+            style={{ '--progress': `${progressPct}%` } as CSSProperties}
           />
           <span className="time">{formatDuration(activeTimeline.duration)}</span>
         </div>
       </div>
 
-      <div className="volume-control">
+      <div className="player-extras">
+        <div className="volume-control">
+          <button
+            type="button"
+            className="volume-btn"
+            onClick={() => dispatch(toggleMute())}
+            title={isMuted ? 'Unmute (M)' : 'Mute (M)'}
+            aria-label={isMuted ? 'Unmute' : 'Mute'}
+            aria-pressed={isMuted}
+          >
+            {volumeIcon}
+          </button>
+          <input
+            className="range volume-bar"
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value={volumePct}
+            onChange={handleVolumeChange}
+            aria-label="Volume"
+            style={{ '--progress': `${volumePct}%` } as CSSProperties}
+          />
+        </div>
+
         <button
           type="button"
-          className="volume-btn"
-          onClick={() => dispatch(toggleMute())}
-          title={isMuted ? 'Unmute (M)' : 'Mute (M)'}
-          aria-label={isMuted ? 'Unmute' : 'Mute'}
-          aria-pressed={isMuted}
+          className="queue-btn"
+          onClick={() => dispatch(toggleQueueSidebar())}
+          title="Queue"
+          aria-label="Toggle queue sidebar"
         >
-          <VolumeIcon size={18} strokeWidth={2} aria-hidden="true" />
+          <ListMusic size={16} strokeWidth={2} aria-hidden="true" />
         </button>
-        <input
-          className="range volume-bar"
-          type="range"
-          min="0"
-          max="100"
-          step="1"
-          value={volumePct}
-          onChange={handleVolumeChange}
-          aria-label="Volume"
-          style={{ ['--progress' as string]: `${volumePct}%` }}
-        />
+
+        <button
+          type="button"
+          className="close-btn"
+          onClick={handleClosePlayer}
+          title="Close player"
+          aria-label="Close player"
+        >
+          <X size={16} strokeWidth={2} aria-hidden="true" />
+        </button>
       </div>
-
-      <button
-        type="button"
-        className="queue-btn"
-        onClick={() => dispatch(toggleQueueSidebar())}
-        title="Queue"
-        aria-label="Toggle queue sidebar"
-      >
-        <ListMusic size={16} strokeWidth={2} aria-hidden="true" />
-      </button>
-
-      <button
-        type="button"
-        className="close-btn"
-        onClick={() => dispatch(closePlayer())}
-        title="Close player"
-        aria-label="Close player"
-      >
-        <X size={16} strokeWidth={2} aria-hidden="true" />
-      </button>
     </div>
   );
 };

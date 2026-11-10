@@ -1,0 +1,86 @@
+.genre-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+}
+
+// Every card sits on the same dark surface as the album and artist cards; only
+// the glow in its corner takes the genre's hue, so they read as one family.
+.genre-card {
+  --genre-hue: 268;
+
+  background:
+    radial-gradient(
+      130% 150% at 100% 0%,
+      hsl(var(--genre-hue) 70% 50% / 0.38) 0%,
+      transparent 65%
+    ),
+    var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  justify-content: space-between;
+  min-height: 12rem;
+  min-width: 0;
+  padding: var(--space-4);
+  text-decoration: none;
+  transition:
+    border-color var(--transition),
+    transform 200ms var(--ease-out-expo);
+
+  @media (hover: hover) {
+    &:hover {
+      border-color: hsl(var(--genre-hue) 70% 62% / 0.7);
+      transform: translateY(-4px);
+    }
+  }
+
+  &__header {
+    align-items: baseline;
+    display: flex;
+    gap: var(--space-3);
+    justify-content: space-between;
+  }
+
+  &__name {
+    font-size: var(--font-lg);
+    font-weight: var(--weight-bold);
+    line-height: 1.2;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  &__count {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-pill);
+    color: var(--color-text);
+    flex-shrink: 0;
+    font-size: var(--font-xs);
+    padding: var(--space-1) var(--space-3);
+  }
+
+  &__artists {
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    color: var(--color-text-muted);
+    display: -webkit-box;
+    font-size: var(--font-sm);
+    line-height: 1.5;
+    overflow: hidden;
+  }
+}
+
+@media (min-width: 481px) {
+  .genre-grid {
+    gap: var(--space-5);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 24rem), 1fr));
+  }
+
+  .genre-card {
+    min-height: 14rem;
+    padding: var(--space-5);
+  }
+}

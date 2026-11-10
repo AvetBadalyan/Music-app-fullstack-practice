@@ -1,11 +1,11 @@
 /* Heading row for list pages, and the accent button that opens a create form.
-   .toolbar-toggle is also used on its own by the artist page's "Add song". */
+   .toolbar-toggle is also used on its own by the artist page's "Add song".
+   Spacing below the row comes from the page's own gap (see ListPage). */
 .page-toolbar {
   align-items: center;
   display: flex;
   gap: var(--space-3);
   justify-content: space-between;
-  margin-bottom: var(--space-4);
 
   h1 {
     margin-bottom: 0;
@@ -14,7 +14,7 @@
 
 .toolbar-toggle {
   align-items: center;
-  background: var(--color-accent);
+  background: var(--color-accent-strong);
   border: none;
   border-radius: var(--radius-pill);
   color: var(--color-text);
@@ -23,11 +23,14 @@
   font-size: var(--font-sm);
   font-weight: var(--weight-bold);
   gap: var(--space-2);
+  min-height: var(--touch-target);
   padding: var(--space-2) var(--space-4);
   transition: background var(--transition);
 
-  &:hover {
-    background: var(--color-accent-hover);
+  @media (hover: hover) {
+    &:hover {
+      background: var(--color-accent-strong-hover);
+    }
   }
 
   /* Icon only on phones, where the toolbar has no room for the label. */
@@ -37,10 +40,6 @@
 }
 
 @media (min-width: 481px) {
-  .page-toolbar {
-    margin-bottom: var(--space-5);
-  }
-
   .toolbar-toggle span {
     display: inline;
   }

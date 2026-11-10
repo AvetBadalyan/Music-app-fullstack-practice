@@ -6,42 +6,24 @@ import './PlayAllButton.scss';
 
 interface PlayAllButtonProps {
   songs: ISong[];
-  disabled?: boolean;
-  disabledReason?: string;
-  /** Optional sort function: receives the song array and returns a sorted copy. */
-  sortFn?: (songs: ISong[]) => ISong[];
+  label?: string;
 }
 
-const PlayAllButton = ({
-  songs,
-  disabled = false,
-  disabledReason,
-  sortFn,
-}: PlayAllButtonProps) => {
+/** Starts the first song and queues the rest, in the order they are shown. */
+const PlayAllButton = ({ songs, label = 'Play All' }: PlayAllButtonProps) => {
   const dispatch = useAppDispatch();
-
-  const handleClick = () => {
-    if (disabled || songs.length === 0) return;
-
-    const queue = sortFn ? sortFn(songs) : [...songs];
-    dispatch(playSong({ song: queue[0], queue }));
-  };
-
-  const isDisabled = disabled || songs.length === 0;
-  const tooltip = isDisabled ? (disabledReason ?? undefined) : undefined;
+  const hasNoSongs = songs.length === 0;
 
   return (
     <button
       type="button"
       className="play-all-btn"
-      onClick={handleClick}
-      disabled={isDisabled}
-      title={tooltip}
-      aria-label={tooltip ?? 'Play all songs'}
-      aria-disabled={isDisabled}
+      onClick={() => dispatch(playSong({ song: songs[0], queue: songs }))}
+      disabled={hasNoSongs}
+      title={hasNoSongs ? 'No songs to play' : undefined}
     >
       <Play size={16} strokeWidth={2} aria-hidden="true" />
-      <span>Play All</span>
+      <span>{label}</span>
     </button>
   );
 };

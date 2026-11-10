@@ -1,48 +1,45 @@
 .new-releases {
-  margin-bottom: var(--space-5);
+  // Each card is a fixed width, so the row behaves like a Spotify-style
+  // strip: a few albums sit left-aligned, and more simply scroll sideways.
+  // Cards never grow to "fill" the row, which is what used to leave a dead
+  // gap after the last one.
+  //
+  // On phones the card is narrower so two fit with a peek of the next, making
+  // it obvious the row scrolls. It widens on tablets and up (set below).
+  --release-card-width: 15rem;
 
-  // ── Section heading ──────────────────────────────────────────
-  &__heading {
-    font-size: var(--font-lg);
-    font-weight: var(--weight-bold);
-    color: var(--color-text);
-    letter-spacing: -0.01em;
-    margin-bottom: var(--space-4);
-  }
+  position: relative;
 
-  // ── Wrapper: arrows flanking the track ───────────────────────
-  &__wrapper {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-  }
-
-  // ── Scrollable track ─────────────────────────────────────────
+  // The row scrolls on its own, and the arrows float on top of it.
   &__track {
-    flex: 1;
-    min-width: 0;
     display: flex;
     gap: var(--space-4);
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-    // Vertical padding gives hover lift and focus rings room to breathe.
+    scrollbar-width: none; // hide the scrollbar in Firefox
+    // Room for the hover lift and focus ring, which overflow would otherwise
+    // clip. The negative margin takes the room back so the gaps around the
+    // section stay even.
     padding-block: var(--space-2);
+    margin-block: calc(var(--space-2) * -1);
 
     &::-webkit-scrollbar {
-      display: none;
+      display: none; // hide the scrollbar in Chrome and Safari
     }
   }
 
-  // ── Album card ───────────────────────────────────────────────
   &__card {
-    flex: 0 0 14rem;
-    scroll-snap-align: start;
-    text-decoration: none;
-    background: var(--color-bg-elevated);
-    border-radius: var(--radius-md);
+    // Fixed width, never grow or shrink: this is what keeps every card the
+    // same size and the row looking like a strip rather than a stretched grid.
+    flex: 0 0 var(--release-card-width);
+    // A flex item defaults to `min-width: auto`, which would let a long
+    // `nowrap` title stretch its card wider than the others.
+    min-width: 0;
     padding: var(--space-3);
-    outline-offset: 3px;
+    border-radius: var(--radius-md);
+    background: var(--color-bg-elevated);
+    text-decoration: none;
+    scroll-snap-align: start;
     transition:
       background var(--transition),
       transform var(--transition),
@@ -51,135 +48,151 @@
     @media (hover: hover) {
       &:hover {
         background: var(--color-surface-hover);
-        transform: translateY(-4px);
         box-shadow: var(--shadow-elevation);
+        transform: translateY(-0.4rem);
       }
     }
 
-    &:focus-visible {
-      outline: 2px solid var(--color-accent);
-    }
-
-    // Skeleton variant — no hover lift needed.
+    // Skeleton cards are not links, so they do not react to the pointer.
     &--skeleton {
       pointer-events: none;
     }
   }
 
-  // ── Cover image / placeholder ────────────────────────────────
   &__cover {
-    width: 100%;
     aspect-ratio: 1;
-    border-radius: var(--radius-md);
-    overflow: hidden;
     margin-bottom: var(--space-3);
+    border-radius: var(--radius-md);
     box-shadow: var(--shadow-elevation);
+    overflow: hidden;
 
     img {
+      display: block;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      display: block;
     }
   }
 
   &__placeholder {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #3a2f55, #1f1a30);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: rgba(255, 255, 255, 0.35);
+    width: 100%;
+    height: 100%;
+    background: var(--color-surface);
+    color: var(--color-text-subtle);
   }
 
-  // ── Text ─────────────────────────────────────────────────────
-  &__card-title {
-    color: var(--color-text);
-    font-weight: var(--weight-bold);
-    font-size: var(--font-sm);
-    white-space: nowrap;
+  &__title,
+  &__meta {
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
-  &__card-sub {
+  &__title {
+    color: var(--color-text);
+    font-size: var(--font-sm);
+    font-weight: var(--weight-bold);
+  }
+
+  &__meta {
+    margin-top: var(--space-1);
     color: var(--color-text-muted);
     font-size: var(--font-xs);
-    margin-top: var(--space-1);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 
-  &__card-year {
-    color: var(--color-text-subtle);
-    font-size: var(--font-xs);
-    margin-top: var(--space-1);
-  }
-
-  // ── Skeleton elements ────────────────────────────────────────
-  &__skeleton-cover {
-    display: block;
-    width: 100%;
-    aspect-ratio: 1;
-    border-radius: var(--radius-md);
-    margin-bottom: var(--space-3);
-  }
-
-  &__skeleton-title {
-    display: block;
-    width: 75%;
-    height: 1.4rem;
-    margin-bottom: var(--space-2);
-  }
-
-  &__skeleton-sub {
+  // The skeleton bars sit inside the same <p> elements as the real text, so
+  // each line is exactly as tall as real text and nothing jumps when the
+  // albums arrive.
+  &__line {
     display: block;
     width: 55%;
     height: 1.2rem;
+    margin-block: 0.3rem; // 18px, one line of the small meta text
   }
 
-  // ── Navigation arrows ────────────────────────────────────────
-  // Hidden on mobile — touch users swipe the track directly.
+  &__title &__line {
+    width: 75%;
+    height: 1.4rem;
+    margin-block: 0.35rem; // 21px, one line of the title text
+  }
+
+  // ── Arrows ───────────────────────────────────────────────────────────────
+  // Phones scroll by swiping, so they have no arrows.
   &__arrow {
     display: none;
-  }
+    position: absolute;
+    // Roughly the middle of the cover rather than of the whole card.
+    top: 40%;
+    z-index: 2;
+    align-items: center;
+    justify-content: center;
+    width: 4.4rem;
+    height: 4.4rem;
+    padding: 0;
+    border: 1px solid var(--glass-border);
+    border-radius: 50%;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    color: var(--color-text);
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition:
+      opacity var(--transition),
+      background var(--transition);
 
-  // ── Desktop ──────────────────────────────────────────────────
-  @media (min-width: 481px) {
-    &__card {
-      flex: 0 0 20rem;
+    &--previous {
+      left: var(--space-2);
     }
 
+    &--next {
+      right: var(--space-2);
+    }
+
+    // At the end of the row there is nothing to scroll to, so hide the arrow.
+    &:disabled {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @media (hover: hover) {
+      &:hover:not(:disabled) {
+        background: var(--color-accent);
+      }
+    }
+  }
+
+  // The arrows stay visible whenever there is somewhere to scroll (they only
+  // fade out when disabled, handled above). Hiding them until hover made it
+  // impossible to tell the row scrolls, so they are always shown now.
+
+  // A soft fade on the right edge hints that more cards are off-screen. It
+  // sits above the track but below the arrows, and lets clicks pass through.
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    width: var(--space-5);
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--color-bg)
+    );
+    pointer-events: none;
+  }
+
+  // ── Tablets and up ───────────────────────────────────────────────────────
+  @media (min-width: 481px) {
+    // Wider cards once there is room, and the arrows appear.
+    --release-card-width: 20rem;
+
     &__arrow {
-      flex-shrink: 0;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 3.6rem;
-      height: 3.6rem;
-      border-radius: 50%;
-      border: 1px solid var(--color-border);
-      background: var(--color-bg-elevated);
-      color: var(--color-text);
-      cursor: pointer;
-      box-shadow: var(--shadow-elevation);
-      transition:
-        background var(--transition),
-        opacity var(--transition),
-        visibility var(--transition);
-
-      @media (hover: hover) {
-        &:hover {
-          background: var(--color-accent);
-        }
-      }
-
-      &--hidden {
-        visibility: hidden;
-        pointer-events: none;
-      }
     }
   }
 }

@@ -1,37 +1,53 @@
 .song-list-skeleton {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+
+  // Mirrors the real song list (SongList.scss): a header line, then rows of
+  // the same height, with the index + title on mobile and the album and genre
+  // columns added from 481px up. Keep the sizes and columns in sync.
+  .skeleton-header {
+    border-bottom: 1px solid var(--color-border);
+    height: 2.7rem;
+    margin-bottom: var(--space-1);
+  }
 
   .skeleton-row {
     display: grid;
     grid-template-columns: 3.2rem minmax(0, 1fr) 4.8rem;
     align-items: center;
     gap: var(--space-4);
+    margin-bottom: 0.2rem;
+    min-height: 6.4rem;
     padding: var(--space-2) var(--space-4);
 
     .sk-index {
       width: 1.6rem;
       height: 1.4rem;
     }
+
     .sk-info {
       display: flex;
       flex-direction: column;
       gap: var(--space-1);
     }
+
     .sk-title {
       width: 60%;
       height: 1.2rem;
     }
+
     .sk-sub {
       width: 40%;
       height: 1rem;
     }
-    .sk-album {
+
+    .sk-album,
+    .sk-genre {
       display: none;
       width: 70%;
       height: 1.2rem;
     }
+
     .sk-duration {
       width: 3.6rem;
       height: 1.2rem;
@@ -40,22 +56,27 @@
   }
 }
 
+// Mirrors the real album/artist grids (AlbumList.scss / ArtistList.scss) so
+// the layout does not shift when the cards load. Keep these in sync with them.
+// Each size below adds up to the height of the real card: the line boxes of
+// the text, written as a bar plus the margin around it. A title that wraps
+// onto a second line makes a real album card taller than its skeleton.
 .card-grid-skeleton {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
   gap: var(--space-4);
 
   .skeleton-card {
     background: var(--color-bg-elevated);
     border-radius: var(--radius-md);
-    padding: var(--space-4);
+    padding: var(--space-3);
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
 
     .sk-media {
       width: 100%;
       aspect-ratio: 1;
+      margin-bottom: var(--space-3);
 
       &--square {
         border-radius: var(--radius-md);
@@ -63,57 +84,75 @@
 
       // Matches the round artist avatars, which are narrower than the card.
       &--circle {
-        width: 11rem;
+        width: 12rem;
         border-radius: 50%;
         margin-inline: auto;
       }
     }
+
+    // Album title: one 16px line (24px).
     .sk-card-title {
       width: 75%;
-      height: 1.4rem;
+      height: 1.6rem;
+      margin-block: 0.4rem;
     }
+
+    // Album artist / artist counts: a 4px gap, then one 12px line (18px).
     .sk-card-sub {
       width: 50%;
       height: 1.2rem;
+      margin-block: calc(var(--space-1) + 0.3rem) 0.3rem;
+    }
+
+    // The artist name is a 14px line (21px) instead.
+    &--circle .sk-card-title {
+      height: 1.4rem;
+      margin-block: 0.35rem;
     }
   }
 }
 
-// Genre tiles are plain coloured blocks, so they need no inner detail.
+// Genre cards are a name and a line of text, so a plain block of the same size will do.
 .tile-grid-skeleton {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
-  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+  gap: var(--space-4);
 
   .sk-tile {
-    height: 6.4rem;
+    height: 12rem;
   }
 }
 
 @media (min-width: 481px) {
   .song-list-skeleton .skeleton-row {
-    grid-template-columns: 4rem minmax(0, 2fr) minmax(0, 1.4fr) 5.6rem;
+    grid-template-columns:
+      4rem minmax(0, 2.4fr) minmax(0, 1.4fr) minmax(0, 1.2fr) 5.6rem;
 
-    .sk-album {
+    .sk-album,
+    .sk-genre {
       display: block;
     }
   }
 
   .card-grid-skeleton {
-    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
     gap: var(--space-5);
 
-    .sk-media--circle {
-      width: 14rem;
+    .skeleton-card {
+      padding: var(--space-4);
+
+      .sk-media--circle {
+        width: 15rem;
+      }
     }
   }
 
   .tile-grid-skeleton {
-    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 24rem), 1fr));
     gap: var(--space-5);
 
     .sk-tile {
-      height: 8.4rem;
+      height: 14rem;
     }
   }
 }

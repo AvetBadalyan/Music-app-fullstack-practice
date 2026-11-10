@@ -4,26 +4,19 @@ import './StatsBadge.scss';
 interface StatsBadgeProps {
   /** Icon element rendered on the left side of the badge. */
   icon: ReactNode;
-  /** The primary value displayed in the badge (e.g., "12 songs", "2h 15m"). */
+  /** The primary value displayed in the badge (e.g., "12", "2h 15m"). */
   value: string;
   /** Optional supplementary label rendered after the value. */
   label?: string;
-  /** Visual density. Defaults to 'regular'. */
-  size?: 'compact' | 'regular';
 }
 
 /**
  * A small read-only badge that pairs an icon with a stat value.
  * Used on artist and album detail pages to surface song count, duration, etc.
  */
-const StatsBadge = ({
-  icon,
-  value,
-  label,
-  size = 'regular',
-}: StatsBadgeProps) => (
+const StatsBadge = ({ icon, value, label }: StatsBadgeProps) => (
   <span
-    className={`stats-badge stats-badge--${size}`}
+    className="stats-badge"
     aria-label={label ? `${value} ${label}` : value}
   >
     <span className="stats-badge__icon" aria-hidden="true">

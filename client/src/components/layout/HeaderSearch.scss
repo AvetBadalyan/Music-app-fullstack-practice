@@ -1,125 +1,151 @@
+// Phones: the search is a round icon button. Focusing it (tapping the icon)
+// stretches it across the whole header. Tablets and up: see the bottom.
 .header-search {
+  // Height of the clickable area inside the pill. The pill itself is 2px
+  // taller, for the 1px border on each side.
+  --search-height: max(4rem, var(--touch-target));
+
   position: relative;
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  flex-shrink: 0;
   margin-left: auto;
-  background: var(--color-surface);
+  width: calc(var(--search-height) + 2px);
+  height: calc(var(--search-height) + 2px);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-pill);
-  padding: var(--space-2) var(--space-4);
+  background: var(--color-surface);
   transition:
     border-color var(--transition),
     background var(--transition),
-    width var(--transition),
-    box-shadow var(--transition);
-  // Cap against the viewport so the field never crowds the logo / menu button /
-  // auth controls on narrow tablets (601-1024px), where the header shares the
-  // row with those elements. 1rem = 10px (html font-size: 62.5%), so 22rem =
-  // 220px. On wide viewports min() picks the rem value; on narrow ones the vw
-  // cap keeps everything on one row.
-  width: min(22rem, 38vw);
+    box-shadow var(--transition),
+    flex-basis var(--transition);
 
-  &--open,
+  // The pill shows the focus ring. The input inside has none of its own.
   &:focus-within {
+    position: absolute;
+    inset-inline: var(--space-4);
+    z-index: 1;
+    width: auto;
     border-color: var(--color-accent);
     background: var(--color-bg-elevated);
-    width: min(34rem, 45vw);
     box-shadow: 0 0 0 3px var(--color-accent-soft);
   }
 
   &__icon {
-    color: var(--color-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
+    width: var(--search-height);
+    height: 100%;
+    color: var(--color-text-muted);
+    cursor: pointer;
   }
 
   &__input {
-    background: transparent;
-    border: none;
-    color: var(--color-text);
     flex: 1;
-    font-size: var(--font-md);
     min-width: 0;
+    // Hidden until the pill has focus.
+    width: 0;
+    padding: 0;
+    opacity: 0;
+    border: none;
+    background: transparent;
+    color: var(--color-text);
+    font-size: var(--font-md); // 16px, so iPhones do not zoom in on focus
     outline: none;
-    padding: 0.5rem 0;
 
     &::placeholder {
       color: var(--color-text-muted);
     }
 
-    /* Remove native search cancel button */
+    // Remove the browser's own clear button; ours is below.
     &::-webkit-search-cancel-button {
       display: none;
     }
-  }
 
-  &__clear {
-    align-items: center;
-    background: none;
-    border: none;
-    border-radius: 50%;
-    color: var(--color-text-muted);
-    cursor: pointer;
-    display: flex;
-    flex-shrink: 0;
-    padding: 2px;
-    transition: color var(--transition);
-
-    &:hover {
-      color: var(--color-text);
+    // The global input focus style would draw a second ring inside the pill.
+    &:focus-visible {
+      box-shadow: none;
     }
   }
 
-  // ── Dropdown ─────────────────────────────────────────────────────────────────
-  &__dropdown {
-    background: var(--color-bg-elevated);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-elevation);
-    display: flex;
-    flex-direction: column;
-    left: 0;
-    // Cap to the space below the header so the list never runs off a short
-    // (e.g. landscape phone) viewport; it scrolls internally when taller.
-    max-height: min(40rem, calc(100vh - var(--header-height) - var(--space-4)));
-    overflow-y: auto;
-    padding: var(--space-2) 0;
-    position: absolute;
-    right: 0;
-    top: calc(100% + var(--space-2));
-    z-index: 200;
+  &:focus-within &__input {
+    width: auto;
+    opacity: 1;
   }
 
-  // ── Group label ───────────────────────────────────────────────────────────────
+  &__clear {
+    // Phones show the clear button only while the field has focus; the
+    // round button has no room for it.
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: var(--search-height);
+    height: 100%;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: color var(--transition);
+
+    @media (hover: hover) {
+      &:hover {
+        color: var(--color-text);
+      }
+    }
+  }
+
+  &:focus-within &__clear {
+    display: flex;
+  }
+
+  // ── Results list ─────────────────────────────────────────────────────────
+  &__dropdown {
+    position: absolute;
+    top: calc(100% + var(--space-2));
+    right: 0;
+    left: 0;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    // Never taller than the space below the header; scrolls inside if needed.
+    max-height: min(40rem, calc(100dvh - var(--header-height) - var(--space-4)));
+    overflow-y: auto;
+    padding: var(--space-2) 0;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-elevated);
+    box-shadow: var(--shadow-elevation);
+  }
+
   &__group-label {
+    padding: var(--space-2) var(--space-4) var(--space-1);
     color: var(--color-text-muted);
     font-size: var(--font-xs);
     font-weight: var(--weight-bold);
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    padding: var(--space-2) var(--space-4) var(--space-1);
-    margin: 0;
 
+    // A line and some air between one group and the next.
     &:not(:first-child) {
       margin-top: var(--space-2);
-      border-top: 1px solid var(--color-border);
       padding-top: var(--space-3);
+      border-top: 1px solid var(--color-border);
     }
   }
 
-  // ── Result row ────────────────────────────────────────────────────────────────
   &__item {
-    align-items: center;
-    background: none;
-    border: none;
-    color: var(--color-text);
-    cursor: pointer;
     display: flex;
+    align-items: center;
     gap: var(--space-3);
     padding: var(--space-2) var(--space-4);
-    text-align: left;
+    color: var(--color-text);
+    text-decoration: none;
     transition: background var(--transition);
-    width: 100%;
 
     @media (hover: hover) {
       &:hover {
@@ -129,90 +155,85 @@
 
     &:focus-visible {
       background: var(--color-surface-hover);
-      outline: none;
+      // Inset ring: the dropdown clips anything drawn outside the row.
+      outline: 2px solid var(--color-accent);
+      outline-offset: -2px;
     }
   }
 
-  // ── Thumbnail ─────────────────────────────────────────────────────────────────
   &__thumb {
+    display: flex;
     align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 4.4rem;
+    height: 4.4rem;
+    border-radius: var(--radius-md);
     background: var(--color-surface);
     color: var(--color-text-muted);
-    display: flex;
-    flex-shrink: 0;
-    height: 4.4rem;
-    justify-content: center;
     overflow: hidden;
-    width: 4.4rem;
 
     img {
+      width: 100%;
       height: 100%;
       object-fit: cover;
-      width: 100%;
     }
 
-    &--rounded { border-radius: var(--radius-md); }
-    &--circle  { border-radius: 50%; }
-  }
-
-  &__thumb-icon {
-    opacity: 0.7;
+    &--round {
+      border-radius: 50%;
+    }
   }
 
   &__item-text {
     display: flex;
     flex-direction: column;
-    gap: 2px;
     min-width: 0;
+  }
+
+  &__item-title,
+  &__item-sub {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__item-title {
     font-size: var(--font-md);
     font-weight: var(--weight-bold);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   &__item-sub {
     color: var(--color-text-muted);
     font-size: var(--font-sm);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
-  &__empty {
-    color: var(--color-text-muted);
-    font-size: var(--font-md);
+  &__message {
     padding: var(--space-4);
+    color: var(--color-text-muted);
     text-align: center;
   }
-}
 
-// On mobile hide the label text, keep it compact
-@media (max-width: 600px) {
-  .header-search {
-    width: 3.2rem;
-    padding: var(--space-1) var(--space-2);
+  // ── Tablets and up ───────────────────────────────────────────────────────
+  // The search is always an open field. It shrinks when the header is
+  // crowded and grows when it has focus.
+  @media (min-width: 481px) {
+    flex: 0 1 22rem;
+    min-width: 14rem;
+    width: auto;
 
-    &__input {
-      width: 0;
-      padding: 0;
-      opacity: 0;
-      pointer-events: none;
+    &:focus-within {
+      position: relative;
+      inset-inline: auto;
+      flex-basis: 34rem;
     }
 
-    &--open,
-    &:focus-within {
-      width: 100%;
+    &__input {
+      width: auto;
+      opacity: 1;
+    }
 
-      .header-search__input {
-        opacity: 1;
-        pointer-events: auto;
-        width: auto;
-        padding: 0.35rem 0;
-      }
+    &__clear {
+      display: flex;
     }
   }
 }

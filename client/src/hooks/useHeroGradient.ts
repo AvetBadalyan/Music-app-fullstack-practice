@@ -90,9 +90,21 @@ export const useHeroGradient = (imageUrl?: string | null) => {
 
     image.onload = () => {
       const sampled = sampleAverageColor(image);
-      if (!sampled) return;
+      if (!sampled) {
+        // Could not read pixels (tainted canvas). Cache the fallback so we
+        // don't retry the broken image on remount.
+        colorCache.set(imageUrl, FALLBACK_COLOR);
+        if (!cancelled) onSampled();
+        return;
+      }
 
       colorCache.set(imageUrl, sampled);
+      if (!cancelled) onSampled();
+    };
+
+    // Cache the fallback on network error too, same reason as above.
+    image.onerror = () => {
+      colorCache.set(imageUrl, FALLBACK_COLOR);
       if (!cancelled) onSampled();
     };
 

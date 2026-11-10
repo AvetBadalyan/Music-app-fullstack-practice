@@ -1,5 +1,6 @@
 // Scrolling belongs to the document, not to an inner `.content` element —
-// the sidebar stays put via `sticky` instead (see Sidebar.scss).
+// the sidebar and the player stay put via `sticky` instead (see Sidebar.scss
+// and MusicPlayer.scss).
 .main-layout {
   display: flex;
   flex-direction: column;
@@ -21,12 +22,29 @@
   .content {
     flex: 1;
     min-width: 0; // prevent grid/flex children from forcing overflow
-    padding-bottom: calc(12rem + env(safe-area-inset-bottom, 0px)); // space for the fixed music player
-  }
-}
 
-@media (min-width: 1025px) {
-  .main-layout .content {
-    padding-bottom: calc(9.6rem + env(safe-area-inset-bottom, 0px));
+    // The skip link moves focus here, so the page container needs no ring.
+    &:focus {
+      outline: none;
+    }
+  }
+
+  // Sits above the top of the screen until a keyboard user tabs to it.
+  .skip-link {
+    position: fixed;
+    top: var(--space-2);
+    left: var(--space-2);
+    z-index: 200;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+    background: var(--color-text);
+    color: var(--color-bg);
+    font-weight: var(--weight-bold);
+    text-decoration: none;
+    transform: translateY(-200%);
+
+    &:focus {
+      transform: none;
+    }
   }
 }

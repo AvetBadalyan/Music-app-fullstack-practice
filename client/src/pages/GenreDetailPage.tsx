@@ -1,20 +1,26 @@
 import { useParams } from 'react-router-dom';
 import {
-  useGetGenreByIdQuery,
   useDeleteGenreMutation,
+  useGetGenreByIdQuery,
 } from '../services/genresApi';
 import { useAppSelector } from '../app/hooks';
 import { useDeleteWithConfirm } from '../hooks/useDeleteWithConfirm';
-import SongList from '../components/songs/SongList';
+import { formatTotalDuration } from '../utils/formatTotalDuration';
+import { pluralize } from '../utils/pluralize';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import DeleteButton from '../components/common/DeleteButton';
+import EmptyState from '../components/common/EmptyState';
+import ListPage from '../components/common/ListPage';
 import PageStatus from '../components/common/PageStatus';
+import SongList from '../components/songs/SongList';
+import '../components/common/PageToolbar.scss';
+import './GenreDetailPage.scss';
 
 const GenreDetailPage = () => {
   const { id = '' } = useParams<{ id: string }>();
   const isAdmin = useAppSelector((state) => state.auth.isAdmin);
 
-  const { data: genre, isLoading, error } = useGetGenreByIdQuery(id);
+  const { data: genre, isLoading, error } = useGetGenreByIdQuery(id, { skip: !id });
   const [deleteGenre, { isLoading: isDeleting }] = useDeleteGenreMutation();
   const { isConfirmOpen, openConfirm, closeConfirm, confirmDelete } =
     useDeleteWithConfirm({ deleteEntity: deleteGenre, redirectTo: '/genres' });
@@ -36,11 +42,20 @@ const GenreDetailPage = () => {
   }
 
   const songs = genre.songs ?? [];
+  const totalSeconds = songs.reduce((sum, song) => sum + song.duration, 0);
 
   return (
-    <div className="page">
+    <ListPage>
       <div className="page-toolbar">
-        <h1>{genre.name}</h1>
+        <div>
+          <h1>{genre.name}</h1>
+          {songs.length > 0 && (
+            <p className="genre-summary">
+              {pluralize(songs.length, 'song')} ·{' '}
+              {formatTotalDuration(totalSeconds)}
+            </p>
+          )}
+        </div>
         {isAdmin && (
           <DeleteButton
             label="Delete genre"
@@ -53,7 +68,10 @@ const GenreDetailPage = () => {
       {songs.length > 0 ? (
         <SongList songs={songs} hideGenreColumn />
       ) : (
-        <PageStatus>No songs in this genre yet.</PageStatus>
+        <EmptyState
+          context="no-songs"
+          description="No songs in this genre yet."
+        />
       )}
 
       {isAdmin && (
@@ -66,7 +84,7 @@ const GenreDetailPage = () => {
           onCancel={closeConfirm}
         />
       )}
-    </div>
+    </ListPage>
   );
 };
 

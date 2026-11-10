@@ -29,6 +29,7 @@ const PageToolbar = ({
         className="toolbar-toggle"
         onClick={onCreateToggle}
         aria-expanded={isCreateOpen}
+        aria-label={isCreateOpen ? 'Close' : createLabel}
       >
         {isCreateOpen ? <X size={16} /> : <Plus size={16} />}
         <span>{isCreateOpen ? 'Close' : createLabel}</span>

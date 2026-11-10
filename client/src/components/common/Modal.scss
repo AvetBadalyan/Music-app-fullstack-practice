@@ -11,7 +11,7 @@
   align-items: center;
   justify-content: center;
   padding: var(--space-4);
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--color-scrim);
   backdrop-filter: blur(4px);
   animation: modal-fade 0.18s ease-out;
 }
@@ -21,12 +21,13 @@
   width: 100%;
   max-width: 42rem;
   max-height: 90vh;
+  max-height: 90dvh;
   overflow-y: auto;
   background: var(--color-bg-elevated);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-elevation);
-  padding: var(--space-5);
+  padding: var(--space-4);
   color: var(--color-text);
   animation: modal-pop 0.18s ease-out;
 
@@ -43,8 +44,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2.8rem;
-    height: 2.8rem;
+    width: max(2.8rem, var(--touch-target));
+    height: max(2.8rem, var(--touch-target));
     background: none;
     border: none;
     color: var(--color-text-muted);
@@ -54,9 +55,11 @@
       color var(--transition),
       background var(--transition);
 
-    &:hover:not(:disabled) {
-      color: var(--color-text);
-      background: rgba(255, 255, 255, 0.06);
+    @media (hover: hover) {
+      &:hover:not(:disabled) {
+        color: var(--color-text);
+        background: rgba(255, 255, 255, 0.06);
+      }
     }
 
     &:disabled {
@@ -72,28 +75,8 @@
   }
 }
 
-@keyframes modal-fade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes modal-pop {
-  from {
-    opacity: 0;
-    transform: translateY(8px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@media (max-width: 480px) {
+@media (min-width: 481px) {
   .modal-panel {
-    padding: var(--space-4);
+    padding: var(--space-5);
   }
 }

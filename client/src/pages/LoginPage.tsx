@@ -25,19 +25,25 @@ const LoginPage = () => {
 
     // Supabase issues the token; AuthSessionProvider picks the new session up
     // and puts it in the store, which is what redirects away from this page.
-    const { error } = await supabase.auth.signInWithPassword({
-      email: emailInput.trim(),
-      password,
-    });
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: emailInput.trim(),
+        password,
+      });
 
-    setIsSubmitting(false);
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
 
-    if (error) {
-      toast.error(error.message);
-      return;
+      toast.success('Signed in');
+    } catch {
+      // e.g. the network is down: the request threw instead of returning an error
+      toast.error('Could not reach the server. Check your connection.');
+    } finally {
+      // Always re-enable the button, whatever happened above.
+      setIsSubmitting(false);
     }
-
-    toast.success('Signed in');
   };
 
   return (

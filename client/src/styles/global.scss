@@ -7,6 +7,7 @@
   --color-surface: #1d1926;
   --color-surface-hover: #272233;
   --color-border: rgba(255, 255, 255, 0.08);
+  --color-scrim: rgba(0, 0, 0, 0.55); /* dimmed backdrop behind drawers */
 
   /* Text */
   --color-text: #ffffff;
@@ -17,12 +18,29 @@
   --color-accent: #9466ee;
   --color-accent-hover: #a87fff;
   --color-accent-soft: rgba(148, 102, 238, 0.14);
+  --color-accent-border: rgba(148, 102, 238, 0.4); /* hover border on pills and chips */
   --color-accent-hsl: 268, 66%, 67%; /* matching accent color in HSL */
+  /* A darker accent for buttons with white text. White on --color-accent is
+     only 3.89:1 (fails WCAG AA); white on this is 4.81:1 (passes). Used as the
+     background of text buttons; --color-accent stays for glows, borders,
+     chips and hover accents where no small text sits on top. */
+  --color-accent-strong: #7c4dff;
+  --color-accent-strong-hover: #6d3fd4;
 
   /* Status */
   --color-success: #10b981;
   --color-danger: #ef4444;
+  --color-danger-hover: #dc2626;
+  --color-danger-soft: rgba(239, 68, 68, 0.08); /* hover tint on destructive buttons */
   --color-warning: #f59e0b;
+
+  /* Text on tinted status panels (form feedback, login warning) */
+  --color-on-accent-soft: #ece1ff;
+  --color-on-danger-soft: #ffd2d2;
+  --color-on-warning-soft: #ffd89a;
+
+  /* Stand-in behind a missing cover or picture */
+  --gradient-placeholder: linear-gradient(135deg, #3a2f55, #1f1a30);
 
   /* Spacing — 1rem = 10px throughout */
   --space-1: 0.4rem; /*  4px — micro (icon gaps, tight pairs) */
@@ -51,7 +69,6 @@
   --shadow-elevation: 0 2px 8px rgba(0, 0, 0, 0.35); /* cards, covers, toasts, hero panels */
   --shadow-glow: 0 8px 22px rgba(148, 102, 238, 0.36); /* primary buttons, equalizer */
   --cover-glow-color: 268, 66%, 67%; /* HSL values without hsl() wrapper */
-  --cover-glow-opacity: 0;
 
   /* Transition */
   --transition: 0.2s ease;
@@ -59,11 +76,46 @@
   /* Header height */
   --header-height: 6.4rem;
 
+  /* Page layout. Content sits in a column no wider than --content-max-width,
+     so rows and grids stay readable on large monitors. --page-gutter is the
+     side padding that does it: the normal page padding on narrower screens,
+     and half the spare width beyond the maximum. Full-width bands such as the
+     detail-page hero use it too, so their text lines up with the rest of the
+     page while their background still runs edge to edge. */
+  --content-max-width: 144rem;
+  --page-padding: var(--space-4);
+  --page-gutter: max(
+    var(--page-padding),
+    calc((100% - var(--content-max-width)) / 2)
+  );
+
+  /* Smallest tap target. Zero for a mouse; 44px on touch screens (see below).
+     Buttons use it as `min-width` / `min-height`. */
+  --touch-target: 0px;
+
+  /* Text size inside form fields. iOS Safari zooms the page in when a field
+     under 16px gets focus, so touch screens use the body size (see below). */
+  --input-font-size: var(--font-sm);
+
   /* Breakpoints — mobile-first, chosen by real device widths.
+     Write the base styles for phones first, then add only these two queries:
        base      → phones (≤ 480px) — single-column layout, smallest paddings
        ≥ 481px   → tablets & desktops — wider grids, larger type, more padding
        ≥ 1025px  → laptops & desktops — full sidebar, horizontal player
   */
+}
+
+@media (pointer: coarse) {
+  :root {
+    --touch-target: 4.4rem;
+    --input-font-size: var(--font-md);
+  }
+}
+
+@media (min-width: 481px) {
+  :root {
+    --page-padding: var(--space-5);
+  }
 }
 
 *,
@@ -134,31 +186,10 @@ button {
   }
 }
 
+/* Skeleton shimmer is decorative, so it stops entirely for reduced motion. */
 @media (prefers-reduced-motion: reduce) {
   .skeleton::after {
     animation: none;
-  }
-}
-
-/* Skeleton fade-out on content load */
-@keyframes skeleton-fade-out {
-  to {
-    opacity: 0;
-  }
-}
-
-.skeleton-container {
-  &.is-loaded {
-    .skeleton {
-      animation: skeleton-fade-out 200ms ease-out forwards;
-    }
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .skeleton-container.is-loaded .skeleton {
-    animation: none;
-    opacity: 0;
   }
 }
 
@@ -205,11 +236,11 @@ button {
 
 /* Toastify theme overrides */
 .Toastify__toast {
-  background: var(--color-bg-elevated) !important;
-  color: var(--color-text) !important;
+  background: var(--color-bg-elevated);
+  color: var(--color-text);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md) !important;
-  box-shadow: var(--shadow-elevation) !important;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-elevation);
   font-family: inherit;
   animation: toast-slide-in 400ms var(--ease-out-back);
 }
@@ -228,7 +259,7 @@ button {
 }
 
 .Toastify__progress-bar {
-  background: var(--color-accent) !important;
+  background: var(--color-accent);
 }
 
 /* Shared shell for the list pages: one class instead of naming every page,
@@ -239,7 +270,7 @@ button {
    on specificity rather than on stylesheet order, which is not ours to rely
    on once the toolbar arrives in a lazily-loaded chunk. */
 .page {
-  padding: var(--space-4);
+  padding: var(--space-4) var(--page-gutter);
 
   :where(&) h1 {
     font-size: var(--font-lg);
@@ -252,7 +283,7 @@ button {
 
 @media (min-width: 481px) {
   .page {
-    padding: var(--space-5);
+    padding-block: var(--space-5);
 
     :where(&) h1 {
       font-size: var(--font-xl);
@@ -261,28 +292,16 @@ button {
   }
 }
 
-/* Gradient text effect for section headings.
-   Apply this class to any heading that should use the accent gradient. */
-.section-heading {
-  background: linear-gradient(
-    135deg,
-    var(--color-text) 0%,
-    var(--color-accent) 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* Keyboard focus ring for links, buttons and cards, defined once here so no
+   component has to repeat it. Form fields replace it with a border and glow
+   (below), so they are left out. */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .page h1 {
-    animation: none;
-  }
-}
-
-/* Global input focus indicator — baseline/fallback.
-   Applies only on keyboard navigation (focus-visible).
-   Component-level SCSS can override with higher specificity. */
+/* Form field focus indicator: an accent border and soft glow instead of the
+   outline. Applies only on keyboard navigation (focus-visible). */
 input,
 textarea,
 select {
@@ -295,6 +314,9 @@ select {
   }
 }
 
+/* Reduced motion: switch every animation and transition off. `!important` is
+   the one deliberate exception to the no-!important rule here - it has to beat
+   every component's own animation declaration, whatever its specificity. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -303,4 +325,14 @@ select {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Text for screen readers only (for example a page title the design shows as an image). */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }

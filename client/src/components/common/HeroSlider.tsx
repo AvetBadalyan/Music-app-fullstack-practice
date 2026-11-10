@@ -2,6 +2,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import './HeroSlider.scss';
 
+// Evaluated once at module load. The preference rarely (never in practice)
+// changes at runtime, so there is no need to call matchMedia on every render.
+const prefersReducedMotion = window.matchMedia(
+  '(prefers-reduced-motion: reduce)',
+).matches;
+
 const SLIDES = [
   {
     src: '/singers/music_slide_1_768.webp',
@@ -43,9 +49,10 @@ const HeroSlider = () => {
   const sliderRef = useRef<HTMLElement>(null);
   const rafIdRef = useRef<number | null>(null);
 
-  // Prefers-reduced-motion users get no autoplay: the fill animation is
-  // skipped so onAnimationEnd never fires and slides only change manually.
-  const autoplay = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Autoplay: skip if the visitor prefers reduced motion — the fill animation
+  // is turned off via CSS so onAnimationEnd never fires, leaving the slider
+  // stationary until the user clicks a dot or arrow.
+  const autoplay = !prefersReducedMotion;
 
   const showNext = useCallback(() => {
     setCurrent((c) => (c + 1) % SLIDES.length);
@@ -60,7 +67,7 @@ const HeroSlider = () => {
   useEffect(() => {
     const slider = sliderRef.current;
     if (!slider) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (prefersReducedMotion) return;
 
     let isVisible = true;
 
@@ -173,7 +180,6 @@ const HeroSlider = () => {
             type="button"
             role="tab"
             aria-selected={i === current}
-            aria-current={i === current ? 'true' : undefined}
             aria-label={`Go to slide ${i + 1}`}
             className="hero-slider__dot"
             onClick={() => setCurrent(i)}

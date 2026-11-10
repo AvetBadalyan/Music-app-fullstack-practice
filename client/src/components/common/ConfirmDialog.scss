@@ -24,7 +24,7 @@
 
 .confirm-dialog__actions {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column-reverse;
   gap: var(--space-3);
 }
 
@@ -33,6 +33,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-height: var(--touch-target);
   padding: var(--space-2) var(--space-5);
   border-radius: var(--radius-pill);
   font-size: var(--font-sm);
@@ -55,9 +56,11 @@
   color: var(--color-text-muted);
   border: 1px solid var(--color-border);
 
-  &:hover:not(:disabled) {
-    color: var(--color-text);
-    background: rgba(255, 255, 255, 0.04);
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      color: var(--color-text);
+      background: rgba(255, 255, 255, 0.04);
+    }
   }
 }
 
@@ -65,18 +68,16 @@
   background: var(--color-danger);
   color: var(--color-text);
 
-  &:hover:not(:disabled) {
-    background: #dc2626;
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      background: var(--color-danger-hover);
+    }
   }
 }
 
-@media (max-width: 480px) {
+@media (min-width: 481px) {
   .confirm-dialog__actions {
-    flex-direction: column-reverse;
-
-    .confirm-dialog__cancel,
-    .confirm-dialog__confirm {
-      width: 100%;
-    }
+    flex-direction: row;
+    justify-content: flex-end;
   }
 }

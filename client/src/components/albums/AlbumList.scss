@@ -1,6 +1,8 @@
+// auto-fill, not auto-fit: with auto-fit a short row (one search result, four
+// "more albums") stretches its cards across the whole width.
 .album-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
   gap: var(--space-4);
 
   .album-card {
@@ -13,6 +15,9 @@
       transform 200ms var(--ease-out-expo),
       box-shadow 250ms var(--ease-out-expo);
     display: block;
+    // A flex/grid item that holds nowrap text must be allowed to shrink, or
+    // one long title widens its card and the grid goes uneven.
+    min-width: 0;
 
     @media (hover: hover) {
       &:hover {
@@ -21,11 +26,6 @@
         box-shadow:
           0 16px 40px -8px hsla(var(--cover-glow-color, 268, 66%, 67%), 0.35),
           var(--shadow-elevation);
-
-        .album-cover .play-overlay {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-        }
       }
     }
 
@@ -47,45 +47,23 @@
       .placeholder {
         width: 100%;
         height: 100%;
-        background: linear-gradient(135deg, #3a2f55, #1f1a30);
+        background: var(--gradient-placeholder);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: var(--font-hero);
-        color: rgba(255, 255, 255, 0.35);
-      }
-
-      .play-overlay {
-        position: absolute;
-        right: var(--space-3);
-        bottom: var(--space-3);
-        width: 4.8rem;
-        height: 4.8rem;
-        border-radius: 50%;
-        background: var(--color-accent);
-        color: var(--color-text);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: var(--font-md);
-        padding-left: 3px;
-        box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.5);
-        opacity: 0;
-        // Start lower + smaller, then settle into place (Spotify-style rise).
-        transform: translateY(8px) scale(0.85);
-        transition:
-          opacity 200ms var(--ease-out-expo),
-          transform 200ms var(--ease-out-back);
+        color: var(--color-text-subtle);
       }
     }
 
+    // Two lines, so a long title is still readable in a narrow phone card.
     .album-title {
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
       color: var(--color-text);
+      display: -webkit-box;
       font-weight: var(--weight-bold);
       font-size: var(--font-md);
-      white-space: nowrap;
       overflow: hidden;
-      text-overflow: ellipsis;
     }
 
     .album-artist {
@@ -101,7 +79,7 @@
 
 @media (min-width: 481px) {
   .album-grid {
-    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
     gap: var(--space-5);
 
     .album-card {
