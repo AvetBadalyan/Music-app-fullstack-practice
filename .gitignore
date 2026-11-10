@@ -13,3 +13,15 @@ client/dist
 
 # hosting
 .vercel
+
+# local AI-agent and editor tooling
+.kiro/
+.codemie/
+.vscode/
+
+# AI review notes
+semantic-review/
+
+# TypeScript build cache
+tsconfig.tsbuildinfo
+*.tsbuildinfo
