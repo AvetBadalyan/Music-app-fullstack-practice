@@ -8,6 +8,12 @@ const prefersReducedMotion = window.matchMedia(
   '(prefers-reduced-motion: reduce)',
 ).matches;
 
+// How wide the hero is on screen: the page minus the sidebar and the padding.
+// Keep in sync with `imagesizes` on the preload link in index.html, so the
+// browser picks (and has already started loading) the same image file.
+const HERO_IMAGE_SIZES =
+  '(min-width: 1025px) calc(100vw - 268px), (min-width: 481px) calc(100vw - 48px), calc(100vw - 32px)';
+
 const SLIDES = [
   {
     src: '/singers/music_slide_1_768.webp',
@@ -137,7 +143,7 @@ const HeroSlider = () => {
                 <img
                   src={shouldLoad ? slide.src : undefined}
                   srcSet={shouldLoad ? slide.srcSet : undefined}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1280px) 80vw, 1200px"
+                  sizes={HERO_IMAGE_SIZES}
                   alt={slide.alt}
                   draggable={false}
                   loading={i === 0 ? 'eager' : 'lazy'}

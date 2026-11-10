@@ -3,6 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Open the connections to the API and the image storage early, so the
+         album covers on the home page start downloading sooner. -->
+    <link rel="preconnect" href="https://musicavet-api.vercel.app" crossorigin />
+    <link rel="preconnect" href="https://tnopmeevynuyszzqarmk.supabase.co" />
     <link
       rel="preload"
       as="image"

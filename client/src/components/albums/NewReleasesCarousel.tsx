@@ -10,6 +10,10 @@ interface NewReleasesCarouselProps {
   isLoading: boolean;
 }
 
+// The first covers are on screen as soon as the page loads (and are often the
+// largest thing painted), so they must not be lazy-loaded. The rest still are.
+const EAGER_COVER_COUNT = 3;
+
 // Skeleton cards shown while loading. Four fill a desktop row.
 const SKELETON_COUNT = 4;
 
@@ -90,7 +94,7 @@ const NewReleasesCarousel = ({ albums, isLoading }: NewReleasesCarouselProps) =>
                 </p>
               </div>
             ))
-          : albums.map((album) => (
+          : albums.map((album, index) => (
               <Link
                 key={album.id}
                 to={`/albums/${album.id}`}
@@ -104,7 +108,7 @@ const NewReleasesCarousel = ({ albums, isLoading }: NewReleasesCarouselProps) =>
                       alt=""
                       width="200"
                       height="200"
-                      loading="lazy"
+                      loading={index < EAGER_COVER_COUNT ? 'eager' : 'lazy'}
                       decoding="async"
                     />
                   ) : (
