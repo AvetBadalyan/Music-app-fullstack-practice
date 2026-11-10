@@ -19,7 +19,10 @@ export function validateRequest<T extends object>(
         },
       );
 
-      const errors = await validate(dtoInstance);
+      const errors = await validate(dtoInstance, {
+        whitelist: true,
+        forbidNonWhitelisted: true,
+      });
 
       if (errors.length > 0) {
         const errorMessages = errors

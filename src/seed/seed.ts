@@ -5,6 +5,25 @@ import { SupabaseStorage } from '../services/supabaseStorage';
 import { Album, Artist, Genre, Song } from './../entities';
 import { albums, artists, genres, songs } from './seedData';
 
+// ─── Environment guard ───────────────────────────────────────────────────────
+// Running this script deletes all data. To prevent accidental production wipes,
+// it refuses to run unless ALLOW_SEED=true is explicitly set.
+if (process.env.ALLOW_SEED !== 'true') {
+  console.error(
+    '\n❌ Seed aborted: ALLOW_SEED is not set.\n\n' +
+      'This script truncates all tables. To proceed, run:\n' +
+      '  ALLOW_SEED=true npm run seed\n',
+  );
+  process.exit(1);
+}
+
+if (process.env.NODE_ENV === 'production') {
+  console.warn(
+    '⚠️  WARNING: Seeding in production (NODE_ENV=production).\n' +
+      'Ensure DATABASE_URL points at a dev database, not the deployed one.\n',
+  );
+}
+
 const assetDirectories = {
   audio: path.join(__dirname, 'mp3'),
   albumCovers: path.join(__dirname, 'album covers'),

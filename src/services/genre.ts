@@ -24,6 +24,7 @@ export class GenreService {
           id: true,
           title: true,
           duration: true,
+          audioFile: true,
           artist: {
             id: true,
             name: true,
@@ -54,6 +55,18 @@ export class GenreService {
       select: {
         id: true,
         name: true,
+        songs: {
+          id: true,
+          artist: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+      relations: {
+        songs: {
+          artist: true,
+        },
       },
     });
 
